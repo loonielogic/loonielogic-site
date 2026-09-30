@@ -386,10 +386,148 @@
           "key": "on.ltt.2026",
           "source": "Ontario Ministry of Finance \u2014 land transfer tax tiers",
           "verified": "2026-09-27"
+        },
+        {
+          "expires": null,
+          "key": "fhsa.carry_forward",
+          "source": "canada.ca: FHSA carry-forward (max $8,000)",
+          "verified": "2026-09-29"
+        },
+        {
+          "expires": null,
+          "key": "hbp.repayment_period",
+          "source": "canada.ca: HBP 15-year repayment",
+          "verified": "2026-09-29"
+        },
+        {
+          "expires": null,
+          "key": "hbp.extended_grace_2026_2028",
+          "source": "Spring Economic Update 2026: HBP grace extension (DISPUTED, confirm)",
+          "verified": "2026-09-30"
+        },
+        {
+          "expires": null,
+          "key": "hbtc.amount_2026",
+          "source": "canada.ca: Home Buyers Amount ($1,400 at 14%)",
+          "verified": "2026-09-29"
+        },
+        {
+          "expires": null,
+          "key": "fhsa.refund_range_on",
+          "source": "Derived from 2026 federal + ON brackets (re-verify)",
+          "verified": "2026-09-30"
+        },
+        {
+          "expires": null,
+          "key": "cmhc.premiums.2026",
+          "source": "CMHC premium tiers + PST on premium",
+          "verified": "2026-09-27"
+        },
+        {
+          "expires": null,
+          "key": "osfi.mqr.2026",
+          "source": "OSFI minimum qualifying rate",
+          "verified": "2026-09-27"
+        },
+        {
+          "expires": null,
+          "key": "mortgage.insured_cap",
+          "source": "Insured mortgage price cap $1.5M",
+          "verified": "2026-09-29"
+        },
+        {
+          "expires": null,
+          "key": "ltt_on.fthb_rebate_max",
+          "source": "Ontario LTT first-time rebate $4,000",
+          "verified": "2026-09-29"
+        },
+        {
+          "expires": null,
+          "key": "ltt_toronto.mltt_brackets_to_3m",
+          "source": "Toronto MLTT (NOT yet verified on toronto.ca)",
+          "verified": "2026-09-29"
+        },
+        {
+          "expires": null,
+          "key": "ltt_toronto.luxury_tiers",
+          "source": "Toronto MLTT luxury tiers (NOT yet verified on toronto.ca)",
+          "verified": "2026-09-29"
+        },
+        {
+          "expires": null,
+          "key": "ltt_toronto.fthb_rebate_max",
+          "source": "Toronto MLTT first-time rebate $4,475",
+          "verified": "2026-09-29"
+        },
+        {
+          "expires": null,
+          "key": "ptt_bc.general_brackets",
+          "source": "BC property transfer tax brackets",
+          "verified": "2026-09-29"
+        },
+        {
+          "expires": null,
+          "key": "bc_fthb.thresholds",
+          "source": "BC first-time buyer exemption thresholds",
+          "verified": "2026-09-29"
+        },
+        {
+          "expires": null,
+          "key": "closing.legal_and_other_fees",
+          "source": "Planner default closing fees (assumption)",
+          "verified": "2026-09-30"
+        },
+        {
+          "expires": null,
+          "key": "closing.cash_buffer",
+          "source": "Planner default cash cushion (assumption)",
+          "verified": "2026-09-30"
+        },
+        {
+          "expires": "2026-10-15",
+          "key": "savings.default_rate",
+          "source": "EQ Bank 2.75% conditional rate (re-check)",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "mortgage.illustrative_contract_rate",
+          "source": "Illustrative 4.50% contract rate (verify)",
+          "verified": "2026-09-30"
+        },
+        {
+          "expires": "2026-10-15",
+          "key": "mortgage.rate_snapshot_best_5yr_fixed",
+          "source": "Ratehub best 5-yr fixed snapshot",
+          "verified": "2026-09-27"
+        },
+        {
+          "expires": null,
+          "key": "rent_vs_buy.assumptions",
+          "source": "Maintenance 1%/yr design default",
+          "verified": "2026-09-27"
+        },
+        {
+          "expires": null,
+          "key": "budget.home_insurance_monthly",
+          "source": "Home insurance design default",
+          "verified": "2026-09-30"
+        },
+        {
+          "expires": null,
+          "key": "property_tax.toronto.2026",
+          "source": "Toronto 2026 residential property tax rate",
+          "verified": "2026-09-27"
+        },
+        {
+          "expires": null,
+          "key": "tfsa.annual_limit.2026",
+          "source": "canada.ca: TFSA 2026 limit",
+          "verified": "2026-09-27"
         }
       ],
       "hub": "/calculators/",
-      "last_reviewed": "2026-09-28",
+      "last_reviewed": "2026-09-30",
       "meta_description": "Plan your down payment month by month: timeline or target-date mode, closing costs, FHSA and Home Buyers' Plan sequencing, and the 20%-down tradeoff.",
       "newsletter_placement": "soft-link",
       "next_review_due": "2026-12-01",

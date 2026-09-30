@@ -1,0 +1,306 @@
+---
+/**
+ * DownPaymentPlanner: the First Home Savings Planner island. Plain Astro
+ * markup plus one TypeScript <script> (no framework). Results are rendered
+ * once at build time from the defaults, so the page is useful with JS off;
+ * the script re-renders on every input change with the same functions.
+ */
+import {
+  defaultInput,
+  plan,
+  DEFAULT_CONTRACT_RATE,
+  DEFAULT_FEES,
+  DEFAULT_INSURANCE_MONTHLY,
+  DEFAULT_SAVINGS_RATE,
+  EQ_RATES,
+  MAINTENANCE_ANNUAL,
+  PROPERTY_TAX_PRESETS,
+  SNAPSHOT_RATE,
+  TFSA_ANNUAL,
+} from "../../lib/calculators/down-payment-planner";
+import { renderResults, pct, $ } from "../../lib/calculators/down-payment-planner-render";
+import { usedFigures } from "../../lib/calculators/figures";
+
+const d = defaultInput();
+const initialHtml = renderResults(plan(d));
+const years = Array.from({ length: d.startYear - 2023 + 1 }, (_, k) => d.startYear - k);
+const target = new Date(d.startYear, d.startMonth + d.targetMonths, 1);
+const targetValue = `${target.getFullYear()}-${String(target.getMonth() + 1).padStart(2, "0")}`;
+const rate = (n: number) => (n * 100).toFixed(2);
+const sources = [...usedFigures.values()];
+const isAssumption = (s: string) => s === "assumption" || s === "needs_reverification";
+---
+
+<div class="dpp" data-start-year={d.startYear} data-start-month={d.startMonth}>
+  <form class="dpp-form" id="dpp-form" novalidate>
+    <fieldset>
+      <legend>What do you want to know?</legend>
+      <label class="dpp-radio"><input type="radio" name="mode" value="timeline" checked /> When can I buy? (timeline)</label>
+      <label class="dpp-radio"><input type="radio" name="mode" value="target" /> How much do I save to buy by a date?</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>The home</legend>
+      <label>Home price
+        <input type="number" name="price" inputmode="numeric" min="0" step="1000" value={d.price} />
+      </label>
+      <label>Province
+        <select name="province">
+          <option value="ON" selected>Ontario</option>
+          <option value="BC">British Columbia</option>
+          <option value="AB">Alberta</option>
+          <option value="MB">Manitoba</option>
+          <option value="SK">Saskatchewan</option>
+          <option value="QC">Quebec</option>
+          <option value="other">Another province or territory</option>
+        </select>
+      </label>
+      <label class="dpp-check" data-show="ON"><input type="checkbox" name="toronto" /> In the City of Toronto (adds municipal land transfer tax)</label>
+      <label data-show="manual" hidden>Transfer tax or registration fees for your province
+        <input type="number" name="manualTransferTax" inputmode="numeric" min="0" step="100" value="0" />
+        <small>This planner only calculates Ontario and BC transfer tax. Enter your own figure.</small>
+      </label>
+      <label class="dpp-check"><input type="checkbox" name="firstTimeBuyer" checked /> First-time buyer rebates apply</label>
+      <fieldset class="dpp-inline">
+        <legend>Down payment</legend>
+        <label class="dpp-radio"><input type="radio" name="downChoice" value="minimum" checked /> Minimum</label>
+        <label class="dpp-radio"><input type="radio" name="downChoice" value="twenty" /> 20%</label>
+      </fieldset>
+      <label class="dpp-check"><input type="checkbox" name="couple" /> Buying as a couple (both first-time buyers; doubles FHSA and HBP limits)</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>What you have saved now</legend>
+      <label>FHSA opened in
+        <select name="fhsaOpenYear">
+          <option value="" selected>Not opened yet (assume it opens this year)</option>
+          {years.map((y) => <option value={y}>{y}</option>)}
+        </select>
+      </label>
+      <label>FHSA balance
+        <input type="number" name="fhsaBalance" inputmode="numeric" min="0" step="100" value={d.fhsaBalance} />
+      </label>
+      <label>Total contributed to your FHSA so far
+        <input type="number" name="fhsaContributedTotal" inputmode="numeric" min="0" step="100" value={d.fhsaContributedTotal} />
+        <small>For a couple, enter the combined amount.</small>
+      </label>
+      <label>RRSP balance
+        <input type="number" name="rrspBalance" inputmode="numeric" min="0" step="100" value={d.rrspBalance} />
+      </label>
+      <label>RRSP contributions made in the 90 days before buying
+        <input type="number" name="rrspRecent" inputmode="numeric" min="0" step="100" value={d.rrspRecent} />
+        <small>These cannot be withdrawn under the Home Buyers' Plan.</small>
+      </label>
+      <label class="dpp-check"><input type="checkbox" name="useHbp" checked /> Include the Home Buyers' Plan</label>
+      <label>TFSA balance
+        <input type="number" name="tfsaBalance" inputmode="numeric" min="0" step="100" value={d.tfsaBalance} />
+      </label>
+      <label>TFSA room available now
+        <input type="number" name="tfsaRoom" inputmode="numeric" min="0" step="100" value={d.tfsaRoom} />
+      </label>
+      <label>Other (taxable) savings
+        <input type="number" name="taxableBalance" inputmode="numeric" min="0" step="100" value={d.taxableBalance} />
+      </label>
+      <label>Expected gift at closing
+        <input type="number" name="gift" inputmode="numeric" min="0" step="500" value={d.gift} />
+      </label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Saving from here</legend>
+      <label data-show="timeline">Monthly savings
+        <input type="number" name="monthly" inputmode="numeric" min="0" step="50" value={d.monthly} />
+      </label>
+      <label data-show="target" hidden>Target purchase month
+        <input type="month" name="targetDate" value={targetValue} />
+      </label>
+      <label>Savings interest rate (% a year)
+        <input type="number" name="savingsRate" inputmode="decimal" min="0" max="20" step="0.05" value={rate(d.savingsRate)} />
+      </label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Mortgage and costs</legend>
+      <label>Mortgage rate (% a year)
+        <input type="number" name="contractRate" inputmode="decimal" min="0" max="20" step="0.01" value={rate(d.contractRate)} />
+        <small>Default {pct(DEFAULT_CONTRACT_RATE)} is illustrative, verify. Best 5-year fixed snapshot: {pct(SNAPSHOT_RATE)} (Ratehub, Sept 2026).</small>
+      </label>
+      <label>Amortization
+        <select name="amortYears">
+          <option value="25" selected>25 years</option>
+          <option value="30">30 years (first-time buyers and new builds; adds 0.20% to the insurance premium)</option>
+        </select>
+      </label>
+      <label>Legal, title, inspection and other fees
+        <input type="number" name="fees" inputmode="numeric" min="0" step="100" value={d.fees} />
+      </label>
+      <label>Extra cushion
+        <input type="number" name="buffer" inputmode="numeric" min="0" step="500" value={d.buffer} />
+      </label>
+      <label>Current monthly rent
+        <input type="number" name="rent" inputmode="numeric" min="0" step="50" value="" placeholder="Enter to compare" />
+      </label>
+      <label>Property tax rate (% of price a year)
+        <input type="number" name="propertyTaxRate" inputmode="decimal" min="0" max="5" step="0.001" value={(d.propertyTaxRate * 100).toFixed(3)} />
+        <small>2026 residential rates: Toronto {pct(PROPERTY_TAX_PRESETS.toronto, 3)}, Calgary {pct(PROPERTY_TAX_PRESETS.calgary, 3)}, Edmonton {pct(PROPERTY_TAX_PRESETS.edmonton, 3)}. Use your municipality's rate.</small>
+      </label>
+      <label>Home insurance per month
+        <input type="number" name="insuranceMonthly" inputmode="numeric" min="0" step="10" value={d.insuranceMonthly} />
+      </label>
+      <label>Condo fees per month
+        <input type="number" name="condoFees" inputmode="numeric" min="0" step="10" value={d.condoFees} />
+      </label>
+    </fieldset>
+  </form>
+
+  <div class="dpp-results" id="dpp-results" aria-live="polite" set:html={initialHtml} />
+</div>
+
+<section class="dpp-assumptions" aria-labelledby="dpp-h-assumptions">
+  <h2 id="dpp-h-assumptions">Assumptions behind these numbers</h2>
+  <ul>
+    <li><strong>Savings rate {pct(DEFAULT_SAVINGS_RATE)} <span class="dpp-flag">re-check</span>.</strong> The default comes from EQ Bank's rate, which requires $2,000 a month in direct deposits. Without that, EQ's base rate is {pct(EQ_RATES.base_personal_account)} (checked 2026-09-28).</li>
+    <li><strong>Mortgage rate {pct(DEFAULT_CONTRACT_RATE)} <span class="dpp-flag">illustrative, verify</span>.</strong> Taken from a worked example, not a lender quote. The Ratehub best 5-year fixed snapshot of {pct(SNAPSHOT_RATE)} is shown alongside and expires 2026-10-15. Payments use Canadian semi-annual compounding.</li>
+    <li><strong>Closing fees {$(DEFAULT_FEES)} <span class="dpp-flag">assumption</span>.</strong> Legal, title, inspection and similar fees vary by lawyer and region. Extra cushion defaults to $0; a larger cushion is a personal choice, not a sourced figure.</li>
+    <li><strong>Toronto land transfer tax <span class="dpp-flag">not yet verified against toronto.ca</span>.</strong> Uses the tiers in effect from April 1, 2026 as researched on 2026-09-29.</li>
+    <li><strong>Home Buyers' Plan grace period <span class="dpp-flag">confirm before relying on it</span>.</strong> Both repayment schedules are shown; only the standard one is settled.</li>
+    <li><strong>Maintenance {pct(MAINTENANCE_ANNUAL, 0)} of price a year and insurance {$(DEFAULT_INSURANCE_MONTHLY)} a month <span class="dpp-flag">assumption</span>.</strong> Design defaults, editable above.</li>
+    <li>Every account earns the same savings rate. Deposits land at the end of each month. Future TFSA room is assumed to stay at the 2026 limit of {$(TFSA_ANNUAL)} a year.</li>
+    <li>Past FHSA contributions are assumed to have been made in the earliest years with room. Couples are assumed to have opened their FHSAs in the same year.</li>
+    <li>Home prices, rents, and rates are held constant. Tax refunds from FHSA or RRSP deductions are not added to savings.</li>
+  </ul>
+  <p class="page-meta">
+    This planner shows scenarios you choose. It is education, not advice, and it does not tell you which option to pick.
+  </p>
+</section>
+
+<section class="dpp-sources" aria-labelledby="dpp-h-sources-list">
+  <h2 id="dpp-h-sources-list">Sources and dates</h2>
+  <p class="page-meta">Figures checked 2026-09-27 to 2026-09-30 against CRA/canada.ca and the other sources listed below; 2026 tax year.</p>
+  <ul>
+    {sources.map((s) => (
+      <li>
+        {s.label.replace(/\s*—\s*/g, ": ")}:{" "}
+        {s.source.startsWith("http")
+          ? <a href={s.source} rel="noopener">{new URL(s.source).hostname}</a>
+          : <span>internal design default</span>}, checked {s.verified_date}
+        {isAssumption(s.status) && <span class="dpp-flag">{s.status === "assumption" ? "assumption" : "re-verify"}</span>}
+        {s.expires && s.expires < "2027-01-01" && <> (expires {s.expires})</>}
+      </li>
+    ))}
+  </ul>
+</section>
+
+<script>
+  import { defaultInput, plan, type PlannerInput, type Province } from "../../lib/calculators/down-payment-planner";
+  import { renderResults } from "../../lib/calculators/down-payment-planner-render";
+
+  const form = document.getElementById("dpp-form") as HTMLFormElement | null;
+  const out = document.getElementById("dpp-results");
+
+  function num(fd: FormData, name: string, fallback = 0): number {
+    const v = Number(fd.get(name));
+    return Number.isFinite(v) && v >= 0 ? v : fallback;
+  }
+
+  function read(f: HTMLFormElement): PlannerInput {
+    const fd = new FormData(f);
+    const base = defaultInput();
+    const province = String(fd.get("province") ?? "ON") as Province;
+    const openRaw = String(fd.get("fhsaOpenYear") ?? "");
+    const [ty, tm] = String(fd.get("targetDate") ?? "").split("-").map(Number);
+    const targetMonths = ty && tm ? ty * 12 + (tm - 1) - (base.startYear * 12 + base.startMonth) : base.targetMonths;
+    return {
+      ...base,
+      mode: fd.get("mode") === "target" ? "target" : "timeline",
+      price: num(fd, "price"),
+      downChoice: fd.get("downChoice") === "twenty" ? "twenty" : "minimum",
+      province,
+      toronto: province === "ON" && fd.get("toronto") === "on",
+      firstTimeBuyer: fd.get("firstTimeBuyer") === "on",
+      manualTransferTax: num(fd, "manualTransferTax"),
+      fees: num(fd, "fees"),
+      buffer: num(fd, "buffer"),
+      couple: fd.get("couple") === "on",
+      fhsaOpenYear: openRaw ? Number(openRaw) : null,
+      fhsaBalance: num(fd, "fhsaBalance"),
+      fhsaContributedTotal: num(fd, "fhsaContributedTotal"),
+      rrspBalance: num(fd, "rrspBalance"),
+      rrspRecent: num(fd, "rrspRecent"),
+      useHbp: fd.get("useHbp") === "on",
+      tfsaBalance: num(fd, "tfsaBalance"),
+      tfsaRoom: num(fd, "tfsaRoom"),
+      taxableBalance: num(fd, "taxableBalance"),
+      gift: num(fd, "gift"),
+      monthly: num(fd, "monthly"),
+      targetMonths: Math.max(1, targetMonths),
+      savingsRate: num(fd, "savingsRate") / 100,
+      contractRate: num(fd, "contractRate") / 100,
+      amortYears: fd.get("amortYears") === "30" ? 30 : 25,
+      rent: num(fd, "rent"),
+      propertyTaxRate: num(fd, "propertyTaxRate") / 100,
+      insuranceMonthly: num(fd, "insuranceMonthly"),
+      condoFees: num(fd, "condoFees"),
+    };
+  }
+
+  function toggle(f: HTMLFormElement, i: PlannerInput) {
+    const manual = i.province !== "ON" && i.province !== "BC";
+    f.querySelectorAll<HTMLElement>("[data-show]").forEach((el) => {
+      const key = el.dataset.show;
+      const show =
+        key === "ON" ? i.province === "ON" : key === "manual" ? manual : key === i.mode;
+      el.hidden = !show;
+    });
+  }
+
+  function update() {
+    if (!form || !out) return;
+    const i = read(form);
+    toggle(form, i);
+    out.innerHTML = renderResults(plan(i));
+  }
+
+  form?.addEventListener("input", update);
+  form?.addEventListener("change", update);
+  update();
+</script>
+
+<style>
+  .dpp { display: grid; gap: 1.5rem; margin-top: 1.5rem; }
+  @media (min-width: 60rem) {
+    .dpp { grid-template-columns: minmax(18rem, 24rem) 1fr; align-items: start; }
+    .dpp-results { position: sticky; top: 5rem; }
+  }
+  .dpp-form fieldset { border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem 1.1rem; margin: 0 0 1rem; background: #fff; }
+  .dpp-form fieldset.dpp-inline { border: 0; padding: 0; margin: 0.5rem 0; background: none; display: flex; gap: 1rem; flex-wrap: wrap; }
+  .dpp-form legend { font-family: var(--font-display); font-weight: 700; color: var(--pine-ink); padding: 0 0.3rem; }
+  .dpp-form label { display: block; font-size: 0.92rem; font-weight: 600; margin: 0.6rem 0; }
+  .dpp-form label[hidden] { display: none; }
+  .dpp-form input[type="number"], .dpp-form input[type="month"], .dpp-form select {
+    display: block; width: 100%; margin-top: 0.25rem; padding: 0.6rem 0.7rem; font: inherit; font-weight: 400;
+    border: 1px solid #c9c5b8; border-radius: 8px; background: #fff; min-height: 2.75rem;
+  }
+  .dpp-form small { display: block; font-weight: 400; color: var(--ink-soft); font-size: 0.8rem; margin-top: 0.25rem; }
+  .dpp-radio, .dpp-check { font-weight: 400 !important; display: flex !important; gap: 0.5rem; align-items: flex-start; }
+  .dpp-radio input, .dpp-check input { margin-top: 0.35rem; width: 1.1rem; height: 1.1rem; flex: none; }
+  .dpp-results :global(.dpp-headline) { font-size: 1.15rem; background: #eef4f3; border: 2px solid var(--pine); border-radius: var(--radius); padding: 1rem 1.25rem; }
+  .dpp-results :global(.dpp-card) { border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem 1.25rem; background: #fff; margin-bottom: 1rem; }
+  .dpp-results :global(h3) { margin-top: 0; }
+  .dpp-results :global(h4) { margin: 1.25rem 0 0.5rem; }
+  .dpp-results :global(.dpp-table) { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+  .dpp-results :global(.dpp-table th), .dpp-results :global(.dpp-table td) { padding: 0.45rem 0.4rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  .dpp-results :global(.dpp-table td) { text-align: right; white-space: nowrap; }
+  .dpp-results :global(.dpp-table th[scope="row"]) { font-weight: 400; }
+  .dpp-results :global(.dpp-compare thead th) { text-align: right; font-family: var(--font-display); }
+  .dpp-results :global(.dpp-total th), .dpp-results :global(.dpp-total td) { font-weight: 700 !important; border-top: 2px solid var(--pine-ink); }
+  .dpp-results :global(.dpp-warn td), .dpp-results :global(.dpp-warn th) { color: var(--danger); font-weight: 700; }
+  .dpp-results :global(.dpp-note) { font-size: 0.85rem; color: var(--ink-soft); margin: 0.6rem 0 0; }
+  .dpp-results :global(.dpp-scroll) { overflow-x: auto; }
+  .dpp :global(.dpp-flag), .dpp-assumptions .dpp-flag, .dpp-sources .dpp-flag {
+    display: inline-block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+    background: var(--gold-soft); color: var(--pine-ink); border-radius: 999px; padding: 0.05rem 0.5rem; margin-left: 0.3rem; white-space: nowrap;
+  }
+  .dpp-assumptions, .dpp-sources { max-width: 50rem; }
+  .dpp-assumptions li, .dpp-sources li { margin-bottom: 0.5rem; font-size: 0.92rem; }
+</style>

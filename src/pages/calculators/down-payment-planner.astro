@@ -1,0 +1,63 @@
+---
+/**
+ * /calculators/down-payment-planner: the First Home Savings Planner.
+ * Page metadata comes from the calculator manifest
+ * (src/data/calculator-manifests.json). The manifest status is still
+ * "draft", so the page is built but marked noindex and stays off the
+ * calculators hub and sitemap.xml until it is published.
+ */
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import RelatedCards from "../../components/RelatedCards.astro";
+import DownPaymentPlanner from "../../components/calculators/DownPaymentPlanner.astro";
+import { getCollection } from "astro:content";
+import manifests from "../../data/calculator-manifests.json";
+import { canonicalUrl } from "../../lib/site";
+
+const SLUG = "/calculators/down-payment-planner";
+const m = manifests.manifests.find((x) => x.slug === SLUG)!;
+
+const builtSlugs = new Set<string>(["/", "/learn/", "/calculators/", "/compare/"]);
+for (const coll of ["explainers", "comparisons", "legal"] as const) {
+  for (const e of await getCollection(coll)) builtSlugs.add(e.data.slug);
+}
+
+const webApp = {
+  "@type": "WebApplication",
+  name: "First Home Savings Planner",
+  url: canonicalUrl(SLUG),
+  applicationCategory: "FinanceApplication",
+  operatingSystem: "Any",
+  inLanguage: "en-CA",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "CAD" },
+};
+---
+
+<BaseLayout
+  title={m.title}
+  metaDescription={m.meta_description}
+  slug={SLUG}
+  pageType="calculator"
+  dateModified={m.last_reviewed}
+  noindex={m.status !== "live"}
+  jsonLdExtra={webApp}
+  breadcrumbs={[{ name: "Tools", slug: "/calculators/" }, { name: "Down Payment Planner", slug: SLUG }]}
+>
+  <div class="wrap">
+    <nav aria-label="Breadcrumb" class="page-meta" style="margin-top:1.5rem">
+      <a href="/">Home</a> › <a href="/calculators/">Tools</a> › Down Payment Planner
+    </nav>
+    <h1>First Home Savings Planner</h1>
+    <p class="lede" style="max-width:44rem;color:var(--ink-soft)">
+      See when a down payment plan reaches its target, or how much a month it takes to buy by a date.
+      The planner adds up the full cash stack (down payment plus closing costs), shows how the FHSA,
+      the Home Buyers' Plan, and a TFSA can fund it, and compares minimum down with 20% down.
+    </p>
+    <p class="page-meta">
+      Last reviewed: {m.last_reviewed} · 2026 tax year · Educational only: these are scenarios you choose, not advice.
+    </p>
+
+    <DownPaymentPlanner />
+
+    <RelatedCards slugs={m.related} builtSlugs={builtSlugs} />
+  </div>
+</BaseLayout>

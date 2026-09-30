@@ -1,0 +1,102 @@
+{
+  "entries": [
+    {
+      "expires": "2027-01-01",
+      "key": "closing.legal_and_other_fees",
+      "label": "Legal, title, inspection and other closing fees (planner default)",
+      "notes": "ASSUMPTION, editable in the planner. $2,500 is the fee line the down-payment planner spec itemizes in its Example A (audit addendum 2026-09-30, item 2: $4,475 net LTT + $1,808 PST on premium + ~$2,500 fees). Audit addendum A quotes an itemized cash target of ~$44,500 for Example A, which implies ~$3,200 of fees instead; the two could not be reconciled because the spec and research files were not readable in the build session. Re-check against down-payment-planner-research.md before publish.",
+      "source": "hidden_files/down-payment-planner-calculator-spec.md (section 5, Example A line items, as restated by the 2026-09-30 audit addendum)",
+      "source_note": "Spec design default, not a government figure.",
+      "status": "assumption",
+      "unit": "cad",
+      "value": 2500,
+      "verified_date": "2026-09-30"
+    },
+    {
+      "expires": "2027-01-01",
+      "key": "closing.cash_buffer",
+      "label": "Extra cash cushion on top of itemized closing costs (planner default)",
+      "notes": "ASSUMPTION. Default $0 so the planner shows only itemized costs. The spec's Example A used a ~$15,000 closing figure (later a $50,000 target) that bakes in roughly $6,000 of cushion no source supports (audit addendum A). The UI shows this as an editable, labeled assumption.",
+      "source": "2026-09-30 audit addendum A to down-payment-planner-calculator-spec.md",
+      "source_note": "Design default, not a sourced figure.",
+      "status": "assumption",
+      "unit": "cad",
+      "value": 0,
+      "verified_date": "2026-09-30"
+    },
+    {
+      "expires": "2026-10-15",
+      "key": "savings.default_rate",
+      "label": "Planner default savings interest rate",
+      "notes": "ASSUMPTION, re-check. 2.75% is the spec default. Per eq.account_rates.2026_09 (bank-promos.json, checked 2026-09-28), EQ Bank's 2.75% requires $2,000/mo in direct deposits; the base rate is 1.00%. Shown in the assumptions panel as 're-check'.",
+      "source": "https://www.eqbank.ca/personal-banking/accounts",
+      "source_note": "Spec default; conditional-rate caveat from bank-promos.json eq.account_rates.2026_09.",
+      "status": "needs_reverification",
+      "unit": "pct",
+      "value": 0.0275,
+      "verified_date": "2026-09-28"
+    },
+    {
+      "expires": "2027-01-01",
+      "key": "mortgage.illustrative_contract_rate",
+      "label": "Illustrative mortgage contract rate (planner default)",
+      "notes": "ASSUMPTION: illustrative, verify. Taken from the affordability spec's worked example, not market data. Qualifying rate = max(contract + 2 points, 5.25%) = 6.50% (osfi.mqr.2026).",
+      "source": "hidden_files/house-affordability-calculator-spec.md (worked example, per 2026-09-30 audit addendum C)",
+      "source_note": "Illustrative design default, not a quoted market rate.",
+      "status": "assumption",
+      "unit": "pct",
+      "value": 0.045,
+      "verified_date": "2026-09-30"
+    },
+    {
+      "expires": "2026-10-15",
+      "key": "mortgage.rate_snapshot_best_5yr_fixed",
+      "label": "Best 5-year fixed rate snapshot (Ratehub, Sept 2026)",
+      "notes": "SNAPSHOT, expires 2026-10-15. Mirrors mortgage.rates_snapshot.2026_09 in mortgage-2026.json so the planner can cite it with its own expiry. Shown alongside the illustrative 4.50% default, never instead of a fresh quote.",
+      "source": "https://www.ratehub.ca/mortgage-rates",
+      "source_note": "Ratehub snapshot (rent-vs-buy-research, verified 2026-09-27).",
+      "status": "needs_reverification",
+      "unit": "pct",
+      "value": 0.0391,
+      "verified_date": "2026-09-27"
+    },
+    {
+      "expires": "2027-01-01",
+      "key": "fhsa.refund_range_on",
+      "label": "Tax refund from an $8,000 FHSA deduction, Ontario illustrative range",
+      "notes": "Per 2026-09-30 audit addendum item 10 (corrects the spec's $1,300 to $3,400). Reproduces as $8,000 x 19.05% (14% federal + 5.05% ON, lowest brackets) = $1,524 and $8,000 x 43.41% (26% federal + 11.16% ON x 1.56 surtax) = $3,473. Not the maximum: at the top ON combined rate (53.53%) the refund would be about $4,282.",
+      "source": "federal-brackets-2026.json + provincial-brackets-2026.json + on.surtax.2026 (derived); range per 2026-09-30 audit addendum",
+      "source_note": "Derived from verified 2026 bracket figures; range endpoints chosen by the spec audit.",
+      "status": "needs_reverification",
+      "unit": "table",
+      "value": { "min": 1524, "max": 3473, "min_rate": 0.1905, "max_rate": 0.4341 },
+      "verified_date": "2026-09-30"
+    },
+    {
+      "expires": "2027-01-01",
+      "key": "hbp.extended_grace_2026_2028",
+      "label": "HBP extended repayment grace for 2026-2028 withdrawals (DISPUTED)",
+      "notes": "DISPUTED, do not present as settled law. hbp-research.md says CRA shows a 5-year grace in effect for first withdrawals made Jan 1, 2026 to Dec 31, 2028 (repayments would start the 5th year after withdrawal instead of the 2nd); fhsa-hbp-2026.json hbp.repayment_start says do not encode until confirmed as legislated. The planner shows it only as a second schedule labeled 'confirm before relying on it'.",
+      "source": "https://budget.canada.ca/",
+      "source_note": "Spring Economic Update 2026 description; legislative status unconfirmed.",
+      "status": "needs_reverification",
+      "unit": "table",
+      "value": { "first_repayment_year_offset": 5, "standard_first_repayment_year_offset": 2, "withdrawal_window": "2026-01-01 to 2028-12-31" },
+      "verified_date": "2026-09-30"
+    },
+    {
+      "expires": "2026-11-15",
+      "key": "budget.home_insurance_monthly",
+      "label": "Home insurance per month (planner default)",
+      "notes": "ASSUMPTION: midpoint of the $100 to $200/mo design range in rent_vs_buy.assumptions (rent-housing-2026.json). Editable in the planner.",
+      "source": "internal design defaults (rent-vs-buy-calculator-spec.md)",
+      "source_note": "Design default, not a sourced figure.",
+      "status": "assumption",
+      "unit": "cad",
+      "value": 150,
+      "verified_date": "2026-09-30"
+    }
+  ],
+  "tax_year": 2026,
+  "topic": "Down payment planner: closing-cost and planner defaults not yet in the verified registry (every entry flagged assumption or needs_reverification)"
+}
