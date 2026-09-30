@@ -1,0 +1,207 @@
+---
+# identity
+slug: /compare/best-bank-accounts-beginners
+page_type: comparison
+title: "Best Bank Accounts for Beginners in Canada (2026)"
+meta_description: "Best Canadian bank accounts for beginners in 2026: EQ Bank's interest math, when another account wins, expired promos flagged by date, and a 6-question quiz."
+og_verdict: "EQ Bank for most beginners: 2.75% when your pay lands there, 1.00% when it doesn't."
+
+# publishing
+wave: 3
+status: draft
+publish_date: null
+last_reviewed: 2026-09-30
+
+# figure provenance (feeds the Q4 rollover watch). `verified` mirrors the
+# registry's verified_date; validate-content fails if it is ever later.
+# simplii.bonus_2026 stays listed on purpose: the page states it ended, and
+# the How we compare table shows it as expired.
+figures:
+  - key: eq.account_rates.2026_09
+    source: "EQ Bank personal accounts page"
+    verified: 2026-09-28
+    expires: 2026-10-15
+  - key: ws.chequing_rates.2026_09
+    source: "Wealthsimple help centre: how interest is paid on cash"
+    verified: 2026-09-28
+    expires: 2026-10-15
+  - key: ws.tiers
+    source: "Wealthsimple pricing page"
+    verified: 2026-09-28
+    expires: 2026-10-15
+  - key: ws.credit_card
+    source: "Wealthsimple pricing page"
+    verified: 2026-09-28
+    expires: 2026-10-15
+  - key: simplii.bonus_2026
+    source: "Simplii offers page"
+    verified: 2026-09-29
+    expires: 2026-10-01
+  - key: tangerine.payroll_250
+    source: "Tangerine offers page (terms partly third-party)"
+    verified: 2026-09-28
+    expires: 2026-11-01
+  - key: neo.essentials_fees
+    source: "Neo fee schedule (March 31, 2026 disclosure)"
+    verified: 2026-09-28
+    expires: 2027-07-01
+
+# navigation (hub-and-spoke, sitemap v1.2)
+hub: /compare/
+cluster: banking
+related: [/learn/credit-score, /learn/first-time-tax-filing]
+
+# page-type extras
+schema_primary: Article
+affiliate_disclosure: true
+affiliate_links:
+  - merchant: eq-bank
+    position: quiz-outcome-cta
+    label: "Visit EQ Bank"
+  - merchant: simplii
+    position: quiz-outcome-cta
+    label: "Visit Simplii"
+  - merchant: tangerine
+    position: quiz-outcome-cta
+    label: "Visit Tangerine"
+  - merchant: wealthsimple
+    position: quiz-outcome-cta
+    label: "Visit Wealthsimple"
+  - merchant: cibc
+    position: quiz-outcome-cta
+    label: "CIBC Smart Start"
+  - merchant: neo
+    position: quiz-outcome-cta
+    label: "Visit Neo"
+quiz_spec: hidden_files/bank-accounts-beginners-quiz-spec.md
+methodology_criteria:
+  - name: "Interest on the balance you hold"
+    detail: "The rate on everyday money, turned into dollars a year on a $5,000 working balance, with and without the conditions that unlock the top rate."
+  - name: "Everyday costs"
+    detail: "Monthly fees, per-use charges, and fee changes already announced, so a free account that starts charging later is priced honestly."
+  - name: "Welcome bonuses, dated"
+    detail: "One-time bonuses count only while verified and unexpired; each shows its end date, and expired offers drop out of the math."
+  - name: "Fit for the situation"
+    detail: "Newcomers, students, frequent travellers, and cashback seekers each get the account that suits them, not one answer forced on everyone."
+
+# newsletter
+newsletter_placement: inline
+
+# freshness contract (promo-watch: Tangerine ends 2026-10-31; re-verify pass #2 ~Oct 5-7)
+review_cadence: promo-watch
+next_review_due: 2026-10-07
+---
+
+import AffiliateCTA from "../../components/AffiliateCTA.astro";
+import NewsletterSoftLink from "../../components/NewsletterSoftLink.astro";
+import PromoCopy from "../../components/PromoCopy.astro";
+
+## The 30-second version
+
+**Open the EQ Bank Personal Account as your main beginner account.** When your pay (at least $2,000 a month) is deposited there, it pays 2.75% on your balance: $137.50 a year on $5,000. Without that deposit it pays 1.00%, or $50 a year. Of the everyday account rates we have verified, EQ's top rate is the highest.
+
+**Promo status, in absolute dates.** Simplii's $300 plus $50 Skip gift card welcome offer ended September 30, 2026 (last checked live September 29, 2026). We have not verified a replacement, so we don't claim one: check simplii.com for its current promotion. <PromoCopy figure="tangerine.payroll_250" fallback="Tangerine's $250 payroll bonus was scheduled to end October 31, 2026, and we have not verified a newer offer.">Tangerine's $250 new-client payroll bonus runs until October 31, 2026 (last checked September 28, 2026).</PromoCopy> Never open an account for a bonus you have not confirmed is live today.
+
+{/* TODO(figure): Draft's 30-second version compared EQ against "50 cents at the other no-fee accounts" (0.01%). Simplii, Tangerine, Neo, and CIBC everyday rates are not in the registry, so no comparison against them is quoted anywhere on this page. */}
+
+## The verdict
+
+For most beginners, the EQ Bank Personal Account wins: of the everyday rates we have verified, it is the highest when your pay lands there, and it still pays 1.00% when it doesn't. The one honest caveat: **without a pay deposit, Wealthsimple Chequing's 1.25% base rate beats EQ's 1.00%.** So the rule is simple. If your pay can go to EQ, EQ. If it never will, Wealthsimple Chequing earns more on the same balance.
+
+Welcome bonuses are a side dish. Simplii's offer ended September 30, 2026, so it is out of the bonus math. <PromoCopy figure="tangerine.payroll_250" fallback="Tangerine's payroll bonus was scheduled to end October 31, 2026; with no verified bonus left, interest alone decides.">Tangerine's $250 payroll bonus runs until October 31, 2026 and is the bonus play until then; after that, EQ's interest lead does the rest.</PromoCopy>
+
+## Side by side
+
+| | Interest on balance | Welcome bonus | Fees and fine print we've verified |
+|---|---|---|---|
+| **EQ Bank Personal Account** | **2.75%** with $2,000+/month pay deposit; 1.00% without | None | Not yet in our verified data |
+| **Wealthsimple Chequing** | 1.25% base; 1.75% at Premium ($100K+ in assets); 2.25% at Generation ($500K+); +0.5% with direct deposit, capped at 2.25% | None verified | $0 monthly fees; CDIC coverage up to $1M through its trust structure |
+| **Simplii No Fee Chequing** | Not yet verified | Ended September 30, 2026 (was $300 plus a $50 Skip gift card; not available in Quebec) | Not yet in our verified data |
+| **Tangerine No-Fee Daily Chequing** | Not yet verified | <PromoCopy figure="tangerine.payroll_250" fallback="Ended October 31, 2026">$250 for $200+/month payroll deposits for 2 consecutive months; ends October 31, 2026</PromoCopy> | Not yet in our verified data |
+| **Neo Chequing** | Not yet verified | None verified | Free Essentials tier; from January 1, 2027: $1 per e-Transfer sent, $1.50 per ATM withdrawal, $4.99 per NSF |
+| **CIBC Smart Start** | Not yet verified | Not yet verified | Not yet in our verified data |
+
+*"Not yet verified" means the figure is not in our registry with a source and a date, so we don't print it. Rates and fees move; confirm with the bank before you open an account.*
+
+{/* TODO(figure): Not in the registry, so not printed (all from the 2026-09-27/28 draft): monthly fees and transaction/e-Transfer limits for EQ, Simplii, Tangerine, Neo; everyday rates for Simplii (0.01%), Tangerine (0.01-0.10%), Neo (0.10%), CIBC (~0%); ATM network sizes (Simplii 3,400+, Tangerine 3,500+, Wealthsimple 60,000+); EQ free Canadian ATM withdrawals and EFT holds up to 5 business days; Wealthsimple ATM fee reimbursement and chequing-card FX; Wealthsimple $2,000 direct-deposit threshold; Wealthsimple $25 new-client bonus (third-party only); CIBC Smart Start $0 until 25 then $16.95, SPC $125, SPC+; Neo 1-3% cashback and current NSF. */}
+
+## The math behind the verdict
+
+Take a beginner keeping a $5,000 working balance:
+
+| Account | Rate | Interest per year on $5,000 |
+|---|---|---|
+| EQ Bank (with $2,000+/month pay deposit) | 2.75% | $137.50 |
+| Wealthsimple Chequing (base) | 1.25% | $62.50 |
+| EQ Bank (no pay deposit) | 1.00% | $50.00 |
+| Simplii, Tangerine, Neo, CIBC | Not yet verified | Not yet verified |
+
+That is the whole argument for EQ: $137.50 a year for holding money you were going to hold anyway. It is also the case for Wealthsimple when your pay can't move: $62.50 beats EQ's $50 base on the same balance.
+
+Now the big-bank default many beginners inherit from their parents. We haven't verified current big-bank fees or waiver minimums, so we don't quote them. The principle holds at any fee: $5,000 parked only to waive a monthly fee still gives up the interest it could earn elsewhere, which is $50 to $137.50 a year at EQ's rates.
+
+One more honest note on EQ: it is a digital-only bank, so there are no branches. Anyone who wants in-person service is choosing a different kind of bank.
+
+## When a different account wins
+
+- **You are a newcomer to Canada.** Simplii runs a New to Canada banking program for people arriving without Canadian pay history. That can beat EQ on the day you land, before any pay deposit exists.
+- **You spend abroad or shop cross-border online.** Wealthsimple's Visa card charges 0% on foreign transactions ($240 a year on Core, $0 at Premium and Generation), and it sits in the same app as Wealthsimple Chequing. We haven't yet verified the chequing account's own card fees abroad.
+- **You are under 25 and want a branch.** CIBC Smart Start is a student-focused account at a big bank with branches. We haven't verified its age limit, fees, or what it becomes later, so check those on CIBC's site before opening and set a reminder for the date it changes.
+- **You want cashback on gas and groceries.** Neo pays cashback on those categories (rates not yet verified by us). Price the 2027 fees first: from January 1, 2027 its free Essentials tier charges $1 per e-Transfer sent, $1.50 per ATM withdrawal, and $4.99 per NSF.
+- **You want the biggest one-time payout.** The biggest one in our research, Simplii's $300 plus $50 Skip gift card, ended September 30, 2026. <PromoCopy figure="tangerine.payroll_250" fallback="Tangerine's $250 payroll bonus was scheduled to end October 31, 2026; we list a bonus again only once we've verified it.">Tangerine's $250 payroll bonus runs until October 31, 2026: $200+ a month in payroll deposits for 2 consecutive months.</PromoCopy>
+
+{/* TODO(figure): Draft figures dropped here: Simplii newcomer window (apply up to 12 months before arrival, 5 years after) and MoneySense 2026 ranking; EQ/Tangerine 2.5% foreign transaction fee; Wealthsimple global ATM reimbursement; CIBC Smart Start $16.95 at 25 and SPC+ (450+ brands); Neo 1-3% cashback and $0 NSF today. */}
+
+## The expensive mistakes beginners actually make
+
+1. **Paying a monthly fee out of inertia.** An account opened years ago by a parent can carry a monthly fee nobody questions. Every month it stays open is money out the door, and moving to a no-fee account online is quick.
+2. **Parking $5,000 to waive a fee while keeping no emergency fund.** The waived fee feels like a win; the math says you gave up $50 to $137.50 a year in interest and locked up your safety net. Never optimize for fee waivers ahead of liquidity.
+3. **Confusing a savings promo rate with the ongoing rate.** A high promotional rate for a few months is marketing. What matters is the rate after the promo ends. Check the base rate, not the banner.
+4. **Believing "no-fee" means "no fees."** Certified cheques, bank drafts, stop payments, and foreign transaction fees still exist at most no-fee banks. Neo's free tier, for one, adds a $4.99 NSF fee from January 1, 2027.
+
+## The 60-second quiz: your account
+
+Work top to bottom. The first question that applies to you ends the quiz.
+
+1. **Does your paycheque (at least $2,000 a month) go into this account?** Yes → **EQ Bank Personal Account**. 2.75% on your balance: $137.50 a year on $5,000.
+2. **Are you new to Canada with no Canadian pay history yet?** Yes → **Simplii No Fee Chequing**. Its New to Canada banking program is built for people arriving without Canadian pay history. Once your pay starts, reconsider EQ.
+3. **Is a one-time welcome bonus what moves you?** <PromoCopy figure="tangerine.payroll_250" fallback="Promo bonuses have expired or changed since this page was verified. We list a bonus only once we've verified it live, so check the side-by-side table above for any current offer.">Yes → **Tangerine**. Simplii's bigger offer ended September 30, 2026, so Tangerine's $250 payroll bonus is the bonus play until October 31, 2026. Never open an account for a bonus you haven't confirmed is live today.</PromoCopy>
+4. **Do you spend abroad or shop cross-border online often?** Yes → **Wealthsimple**. Its Visa card charges 0% on foreign transactions ($240 a year on Core, $0 at Premium and Generation), in the same app as Wealthsimple Chequing.
+5. **Are you under 25 and want a branch plus a student credit card path?** Yes → **CIBC Smart Start**. We haven't verified its age limit or what it becomes later: check both on CIBC's site and set a calendar reminder for the date it changes.
+6. **Do you want cashback on gas and groceries?** Yes → **Neo Chequing**. Read the 2027 fees before you commit: from January 1, 2027 the free tier charges $1 per e-Transfer sent and $1.50 per ATM withdrawal.
+
+No to all of the above, or genuinely unsure? **Default to the EQ Bank Personal Account if your pay can go there later**, for the 2.75% rate. If your pay will never go there, Wealthsimple Chequing's 1.25% base beats EQ's 1.00% on the same balance.
+
+### Open the account the quiz points to
+
+None of the links below earns us anything. Each opens the bank's own site.
+
+<AffiliateCTA merchant="eq-bank" position="quiz-outcome-cta" label="Visit EQ Bank" src="compare/best-bank-accounts-beginners" />
+
+<AffiliateCTA merchant="simplii" position="quiz-outcome-cta" label="Visit Simplii" src="compare/best-bank-accounts-beginners" note="Simplii's $300 plus $50 Skip welcome offer ended September 30, 2026. Check its current promotion on its own site." />
+
+<AffiliateCTA merchant="tangerine" position="quiz-outcome-cta" label="Visit Tangerine" src="compare/best-bank-accounts-beginners" note="Payroll bonus scheduled to end October 31, 2026: confirm it's live before opening." />
+
+<AffiliateCTA merchant="wealthsimple" position="quiz-outcome-cta" label="Visit Wealthsimple" src="compare/best-bank-accounts-beginners" />
+
+<AffiliateCTA merchant="cibc" position="quiz-outcome-cta" label="CIBC Smart Start" src="compare/best-bank-accounts-beginners" />
+
+<AffiliateCTA merchant="neo" position="quiz-outcome-cta" label="Visit Neo" src="compare/best-bank-accounts-beginners" note="Free Essentials tier fees start January 1, 2027: $1 per e-Transfer sent, $1.50 per ATM withdrawal, $4.99 per NSF." />
+
+<NewsletterSoftLink />
+
+## Keep going
+
+New to this? Our explainers on credit scores and filing taxes for the first time are in progress; the [explainers hub](/learn/) lists what's ready now. Already choosing where to invest, not just where to bank? [Wealthsimple vs Questrade](/compare/wealthsimple-vs-questrade) picks a broker with the same method.
+
+---
+
+*LoonieLogic publishes general financial education, not personal financial advice. Rules and rates change; confirm any figure directly with the bank before you open an account.*
+
+## Sources
+
+- EQ Bank, [personal banking accounts](https://www.eqbank.ca/personal-banking/accounts): 2.75% with $2,000+/month pay direct deposit, 1.00% base. Checked 2026-09-28.
+- Wealthsimple help centre, [how interest is paid on cash](https://help.wealthsimple.com/hc/en-ca/articles/360061583072-How-Interest-is-Paid-on-Cash): 1.25% / 1.75% / 2.25% by tier, +0.5% direct-deposit boost capped at 2.25%, $0 monthly fees, CDIC coverage up to $1M. Wealthsimple [pricing page](https://www.wealthsimple.com/en-ca/pricing): tier thresholds and Visa card terms. Checked 2026-09-28.
+- Simplii, [offers page](https://www.simplii.com/en/offers.html): $300 plus $50 Skip gift card for $100+/month direct deposit for 3 consecutive months, not available in Quebec, ending September 30, 2026 at 11:59 pm ET. Last checked live 2026-09-29.
+- Tangerine, [offers page](https://www.tangerine.ca/en/landing-page/tangerine-offers): $250 for $200+/month payroll deposits for 2 consecutive months, until October 31, 2026 (terms partly confirmed through third-party sources). Checked 2026-09-28.
+- Neo Financial, [fee schedule](https://www.neofinancial.com/legal/fee-schedule) (March 31, 2026 disclosure): Essentials tier charges from January 1, 2027. Checked 2026-09-28.

@@ -3,13 +3,16 @@
  * AffiliateCTA — the single component editors use for monetized CTAs.
  * Per hidden_files/affiliate-link-implementation-spec.md:
  * - Live records → /go/<merchant>/ href with rel="sponsored noopener" and an
- *   "(affiliate link)" marker on the button.
- * - Anything below live (all 5 records are `pending` at scaffold) → honest
- *   placeholder: the same button styling as a non-navigating element, with
- *   micro-copy saying the affiliate link goes here once approved. The
- *   merchant's plain homepage gets wired in when the first real CTA ships
- *   (the record carries no confirmed homepage URL at scaffold, and we do not
- *   guess URLs). No tracking params, no invented UTMs, no leaked tokens.
+ *   "(affiliate link)" marker on the button. validate-content --dist fails
+ *   the build if either is missing or the disclosure does not come first.
+ * - Anything below live (every record is `pending` today) → honest
+ *   placeholder: a plain link to the merchant's homepage (from
+ *   affiliates-index.json; only domains the figures registry already cites),
+ *   rel="noopener" and NOT sponsored, with a visible "not an affiliate link"
+ *   marker. No homepage on file → text only, never a dead or disabled button.
+ *   No tracking params, no invented UTMs, no leaked tokens.
+ * - `note` is optional small print under the CTA (promo end dates, fee
+ *   changes); editors pass it, the component never invents it.
  */
 import affiliateRecords from "../data/affiliates-index.json";
 
@@ -18,9 +21,10 @@ interface Props {
   position: string;
   label: string;
   src: string;
+  note?: string;
 }
 
-const { merchant, position, label, src } = Astro.props;
+const { merchant, position, label, src, note } = Astro.props;
 const record = (affiliateRecords as Record<string, {
   display_name: string;
   homepage: string | null;
@@ -34,7 +38,7 @@ if (!record) {
 const isLive = record.status === "live";
 const href = isLive
   ? `/go/${merchant}/?src=${encodeURIComponent(src)}&pos=${encodeURIComponent(position)}&v=1`
-  : null; // placeholder: no destination until the program is live
+  : null; // placeholder: no affiliate destination until the program is live
 ---
 
 <div class="affiliate-cta">
@@ -43,12 +47,23 @@ const href = isLive
       {label}
       <span class="sponsored-marker"> (affiliate link)</span>
     </a>
+  ) : record.homepage ? (
+    <>
+      <a class="btn btn-ink" href={record.homepage} rel="noopener" target="_blank">
+        {label}
+        <span class="sponsored-marker"> (not an affiliate link)</span>
+      </a>
+      <p class="micro">
+        Opens {record.display_name}'s own site in a new tab. We earn nothing
+        from this link.
+      </p>
+    </>
   ) : (
-    <span class="btn btn-gold" aria-disabled="true" role="link">
-      {label}
-    </span>
     <p class="micro">
-      Affiliate link goes here once our application is approved.
+      <strong>{label}:</strong> we don't link to {record.display_name} yet.
+      Search for it on {record.display_name}'s own site. We earn nothing from
+      this pick.
     </p>
   )}
+  {note && <p class="micro">{note}</p>}
 </div>

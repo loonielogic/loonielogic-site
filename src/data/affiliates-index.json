@@ -1,4 +1,14 @@
 {
+  "cibc": {
+    "display_name": "CIBC",
+    "homepage": null,
+    "status": "pending"
+  },
+  "eq-bank": {
+    "display_name": "EQ Bank",
+    "homepage": "https://www.eqbank.ca",
+    "status": "pending"
+  },
   "fintel-connect": {
     "display_name": "Fintel Connect (network)",
     "homepage": null,
@@ -9,9 +19,24 @@
     "homepage": null,
     "status": "pending"
   },
+  "neo": {
+    "display_name": "Neo Financial",
+    "homepage": "https://www.neofinancial.com",
+    "status": "pending"
+  },
   "questrade": {
     "display_name": "Questrade",
-    "homepage": null,
+    "homepage": "https://www.questrade.com",
+    "status": "pending"
+  },
+  "simplii": {
+    "display_name": "Simplii Financial",
+    "homepage": "https://www.simplii.com",
+    "status": "pending"
+  },
+  "tangerine": {
+    "display_name": "Tangerine",
+    "homepage": "https://www.tangerine.ca",
     "status": "pending"
   },
   "turbotax": {
@@ -21,7 +46,7 @@
   },
   "wealthsimple": {
     "display_name": "Wealthsimple",
-    "homepage": null,
+    "homepage": "https://www.wealthsimple.com/en-ca",
     "status": "pending"
   }
 }

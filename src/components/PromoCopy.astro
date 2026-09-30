@@ -1,0 +1,33 @@
+---
+/**
+ * PromoCopy: build-time promo gate for comparison MDX. Renders its children
+ * only while the figures-registry entry `figure` is verified and before its
+ * `expires` date; otherwise renders `fallback` (or nothing). Expiry is
+ * authoritative and conservative: an unknown key or an unconfirmed entry
+ * shows the fallback, never the claim. Re-verifying a promo means updating
+ * the registry entry (verified_date, expires) and rebuilding, not editing
+ * page copy.
+ */
+import {
+  indexRegistry,
+  isoDay,
+  promoIsLive,
+  type RegistryFile,
+} from "../lib/figure-provenance";
+
+interface Props {
+  figure: string;
+  fallback?: string;
+}
+
+const { figure, fallback } = Astro.props;
+const registry = indexRegistry(
+  Object.values(import.meta.glob<RegistryFile>("../data/figures/*.json", { eager: true, import: "default" })),
+);
+if (!registry.has(figure)) {
+  throw new Error(`PromoCopy: figure key "${figure}" is not in src/data/figures/`);
+}
+const live = promoIsLive(figure, registry, isoDay(new Date()));
+---
+
+{live ? <slot /> : fallback && <Fragment set:text={fallback} />}

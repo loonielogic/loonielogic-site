@@ -9,9 +9,15 @@ const builtSlugs = new Set(comparisons.map((e) => e.data.slug));
 
 const cardMeta = {
   "/compare/tfsa-vs-rrsp": { verdict: "The only comparison that recommends. No affiliate links on this page." },
-  "/compare/wealthsimple-vs-questrade": { verdict: "Wealthsimple default for most beginners; Questrade wins for US-heavy investors." },
+  "/compare/wealthsimple-vs-questrade": {
+    verdict: "Wealthsimple default for most beginners; Questrade wins for US-heavy investors.",
+    quiz: "Picking a broker? Six questions to Wealthsimple or Questrade.",
+  },
   "/compare/fhsa-vs-home-buyers-plan": { verdict: "FHSA first, HBP second, stack both." },
-  "/compare/best-bank-accounts-beginners": { verdict: "EQ Bank default; 2.75% vs $0.50/yr." },
+  "/compare/best-bank-accounts-beginners": {
+    verdict: "EQ Bank default: 2.75% with a $2,000 monthly pay deposit, 1.00% without.",
+    quiz: "Which free bank account fits you? Six questions, one answer.",
+  },
 };
 ---
 

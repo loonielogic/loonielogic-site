@@ -4,13 +4,15 @@
  * affiliate-link spec §4: the short commission disclosure when the page
  * carries live affiliate links, the explicit non-affiliate line otherwise
  * (a page that discloses commissions it cannot earn misleads in reverse).
- * Layout and reading chrome live in ArticleShell.
+ * Layout and reading chrome live in ArticleShell. Comparisons that declare
+ * methodology_criteria get the shared "How we compare" block after the body.
  */
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ArticleShell from "../../components/ArticleShell.astro";
 import RelatedCards from "../../components/RelatedCards.astro";
 import ComparisonDisclosure from "../../components/ComparisonDisclosure.astro";
 import AffiliateCTA from "../../components/AffiliateCTA.astro";
+import HowWeCompare from "../../components/HowWeCompare.astro";
 import { getCollection, render } from "astro:content";
 import affiliateIndex from "../../data/affiliates-index.json";
 
@@ -37,6 +39,8 @@ const liveMerchants = d.affiliate_links.filter(
   (l) => (affiliateIndex as Record<string, { status: string }>)[l.merchant]?.status === "live",
 );
 const hasLiveLinks = liveMerchants.length > 0;
+const criteria = d.methodology_criteria ?? [];
+const hasMethod = criteria.length > 0;
 const srcSlug = d.slug.replace(/^\//, "");
 ---
 
@@ -62,13 +66,24 @@ const srcSlug = d.slug.replace(/^\//, "");
     newsletter={d.newsletter_placement}
   >
     <Fragment slot="lead">
-      <ComparisonDisclosure hasLiveLinks={hasLiveLinks} />
+      <ComparisonDisclosure
+        hasLiveLinks={hasLiveLinks}
+        hasAffiliateMerchants={d.affiliate_links.length > 0}
+        hasMethod={hasMethod}
+      />
       {liveMerchants.map((l) => (
         <AffiliateCTA merchant={l.merchant} position={l.position} label={l.label} src={srcSlug} />
       ))}
     </Fragment>
     <Content />
     <Fragment slot="after">
+      {hasMethod && (
+        <HowWeCompare
+          criteria={criteria}
+          figureKeys={d.figures.map((f) => f.key)}
+          hasLiveLinks={hasLiveLinks}
+        />
+      )}
       {hasLiveLinks && (
         <div class="disclosure-bar" role="note">
           <p>

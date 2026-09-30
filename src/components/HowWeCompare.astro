@@ -1,0 +1,143 @@
+---
+/**
+ * HowWeCompare: the shared "How we compare" methodology block for /compare/*
+ * pages. It makes the site's honesty rule concrete on every comparison:
+ *
+ *   1. the criteria this comparison scores (front matter methodology_criteria)
+ *   2. that every figure is sourced and dated, with the actual last-checked
+ *      date of each cited figure pulled from the registry
+ *      (src/data/figures/*.json), never from page prose
+ *   3. the affiliate relationship: what can earn us money, that it never
+ *      moves a ranking, that rankings are not for sale, and what is true of
+ *      THIS page today (live links or none)
+ *   4. how to report an error
+ *
+ * Rendered by src/pages/compare/[slug].astro for any comparison that sets
+ * methodology_criteria, so a new comparison gets it from front matter alone.
+ */
+import {
+  indexRegistry,
+  isoDay,
+  longDate,
+  provenanceRows,
+  verifiedRange,
+  type RegistryFile,
+} from "../lib/figure-provenance";
+
+interface Props {
+  criteria: { name: string; detail: string }[];
+  figureKeys: string[];
+  hasLiveLinks: boolean;
+}
+
+const { criteria, figureKeys, hasLiveLinks } = Astro.props;
+
+const registry = indexRegistry(
+  Object.values(import.meta.glob<RegistryFile>("../data/figures/*.json", { eager: true, import: "default" })),
+);
+const rows = provenanceRows(figureKeys, registry, isoDay(new Date()));
+const range = verifiedRange(rows);
+const unconfirmed = rows.filter((r) => r.status === "unconfirmed").length;
+
+const STATUS_TEXT = {
+  verified: "Checked against the source",
+  unconfirmed: "Not yet confirmed on the provider's own pages",
+  expired: "Expired: not presented as current",
+} as const;
+---
+
+<section class="how-we-compare" id="how-we-compare" aria-labelledby="how-we-compare-title">
+  <h2 id="how-we-compare-title">How we compare</h2>
+  <p>
+    Every LoonieLogic comparison follows the same rules. Here is how this one
+    was built.
+  </p>
+
+  <h3>What we score</h3>
+  <ol class="hwc-criteria">
+    {criteria.map((c) => <li><strong>{c.name}:</strong> {c.detail}</li>)}
+  </ol>
+  <p>
+    We weigh these for a beginner, show the math wherever money changes hands,
+    and name a pick. When the answer depends on your situation, we say which
+    situation points where.
+  </p>
+
+  <h3>Every figure is sourced and dated</h3>
+  <p>
+    Every fee, rate, and promotion on this page comes from our figures
+    registry, where each number is stored with its source and the date we last
+    checked it.
+    {range && (
+      range.from === range.to
+        ? <> The figures here were last checked on <time datetime={range.from}>{longDate(range.from)}</time>.</>
+        : <> The figures here were last checked between <time datetime={range.from}>{longDate(range.from)}</time> and <time datetime={range.to}>{longDate(range.to)}</time>.</>
+    )}
+    {" "}We never present a figure as fresher than its last check, and a
+    promotion disappears from the page once its end date passes.
+    {unconfirmed > 0 && <> Figures we could not yet confirm on a provider's own pages are labelled that way where they appear.</>}
+    {" "}Rates and fees change, so confirm with the provider before you open anything.
+  </p>
+  {rows.length > 0 && (
+    <details class="hwc-figures">
+      <summary>Every figure on this page and when we checked it ({rows.length})</summary>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr><th scope="col">Figure</th><th scope="col">Last checked</th><th scope="col">Status</th></tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr data-figure-key={r.key}>
+                <td>{r.label}</td>
+                <td><time datetime={r.verified}>{longDate(r.verified)}</time></td>
+                <td>{STATUS_TEXT[r.status]}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </details>
+  )}
+
+  <h3>How we make money, and what it never buys</h3>
+  <p>
+    Some links on LoonieLogic comparison pages may earn us a commission when a
+    reader opens an account through them. A commission never changes a
+    ranking, a verdict, or the math. Rankings are never for sale: no provider
+    can pay to be included, to rank higher, or to have a weakness left out.
+    When the provider that could pay us is the worse pick for a situation, we
+    say so.
+  </p>
+  <p>
+    {hasLiveLinks
+      ? <>On this page, links marked "(affiliate link)" may earn us a commission. Every other link earns us nothing.</>
+      : <>On this page, no link earns us anything today. Every provider link is a plain link, marked "(not an affiliate link)".</>}
+    {" "}Full policy: our <a href="/affiliate-disclosure">affiliate disclosure</a>.
+  </p>
+
+  <h3>Spot an error?</h3>
+  <p>
+    Tell us through the <a href="/about#contact">contact details on our About page</a>.
+    We'd rather fix a mistake than defend it: we correct the page, note the
+    correction, and update the review date.
+  </p>
+</section>
+
+<style>
+  .how-we-compare {
+    margin: 3rem 0 0;
+    padding: 1.5rem clamp(1rem, 3vw, 1.75rem);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--paper-2);
+  }
+  .how-we-compare h2 { margin-top: 0; }
+  .how-we-compare h3 { margin-top: 1.5rem; }
+  .hwc-criteria { padding-left: 1.25rem; }
+  .hwc-criteria li { margin: 0.4rem 0; }
+  .hwc-figures { margin: 0.75rem 0 0; }
+  .hwc-figures summary { cursor: pointer; font-weight: 600; }
+  .table-scroll { overflow-x: auto; }
+  .hwc-figures table { width: 100%; font-size: 0.9rem; margin-top: 0.75rem; }
+</style>

@@ -17,6 +17,8 @@ interface CardMeta {
   chips?: string[];
   badge?: string;
   verdict?: string;
+  /** One-line deck for the page's decision quiz, shown under the verdict. */
+  quiz?: string;
 }
 
 interface Props {
@@ -102,9 +104,10 @@ const ctaText = cta.label.replace(/\s*→\s*$/, "");
       <div class="disclosure-bar" role="note">
         <p>
           <em>
-            We may earn a commission when you sign up for products through
-            links on this page, at no extra cost to you. We disclose this on
-            every comparison page too.{" "}
+            We earn nothing from the links on our comparison pages today:
+            no affiliate links are live yet, so every provider link is a
+            plain link. If that ever changes, this note and the disclosure
+            on each page say so first, and the rankings stay the same.{" "}
             <a href="/affiliate-disclosure">Read our affiliate disclosure</a>.
           </em>
         </p>
@@ -135,6 +138,7 @@ const ctaText = cta.label.replace(/\s*→\s*$/, "");
                   </div>
                 )}
                 {meta.verdict && <p class="verdict"><strong>Verdict:</strong> {meta.verdict}</p>}
+                {meta.quiz && <p class="verdict"><strong>Quiz:</strong> {meta.quiz}</p>}
                 <div class="card-foot"><span class="go" aria-hidden="true">Read →</span></div>
               </article>
             );

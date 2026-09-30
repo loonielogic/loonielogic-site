@@ -1,0 +1,262 @@
+---
+# identity
+slug: /compare/wealthsimple-vs-questrade
+page_type: comparison
+title: "Wealthsimple vs Questrade 2026: Fees, Features, Verdict"
+meta_description: "Wealthsimple vs Questrade for Canadian beginners in 2026: FX fees, USD accounts, managed-portfolio costs, margin rates, a clear pick, and a 6-question quiz."
+og_verdict: "Wealthsimple for most beginners. Questrade for US-heavy TFSAs and RRSPs and low-fee managed money."
+
+# publishing
+wave: 1
+status: draft
+publish_date: null
+last_reviewed: 2026-09-30
+
+# figure provenance (feeds the Q4 rollover watch). `verified` mirrors the
+# registry's verified_date; validate-content fails if it is ever later.
+figures:
+  - key: ws.tiers
+    source: "Wealthsimple pricing page"
+    verified: 2026-09-28
+    expires: 2026-10-15
+  - key: ws.stock_etf_fees
+    source: "Wealthsimple pricing page"
+    verified: 2026-09-28
+    expires: 2026-10-15
+  - key: ws.fx
+    source: "Wealthsimple pricing page"
+    verified: 2026-09-28
+    expires: 2026-10-15
+  - key: ws.usd_account_fee
+    source: "Wealthsimple pricing page"
+    verified: 2026-09-28
+    expires: 2026-10-15
+  - key: ws.managed_fees
+    source: "Wealthsimple pricing page"
+    verified: 2026-09-28
+    expires: 2026-10-15
+  - key: ws.crypto_fees
+    source: "Wealthsimple crypto fee schedule (updated 2026-09-24)"
+    verified: 2026-09-28
+    expires: 2026-10-15
+  - key: ws.chequing_rates.2026_09
+    source: "Wealthsimple help centre: how interest is paid on cash"
+    verified: 2026-09-28
+    expires: 2026-10-15
+  - key: ws.credit_card
+    source: "Wealthsimple pricing page"
+    verified: 2026-09-28
+    expires: 2026-10-15
+  - key: ws.tax_filing
+    source: "Wealthsimple pricing page"
+    verified: 2026-09-28
+    expires: 2026-10-15
+  - key: ws.mortgage_cashback
+    source: "Wealthsimple pricing page"
+    verified: 2026-09-28
+    expires: 2026-10-15
+  - key: ws.margin_rates
+    source: "Wealthsimple pricing page"
+    verified: 2026-09-28
+    expires: 2026-10-15
+  - key: ws.match_1pct
+    source: "Wealthsimple help centre: 1% Match"
+    verified: 2026-09-29
+    expires: 2027-01-01
+  - key: qt.base_fees
+    source: "Questrade pricing page"
+    verified: 2026-09-28
+    expires: 2026-10-15
+  - key: qt.plus
+    source: "Questrade pricing page"
+    verified: 2026-09-28
+    expires: 2026-10-15
+  - key: qt.margin_rates
+    source: "Questrade margin interest rates page"
+    verified: 2026-09-28
+    expires: 2026-10-15
+  - key: qt.questwealth
+    source: "Third-party sources (not yet confirmed on Questrade's own pages)"
+    verified: 2026-09-28
+    expires: 2026-10-15
+
+# navigation (hub-and-spoke, sitemap v1.2)
+hub: /compare/
+cluster: investing
+related: [/compare/tfsa-vs-rrsp, /calculators/compound-growth]
+
+# page-type extras
+schema_primary: Article
+affiliate_disclosure: true
+affiliate_links:
+  - merchant: questrade
+    position: quiz-outcome-cta
+    label: "Visit Questrade"
+  - merchant: wealthsimple
+    position: quiz-outcome-cta
+    label: "Visit Wealthsimple"
+quiz_spec: hidden_files/wealthsimple-vs-questrade-quiz-spec.md
+methodology_criteria:
+  - name: "Everyday trading costs"
+    detail: "Commissions, currency conversion, and USD-account fees on the trades a beginner actually makes, priced in dollars on a realistic balance."
+  - name: "Managed-portfolio cost"
+    detail: "The all-in yearly cost of a hands-off portfolio: management fee plus the funds' own fees (MERs), on the same balance at both."
+  - name: "Borrowing costs"
+    detail: "Margin rates at the entry tier. Named because the gap is large, not because we recommend borrowing to invest."
+  - name: "What lives under one login"
+    detail: "Accounts and extras beyond investing: chequing, a credit card, tax filing, crypto, and the registered accounts each one offers."
+  - name: "Fine print"
+    detail: "Minimums, holds, and promo strings that change what an offer is really worth."
+
+# newsletter
+newsletter_placement: inline
+
+# freshness contract (figures expire 2026-10-15; re-verify pass #2 ~Oct 5-7)
+review_cadence: quarterly
+next_review_due: 2026-10-07
+---
+
+import AffiliateCTA from "../../components/AffiliateCTA.astro";
+import NewsletterSoftLink from "../../components/NewsletterSoftLink.astro";
+
+## The 30-second version
+
+**Wealthsimple is the default pick for most beginners.** It puts chequing, investing, a credit card, tax filing, and crypto in one app, with $0 commissions on stocks and ETFs. **Questrade wins in two situations:** your TFSA or RRSP will hold mostly US stocks or ETFs (Questrade's free dual-currency accounts sidestep the 1.5% conversion fee both charge), or you want the cheapest hands-off managed portfolio (Questwealth's fee is roughly half of Wealthsimple's, on figures we have not yet confirmed on Questrade's own pages). Stock and ETF commissions are $0 at both, so "free trading" doesn't decide this. **Currency conversion and the fee on managed money do.**
+
+**Who pays us here:** nobody, today. Questrade runs an open affiliate program that pays publishers $50 to $250 per funded account; we have not joined it. Wealthsimple has no public affiliate signup. So we earn nothing from either link on this page, and if that ever changes, the disclosure at the top changes first and this verdict does not.
+
+{/* TODO(figure): Draft said Questrade's $0 commissions have been "permanent since February 2025". The registry (qt.base_fees) holds the $0 but not the date; add it to the registry before quoting the date. */}
+
+## Side-by-side: what each one actually charges
+
+| | Wealthsimple | Questrade |
+|---|---|---|
+| **Stock and ETF commissions** | $0 | $0 |
+| **Options** | US equity options: $0 | US equity options: $0; CAD options: $0.99 per contract; US index options: $0.99 per contract from September 28, 2026 |
+| **Fee to convert CAD to USD** | 1.5% | 1.5% |
+| **Avoiding that fee** | Norbert's Gambit journaling at $9.95 plus tax, which needs a USD account; or hold a USD account: $10/month on Core after a free 30-day trial, free at Premium ($100K+) and Generation ($500K+) | Free dual-currency accounts, registered accounts included; journaling at $9.95 per request, unlimited and free with Questrade Plus |
+| **Managed portfolio fee** | 0.5% Core; 0.4% Premium and Generation (a 0.2% tier needs $10M) | 0.25% under $100K; 0.20% at $100K+ (not yet confirmed on Questrade's own pages*) |
+| **Crypto** | Flat 0.5% trading fee plus spread on market orders; no spread on limit orders; Active Trader volume tiers from 0.5% down to 0%; $1 surcharge on orders under $100 (fee schedule of September 24, 2026) | Not offered |
+| **Chequing** | Yes: 1.25% / 1.75% / 2.25% interest by tier, $0 monthly fees, CDIC coverage up to $1M through its trust structure | Not offered |
+| **Credit card** | 2% cash back, 0% foreign transaction fees; $240 a year on Core, $0 at Premium and Generation | Not offered |
+| **Tax filing** | Built in: Basic is pay-what-you-want, Plus $40, Pro $80 | Not offered |
+| **Mortgages** | Cash back up to $500 / $1,500 / $3,000 by tier | Not offered |
+| **Margin rate (CAD, entry tier)** | 4.95% (Core) | 8.70% (non-registered, under $100K) |
+| **Account fees** | Not yet in our verified data | $0 base plan; no annual or inactivity fees |
+| **Standing extras** | 1% Match on $25,000+ transfers, paid over 24 months with a 730-day hold | Questrade Plus at $19.99/month: unlimited free journaling, 1% RRSP deposit match up to the CRA annual limit, first access to pre-IPO deals |
+| **Registered accounts** | TFSA, RRSP, FHSA, RESP, LIRA, GRSP | TFSA, RRSP, FHSA, RESP, RRIF, LIF, LIRA |
+| **Beyond stocks and ETFs** | Gold, futures, managed portfolios, private credit | Mutual funds ($9.95 per trade), bonds, GICs, forex, CFDs, Custom Indexing, pre-IPO |
+| **Affiliate program** | No public signup: we earn nothing from Wealthsimple | Open program we have not joined: we earn nothing from Questrade either |
+
+*Questwealth's management fees, fund MERs, and $1,000 minimum come from third-party sources. Questrade's own pages did not confirm them when we checked on September 28, 2026, so treat every Questwealth number on this page as approximate until our next check.*
+
+{/* TODO(figure): Rows dropped from the draft because the registry does not hold them: Wealthsimple managed minimum ($0), Wealthsimple account/inactivity fees, Questrade account closure ($150, third-party only), support hours for both, Wealthsimple crypto coin count (140+), Wealthsimple partner rewards from $200K. Add registry entries before restoring any of them. */}
+
+## The math behind the verdict
+
+Three worked comparisons on 2026 numbers.
+
+### 1. Managed money: Questwealth's fee is roughly half
+
+A $50,000 hands-off portfolio:
+
+| | Wealthsimple (Core) | Questwealth (unconfirmed*) |
+|---|---|---|
+| Management fee | 0.50% = $250/year | 0.25% = $125/year |
+| Underlying fund fees (MER) | 0.12-0.15% = $60-$75/year | 0.17-0.22% = $85-$110/year |
+| **All-in** | **$310-$325/year** | **$210-$235/year** |
+
+If the third-party Questwealth figures hold, the same $50,000 costs **$90 to $100 a year less** at Questrade. At $100,000, where Wealthsimple drops to 0.40% at Premium and Questwealth to 0.20%, the gap is about $140 a year. Questwealth's reported minimum to open is $1,000, also unconfirmed on Questrade's own pages. If "set it and forget it" is the whole plan, the fee gap is the deciding number, and it is the first thing our next check confirms or corrects.
+
+### 2. US-dollar investing: Questrade's free dual-currency is the quiet killer feature
+
+Both charge 1.5% to convert CAD to USD directly. On a $25,000 conversion for US stocks inside a TFSA, that's **$375 gone in one click**. The workarounds:
+
+- **Questrade:** hold USD directly in the registered account for free, or journal shares for $9.95. No monthly fee anywhere in the picture. Questrade Plus ($19.99/month) makes journaling unlimited, but at $239.88 a year it takes about **24 journals a year** to pay for itself, so most beginners don't need it.
+- **Wealthsimple:** Norbert's Gambit costs $9.95 plus tax per journal, but it requires a USD account, and that USD account is **$10/month ($120/year)** on Core, free only from Premium ($100K+ in assets).
+
+Put simply: a beginner who buys US ETFs inside a TFSA saves roughly $120 a year at Questrade by skipping the USD-account fee, and avoids the 1.5% conversion with $9.95 journaling. Wealthsimple's gambit narrows the gap, but the USD-account fee is the leak that hasn't closed.
+
+{/* TODO(figure): Draft's gambit details "added March 2026", "about 2 business days", "web only", and "$11.24 in Ontario tax" are not in the registry (qt.base_fees notes hold only "$9.95 + tax"). */}
+
+### 3. Margin: Wealthsimple charges almost half what Questrade does
+
+| | Wealthsimple (Core) | Questrade (non-registered, under $100K) |
+|---|---|---|
+| CAD margin rate | 4.95% | 8.70% (CAD prime 4.45% + 4.25%) |
+| USD margin rate | 7.50% | 11.50% (USD prime 7.00% + 4.50%) |
+| Cost of a $20,000 CAD debit for a year | $990 | $1,740 |
+
+That is a **$750-a-year gap** on a $20,000 balance. Margin is not a beginner product, and borrowing to invest is how beginners become cautionary tales, but the inversion is worth naming: the "beginner" brand is cheaper to borrow from than the "active trader" brand.
+
+## When Questrade wins instead
+
+Wealthsimple is the default, but Questrade is the right first call in four situations:
+
+1. **Your TFSA is full of US stocks and ETFs.** Free dual-currency inside registered accounts is Questrade's single biggest structural advantage. No $120-a-year USD-account fee, no forced conversions.
+2. **You want a robo portfolio and care about the fee.** On the third-party figures, Questwealth at 0.25%/0.20% is roughly half of Wealthsimple's 0.5%/0.4%. On $100,000 that's about $140 a year, every year. We'll confirm or correct this at our next check.
+3. **You plan to outgrow beginner tools.** CAD options, forex and CFDs, pre-IPO access, Custom Indexing, mutual funds, and bonds and GICs all exist at Questrade. Wealthsimple's shelf is simpler by design. Starting at Questrade means never switching platforms later.
+4. **You want brokerage and banking kept apart.** Questrade has no chequing account or credit card, which some people prefer: the money you invest never sits one tap away from the money you spend.
+
+## When Wealthsimple wins instead (the default cases)
+
+1. **You want one app, not five.** Chequing, investing, a 2% cash-back card with no foreign transaction fees, tax filing, and crypto live under one login. Nothing at Questrade compares; it is brokerage-only.
+2. **You keep meaningful cash in chequing.** $10,000 idle earns $125 a year at Core's 1.25% (up to $225 at Generation's 2.25%), inside the same app as your investments.
+3. **You file your own taxes.** Pay-what-you-want Basic filing lives in the same app as your money. Questrade doesn't offer tax filing.
+4. **You're moving a large account.** The 1% Match on $25,000+ transfers pays $1,000 on a $100,000 transfer. Read the strings, though: 24 monthly payments of about $41.67, a 730-day hold, and payouts shrink permanently if you withdraw more than your 20% buffer. It is golden handcuffs, not free money. Questrade runs its own acquisition promos; we haven't confirmed their current terms on Questrade's own pages, so we don't quote them.
+
+{/* TODO(figure): Questrade promos ($50 cash back on a $250 deposit, up to $150 transfer-fee rebate) sit in qt.promos.2026 as needs_reverification (third-party only). Confirm on questrade.com/promotions before quoting. */}
+
+## The expensive mistakes (the ways Canadians actually lose money here)
+
+1. **Paying 1.5% on every US buy.** This is the biggest beginner leak in Canadian investing. Converting $25,000 directly for US ETFs costs $375. Journaling costs $9.95 at Questrade. Learn how the gambit works before the first US purchase, wherever the account is.
+2. **Paying $10/month for a Wealthsimple USD account you barely use.** Holding US dollars year-round for frequent US trading can justify the fee. Converting once a year doesn't: the gambit is cheaper. Core clients with small USD balances pay the most and get the least.
+3. **Treating the 1% Match as a reason to switch.** A $1,000 bonus on a $100,000 transfer is nice, but it is paid over two years and shrinks if you withdraw. Switch because the platform fits, not because of the bonus calendar.
+4. **Assuming "free trading" means zero cost.** ECN fees can still attach to orders that remove liquidity at Questrade, Wealthsimple's 1.5% conversion fee sits outside "commissions," and exercising an option costs $24.95 at Questrade. Read the fee schedule, not the headline.
+
+## The 60-second quiz: your broker
+
+Work top to bottom. The first question that applies to you ends the quiz.
+
+1. **Do you want chequing, investing, a credit card, tax filing, and crypto under one login?** Yes → **Wealthsimple**. Nothing at Questrade compares; it is brokerage-only.
+2. **Will your TFSA or RRSP hold mostly US stocks or ETFs?** Yes → **Questrade**. Free dual-currency inside registered accounts ends the 1.5% conversion drag. On a $25,000 US position that is $375 you never pay.
+3. **Do you want the cheapest hands-off portfolio and "set it and forget it"?** Yes → **Questrade**. On third-party figures not yet confirmed on Questrade's own pages, Questwealth at 0.25%/0.20% is roughly half Wealthsimple's 0.5%/0.4% managed fee: $90 to $100 a year less on $50,000.
+4. **Do you want to trade crypto alongside stocks?** Yes → **Wealthsimple**. Questrade doesn't offer crypto. Wealthsimple charges a flat 0.5% plus spread on market orders; limit orders carry no spread.
+5. **Do you file your own taxes?** Yes → **Wealthsimple**. Pay-what-you-want Basic filing lives inside the same app as your money.
+6. **Do you expect to want advanced tools within two years (CAD options, forex, pre-IPO, mutual funds, bonds and GICs)?** Yes → **Questrade**. Wealthsimple's shelf is simpler by design; starting at Questrade means never switching platforms later.
+
+No to all of the above, or genuinely unsure? **Default to Wealthsimple.** For a beginner who invests mostly in Canadian securities and wants one app that does everything, simplicity beats the last dollar of fees. If US holdings grow later, Questrade can sit alongside it, and the $9.95 journaling trick works the moment it does.
+
+**Account type still open?** [Take the TFSA vs RRSP 60-second quiz](/compare/tfsa-vs-rrsp) first, then come back and open the broker it points to.
+
+### Open the broker the quiz points to
+
+Neither link below earns us anything. Both open the provider's own site.
+
+<AffiliateCTA merchant="wealthsimple" position="quiz-outcome-cta" label="Visit Wealthsimple" src="compare/wealthsimple-vs-questrade" />
+
+<AffiliateCTA merchant="questrade" position="quiz-outcome-cta" label="Visit Questrade" src="compare/wealthsimple-vs-questrade" />
+
+<NewsletterSoftLink />
+
+## What to do: the decision in 60 seconds
+
+- **Pick Wealthsimple if:** you want investing, chequing, a credit card, and tax filing in one app, your investing is mostly Canadian, and simplicity matters more to you than the last dollar of fees.
+- **Pick Questrade if:** your TFSA or RRSP holds US stocks or ETFs (free dual-currency saves real money every year), you want a low-fee robo portfolio, or you expect to want advanced trading tools within a couple of years.
+- **Either way, today:** open only what you need (a TFSA at one of them, not three accounts at both), learn the $9.95 journaling workaround before buying any US security, and check the promo pages the week you open, because bonuses change.
+
+---
+
+*General information for education only, not personal financial advice. Figures are 2026; fees and promos change, so confirm against the official pricing pages before opening an account.*
+
+## Sources
+
+- Wealthsimple, [pricing page](https://www.wealthsimple.com/en-ca/pricing): Core, Premium ($100K+), and Generation ($500K+) tiers; $0 stock and ETF commissions and $0 US equity options; 1.5% conversion fee; USD account $10/month on Core after a free 30-day trial, free at Premium and Generation; managed fees 0.5% / 0.4% / 0.4% (0.2% at $10M) and Classic MERs 0.12-0.15%; tax filing tiers; Visa card terms; mortgage cash back; margin rates. Checked 2026-09-28.
+- Wealthsimple, [crypto fee schedule](https://www.wealthsimple.com/en-ca/crypto/fees) (updated September 24, 2026): flat 0.5% plus spread on market orders, no spread on limit orders, Active Trader volume tiers, $1 surcharge under $100. Checked 2026-09-28.
+- Wealthsimple help centre, [how interest is paid on cash](https://help.wealthsimple.com/hc/en-ca/articles/360061583072-How-Interest-is-Paid-on-Cash): chequing interest 1.25% / 1.75% / 2.25%, $0 monthly fees, CDIC coverage up to $1M. Checked 2026-09-28.
+- Wealthsimple help centre, [1% Match](https://help.wealthsimple.com/hc/en-ca/articles/18144268357527-1-Match) (last updated July 27, 2026): $25,000+ qualifying transfers, 24 monthly payments, 730-day hold, 20% withdrawal buffer. Checked 2026-09-29.
+- Questrade, [pricing page](https://www.questrade.com/pricing): $0 base plan, $0 stock and ETF commissions, options pricing including US index options at $0.99 per contract from September 28, 2026, $24.95 option exercise, 1.5% conversion, free dual-currency, $9.95 journaling, $9.95 mutual fund trades, no annual or inactivity fees, Questrade Plus at $19.99/month. Checked 2026-09-28.
+- Questrade, [margin interest rates](https://www.questrade.com/pricing/margin-interest-rates): CAD prime 4.45%, USD prime 7.00%; non-registered under $100K at prime + 4.25% (CAD) and prime + 4.50% (USD). Checked 2026-09-28.
+- Questwealth management fees, MERs, and minimum: third-party sources only; not yet confirmed on Questrade's own pages (checked 2026-09-28).
+- Affiliate terms: Questrade's official publisher program rewards ($50 to $250 per funded account), checked 2026-09-26. Wealthsimple has no public publisher signup.
+- All worked math uses the figures above: managed all-in on $50,000 and $100,000, $375 conversion vs $9.95 journal, $750 margin gap, 1% Match at about $41.67 a month, chequing interest on $10,000, Plus break-even at about 24 journals a year.

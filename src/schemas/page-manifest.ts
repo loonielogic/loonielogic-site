@@ -159,6 +159,16 @@ export const comparisonSchema = pageManifestBase.extend({
   // One-line verdict printed on the page's share card (src/lib/og.ts).
   // Optional: without it the card uses the meta description.
   og_verdict: z.string().min(20).max(120).optional(),
+  // What this comparison scores, in reader order. Rendered by the shared
+  // "How we compare" block (src/components/HowWeCompare.astro).
+  methodology_criteria: z
+    .array(
+      z.object({
+        name: z.string().min(3).max(60),
+        detail: z.string().min(20).max(300),
+      }),
+    )
+    .default([]),
 });
 
 /** Calculators: manifests live in src/data/calculator-manifests.json (one per

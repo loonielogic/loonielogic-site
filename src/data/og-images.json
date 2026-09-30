@@ -53,11 +53,35 @@
     "title": "TFSA vs RRSP, Brokerages & Banks Compared",
     "line": "Honest Canadian comparisons with verdicts, starting with TFSA vs RRSP."
   },
+  "/compare/best-bank-accounts-beginners": {
+    "image": "/og/compare-best-bank-accounts-beginners.png",
+    "alt": "LoonieLogic comparison: Best Bank Accounts for Beginners in Canada (2026). Verdict: EQ Bank for most beginners: 2.75% when your pay lands there, 1.00% when it doesn't.",
+    "title": "Best Bank Accounts for Beginners in Canada (2026)",
+    "line": "EQ Bank for most beginners: 2.75% when your pay lands there, 1.00% when it doesn't."
+  },
   "/compare/tfsa-vs-rrsp": {
     "image": "/og/compare-tfsa-vs-rrsp.png",
     "alt": "LoonieLogic comparison: TFSA vs RRSP Canada 2026: The Comparison That Recommends. Verdict: Employer match first. Then a higher tax rate now means RRSP; lower now, or a tie, means TFSA.",
     "title": "TFSA vs RRSP Canada 2026: The Comparison That Recommends",
     "line": "Employer match first. Then a higher tax rate now means RRSP; lower now, or a tie, means TFSA."
+  },
+  "/compare/wealthsimple-vs-questrade": {
+    "image": "/og/compare-wealthsimple-vs-questrade.png",
+    "alt": "LoonieLogic comparison: Wealthsimple vs Questrade 2026: Fees, Features, Verdict. Verdict: Wealthsimple for most beginners. Questrade for US-heavy TFSAs and RRSPs and low-fee managed money.",
+    "title": "Wealthsimple vs Questrade 2026: Fees, Features, Verdict",
+    "line": "Wealthsimple for most beginners. Questrade for US-heavy TFSAs and RRSPs and low-fee managed money."
+  },
+  "/go/cibc/": {
+    "image": "/og/wordmark.png",
+    "alt": "LoonieLogic wordmark beside the gold loon coin mark",
+    "title": "LoonieLogic",
+    "line": ""
+  },
+  "/go/eq-bank/": {
+    "image": "/og/wordmark.png",
+    "alt": "LoonieLogic wordmark beside the gold loon coin mark",
+    "title": "LoonieLogic",
+    "line": ""
   },
   "/go/fintel-connect/": {
     "image": "/og/wordmark.png",
@@ -71,7 +95,25 @@
     "title": "LoonieLogic",
     "line": ""
   },
+  "/go/neo/": {
+    "image": "/og/wordmark.png",
+    "alt": "LoonieLogic wordmark beside the gold loon coin mark",
+    "title": "LoonieLogic",
+    "line": ""
+  },
   "/go/questrade/": {
+    "image": "/og/wordmark.png",
+    "alt": "LoonieLogic wordmark beside the gold loon coin mark",
+    "title": "LoonieLogic",
+    "line": ""
+  },
+  "/go/simplii/": {
+    "image": "/og/wordmark.png",
+    "alt": "LoonieLogic wordmark beside the gold loon coin mark",
+    "title": "LoonieLogic",
+    "line": ""
+  },
+  "/go/tangerine/": {
     "image": "/og/wordmark.png",
     "alt": "LoonieLogic wordmark beside the gold loon coin mark",
     "title": "LoonieLogic",

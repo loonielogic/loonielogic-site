@@ -3,18 +3,29 @@
  * ComparisonDisclosure — the disclosure bar for /compare/* pages.
  * Per hidden_files/affiliate-link-implementation-spec.md §4:
  * - Pages with live affiliate links → the short above-the-fold disclosure.
- * - Pages with zero live links (e.g. TFSA vs RRSP at scaffold) → the explicit
- *   non-affiliate line, NOT the commission disclosure (disclosing commissions
- *   a page cannot earn is a misleading impression in reverse).
+ *   It carries data-affiliate-disclosure="commission", which the post-build
+ *   gate (src/lib/affiliate-gates.ts) requires before the first /go/ link.
+ * - Pages with zero live links → the explicit non-affiliate line, NOT the
+ *   commission disclosure (disclosing commissions a page cannot earn is a
+ *   misleading impression in reverse). Pages that name merchants we may
+ *   later apply to (hasAffiliateMerchants) say "none live yet" instead of
+ *   "no program exists", which would not be true for them.
+ * - hasMethod adds a pointer to the page's "How we compare" block.
  */
 interface Props {
   hasLiveLinks: boolean;
+  hasAffiliateMerchants?: boolean;
+  hasMethod?: boolean;
 }
 
-const { hasLiveLinks } = Astro.props;
+const { hasLiveLinks, hasAffiliateMerchants = false, hasMethod = false } = Astro.props;
 ---
 
-<div class:list={["disclosure-bar", { "is-clean": !hasLiveLinks }]} role="note">
+<div
+  class:list={["disclosure-bar", { "is-clean": !hasLiveLinks }]}
+  role="note"
+  data-affiliate-disclosure={hasLiveLinks ? "commission" : "none"}
+>
   {hasLiveLinks ? (
     <p>
       <strong>Heads up:</strong> some links on this page are affiliate links.
@@ -22,12 +33,21 @@ const { hasLiveLinks } = Astro.props;
       you. Commissions never change our math or our recommendations. Full
       details on our{" "}
       <a href="/affiliate-disclosure">affiliate disclosure page</a>.
+      {hasMethod && <> <a href="#how-we-compare">How we compare</a>.</>}
+    </p>
+  ) : hasAffiliateMerchants ? (
+    <p>
+      <strong>No affiliate links live here:</strong> we earn nothing from any
+      link on this page today. If that changes, this note becomes a commission
+      disclosure before any paid link appears, and the ranking stays the same.
+      {hasMethod && <> <a href="#how-we-compare">How we compare</a>.</>}
     </p>
   ) : (
     <p>
       <strong>No affiliate links here:</strong> we don't earn anything from the
-      links on this page. There's no affiliate program for these providers we
-      can use honestly yet.
+      links on this page. There's no affiliate program we can use honestly here
+      yet.
+      {hasMethod && <> <a href="#how-we-compare">How we compare</a>.</>}
     </p>
   )}
 </div>

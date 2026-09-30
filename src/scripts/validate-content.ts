@@ -23,12 +23,18 @@
  *   9. newsletter capture gates (src/lib/newsletter-gates.ts): provider URL
  *      (placeholder WARNS, malformed FAILS), no hard-coded newsletter copy
  *      outside the registry, no popup/timer machinery
+ *  10. comparisons: a cited figure's `verified` date may not be later than
+ *      the registry's verified_date (never present a figure as fresher than
+ *      its last real check); comparisons without methodology criteria WARN
  *
  * Post-build:  npm run validate-content -- --dist   (last step of npm run build)
  *   Checks the rendered HTML in dist/: every newsletter form carries the
  *   purpose line + privacy-policy link, registry copy renders verbatim,
  *   no forms on banned page types, honest unconfigured state, draft
- *   newsletter pages noindex and off sitemap.xml.
+ *   newsletter pages noindex and off sitemap.xml. Affiliate gates
+ *   (src/lib/affiliate-gates.ts): /go/ links tagged sponsored + labelled,
+ *   disclosure before the first one, no leaked tokens or invented UTMs,
+ *   no /go/ paths in sitemap.xml.
  *
  * Deps (dev): astro, zod, js-yaml, typescript. package.json below.
  */
@@ -52,6 +58,7 @@ import {
   checkSourceFile,
   routeOf,
 } from "../lib/newsletter-gates.js";
+import { checkAffiliateHtml, checkSitemapHasNoGo } from "../lib/affiliate-gates.js";
 
 /* ------------------------------------------------------------------ */
 /* Paths — repo root is two levels up from src/scripts/                */
@@ -84,6 +91,7 @@ interface FigureIndexEntry {
   key: string;
   status: string;
   expires: string | null;
+  verified_date: string | null;
 }
 
 function loadFigureIndex(): Map<string, FigureIndexEntry> {
@@ -98,6 +106,7 @@ function loadFigureIndex(): Map<string, FigureIndexEntry> {
           key: e.key,
           status: e.status ?? "unknown",
           expires: e.expires ?? null,
+          verified_date: e.verified_date ?? null,
         });
       }
     }
@@ -208,7 +217,8 @@ function validatePage(
     status: string;
     related: string[];
     hub: string | null;
-    figures: { key: string; expires: string | null }[];
+    figures: { key: string; verified: string; expires: string | null }[];
+    methodology_criteria?: unknown[];
     affiliate_links: { merchant: string }[];
     calculator_spec: string | null;
     quiz_spec: string | null;
@@ -245,6 +255,12 @@ function validatePage(
     }
     if (entry.status === "rejected") {
       fail(where, `figure key "${fig.key}" is REJECTED — do not cite it`);
+    }
+    if (m.page_type === "comparison" && entry.verified_date && fig.verified > entry.verified_date) {
+      fail(
+        where,
+        `figure "${fig.key}" claims verified ${fig.verified} but the registry's last check is ${entry.verified_date}`,
+      );
     }
     const expiry = fig.expires ?? entry.expires;
     if (expiry && expiry < today) {
@@ -287,6 +303,11 @@ function validatePage(
     if (m.next_review_due < today) {
       fail(where, `live page is past next_review_due (${m.next_review_due})`);
     }
+  }
+
+  /* 10. comparison methodology block */
+  if (m.page_type === "comparison" && (m.methodology_criteria ?? []).length === 0) {
+    warn(where, "comparison has no methodology_criteria; the How we compare block will not render");
   }
 
   /* 8. newsletter placement rules (newsletter-email-capture-spec.md) */
@@ -342,10 +363,13 @@ function validateDist() {
     forms += (html.match(/\sdata-newsletter-form="/g) ?? []).length;
     const route = routeOf(file.slice(DIST_DIR.length + 1));
     for (const e of checkRenderedPage({ route, html, configured, legalRoutes })) fail("dist", e);
+    for (const e of checkAffiliateHtml(route, html)) fail("dist", e);
   }
   const sitemap = join(DIST_DIR, "sitemap.xml");
   if (existsSync(sitemap)) {
-    for (const e of checkSitemapXml(readFileSync(sitemap, "utf8"), configured)) fail("dist", e);
+    const xml = readFileSync(sitemap, "utf8");
+    for (const e of checkSitemapXml(xml, configured)) fail("dist", e);
+    for (const e of checkSitemapHasNoGo(xml)) fail("dist", e);
   }
   console.log(`Checked ${pages.length} built pages, ${forms} newsletter forms (provider ${configured ? "configured" : "not configured"}).`);
 }
