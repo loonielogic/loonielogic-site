@@ -27,12 +27,17 @@ const record = (affiliateIndex as Record<string, { display_name: string; status:
   pageType="hub"
   noindex={true}
 >
-  <div class="wrap prose" style="margin-top:3rem">
-    <h1>Not active yet</h1>
-    <p>
-      The {record.display_name} redirect isn't live: our affiliate application
-      hasn't been approved. Nothing was tracked and you weren't sent anywhere.
-    </p>
-    <p><a href="/compare/">Back to our comparisons →</a></p>
-  </div>
+  <section class="page-hero page-hero-light">
+    <div class="wrap">
+      <p class="eyebrow">Affiliate redirect</p>
+      <h1>Not active yet</h1>
+      <p class="lede">
+        The {record.display_name} redirect isn't live: our affiliate application
+        hasn't been approved. Nothing was tracked and you weren't sent anywhere.
+      </p>
+      <div class="btn-row">
+        <a class="btn btn-ink" href="/compare/">Back to our comparisons <span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
 </BaseLayout>

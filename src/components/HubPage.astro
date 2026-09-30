@@ -8,6 +8,7 @@
  * that isn't (hub renders only published cards per spec §7).
  */
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Breadcrumbs from "./Breadcrumbs.astro";
 import type { SitemapPage } from "../lib/site";
 
 interface CardMeta {
@@ -29,11 +30,16 @@ interface Props {
   groups?: { label: string; slugs: string[] }[];
   cta: { label: string; href: string };
   disclosureBlock?: boolean;
+  /** Small label above the H1. */
+  eyebrow?: string;
+  /** One line of copy beside the closing CTA button. */
+  ctaLead?: string;
 }
 
 const {
   slug, title, metaDescription, h1, intro, breadcrumb, cards, builtSlugs,
-  cardMeta = {}, groups, cta, disclosureBlock = false,
+  cardMeta = {}, groups, cta, disclosureBlock = false, eyebrow = breadcrumb,
+  ctaLead = "Ready for the next step?",
 } = Astro.props;
 
 const bySlug = new Map(cards.map((c) => [c.slug, c]));
@@ -53,6 +59,9 @@ const grouped = groups
       .filter((g) => g.cards.length > 0)
   : null;
 const sections = grouped ?? (live.length > 0 ? [{ label: null, cards: live }] : []);
+
+// The trailing arrow is drawn by the button itself.
+const ctaText = cta.label.replace(/\s*→\s*$/, "");
 ---
 
 <BaseLayout
@@ -62,13 +71,23 @@ const sections = grouped ?? (live.length > 0 ? [{ label: null, cards: live }] : 
   pageType="hub"
   breadcrumbs={[{ name: breadcrumb, slug }]}
 >
-  <div class="wrap">
-    <nav aria-label="Breadcrumb" class="page-meta" style="margin-top:1.5rem">
-      <a href="/">Home</a> › {breadcrumb}
-    </nav>
-    <h1>{h1}</h1>
-    <p class="lede" style="max-width:44rem;color:var(--ink-soft)">{intro}</p>
+  <section class="page-hero page-hero-light hub-hero">
+    <div class="wrap">
+      <Breadcrumbs trail={[{ name: breadcrumb, slug }]} />
+      <p class="eyebrow">{eyebrow}</p>
+      <h1>{h1}</h1>
+      <p class="lede">{intro}</p>
+      {live.length + upcoming.length > 0 && (
+        <p class="hub-count">
+          {live.length > 0 && <><strong>{live.length}</strong> published</>}
+          {live.length > 0 && upcoming.length > 0 && " · "}
+          {upcoming.length > 0 && <><strong>{upcoming.length}</strong> in progress</>}
+        </p>
+      )}
+    </div>
+  </section>
 
+  <div class="wrap">
     {disclosureBlock && (
       <div class="disclosure-bar" role="note">
         <p>
@@ -83,23 +102,23 @@ const sections = grouped ?? (live.length > 0 ? [{ label: null, cards: live }] : 
     )}
 
     {sections.map((g) => (
-      <section aria-label={g.label ?? "Live now"} style="margin-top:2.5rem">
-        {g.label && <h2>{g.label}</h2>}
+      <section class="hub-section" aria-label={g.label ?? "Live now"}>
+        {g.label && <h2 class="hub-label">{g.label}</h2>}
         <div class="card-grid">
           {g.cards.map((p) => {
             const meta = cardMeta[p.slug] ?? {};
             return (
-              <article class="card">
+              <article class="card is-linked">
                 <h3><a href={p.slug}>{p.title}</a></h3>
                 <p class="dek">{p.card_dek ?? p.meta_description}</p>
                 {(meta.chips || meta.badge) && (
                   <div class="chips">
-                    {meta.badge && <span class="chip">{meta.badge}</span>}
+                    {meta.badge && <span class="chip chip-badge">{meta.badge}</span>}
                     {(meta.chips ?? []).map((c) => <span class="chip">{c}</span>)}
                   </div>
                 )}
-                {meta.verdict && <p class="meta"><strong>Verdict:</strong> {meta.verdict}</p>}
-                <p class="meta"><a href={p.slug}>Read →</a></p>
+                {meta.verdict && <p class="verdict"><strong>Verdict:</strong> {meta.verdict}</p>}
+                <div class="card-foot"><span class="go" aria-hidden="true">Read →</span></div>
               </article>
             );
           })}
@@ -108,7 +127,7 @@ const sections = grouped ?? (live.length > 0 ? [{ label: null, cards: live }] : 
     ))}
 
     {upcoming.length > 0 && (
-      <section class="coming-next" aria-label="Coming next" style="margin-top:2.5rem">
+      <section class="coming-next" aria-label="Coming next">
         <h2>Coming next</h2>
         <p class="page-meta">Not published yet. These pages are in progress:</p>
         <ul>
@@ -117,8 +136,22 @@ const sections = grouped ?? (live.length > 0 ? [{ label: null, cards: live }] : 
       </section>
     )}
 
-    <div class="disclosure-bar" style="margin-top:2.5rem">
-      <p><a class="btn" href={cta.href}>{cta.label}</a></p>
+    <div class="cta-band">
+      <p>{ctaLead}</p>
+      <a class="btn btn-gold" href={cta.href}>{ctaText} <span class="arrow" aria-hidden="true">→</span></a>
     </div>
   </div>
 </BaseLayout>
+
+<style>
+  .hub-hero { padding-bottom: clamp(2.5rem, 6vw, 3.75rem); }
+  .hub-hero h1 { max-width: 22ch; }
+  .hub-count { margin: 1.5rem 0 0; font-size: 0.9rem; color: var(--ink-soft); }
+  .hub-count strong { font-family: var(--font-display); font-size: 1.2rem; color: var(--lake-900); }
+  .hub-section { margin-top: 3rem; }
+  .hub-label {
+    display: flex; align-items: center; gap: 1rem;
+    font-size: 1.5rem; margin: 0 0 0.25rem;
+  }
+  .hub-label::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+</style>

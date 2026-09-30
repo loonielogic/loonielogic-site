@@ -1,0 +1,50 @@
+---
+/**
+ * 404 — served by Cloudflare Pages for any unknown path (static 404.html).
+ * noindex; not on the canonical sitemap.
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { loonMarkSvg } from "../lib/loon-mark";
+---
+
+<BaseLayout
+  title="Page not found | LoonieLogic"
+  metaDescription="This page does not exist on LoonieLogic. Head back to the explainers, comparisons, or the homepage."
+  slug="/404"
+  pageType="home"
+  noindex={true}
+>
+  <section class="page-hero lost">
+    <div class="wrap lost-grid">
+      <div>
+        <p class="eyebrow">Error 404</p>
+        <h1>This loon dove, and the page went with it.</h1>
+        <p class="lede">
+          The page you were looking for isn't here. It may have moved, or it may
+          not be published yet. Here is dry land:
+        </p>
+        <div class="btn-row">
+          <a class="btn btn-gold" href="/">Back to the homepage <span class="arrow" aria-hidden="true">→</span></a>
+          <a class="btn btn-outline" href="/learn/">Browse the explainers</a>
+          <a class="btn btn-outline" href="/compare/">See the comparisons</a>
+        </div>
+      </div>
+      <div class="lost-mark" aria-hidden="true">
+        <Fragment set:html={loonMarkSvg({ size: 220 })} />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .lost { padding: clamp(3rem, 8vw, 6rem) 0; }
+  .lost h1 { max-width: 16ch; }
+  .lost-grid { display: grid; gap: 2.5rem; align-items: center; }
+  @media (min-width: 52rem) { .lost-grid { grid-template-columns: 1fr auto; } }
+  .lost-mark { justify-self: center; opacity: 0.95; }
+  .lost-mark :global(svg) { width: clamp(8rem, 22vw, 14rem); height: auto; filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.45)); }
+  @media (prefers-reduced-motion: no-preference) {
+    .lost-mark :global(svg) { animation: dive 5s ease-in-out infinite; }
+    @keyframes dive { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(10px) rotate(3deg); } }
+  }
+</style>

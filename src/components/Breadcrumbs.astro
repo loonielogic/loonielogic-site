@@ -1,0 +1,30 @@
+---
+/**
+ * Visible breadcrumb trail. Mirrors the BreadcrumbList JSON-LD the layout
+ * emits from the same `breadcrumbs` prop: Home first, current page last
+ * (unlinked, aria-current).
+ */
+interface Crumb {
+  name: string;
+  slug: string;
+}
+
+interface Props {
+  trail: Crumb[];
+}
+
+const { trail } = Astro.props;
+const items = [{ name: "Home", slug: "/" }, ...trail];
+---
+
+<nav aria-label="Breadcrumb" class="crumbs">
+  <ol>
+    {items.map((c, i) =>
+      i === items.length - 1 ? (
+        <li><span aria-current="page">{c.name}</span></li>
+      ) : (
+        <li><a href={c.slug}>{c.name}</a></li>
+      ),
+    )}
+  </ol>
+</nav>

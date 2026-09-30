@@ -6,6 +6,7 @@
  */
 import "../styles/global.css";
 import { canonicalUrl, SITE_URL, DEFAULT_OG_IMAGE } from "../lib/site";
+import { loonMarkSvg, loonFaviconHref } from "../lib/loon-mark";
 
 interface Crumb {
   name: string;
@@ -24,6 +25,8 @@ interface Props {
   ogImage?: string;
   /** Trail below Home, ending with the current page. Emits BreadcrumbList. */
   breadcrumbs?: Crumb[];
+  /** Show the CSS-only reading-progress rule under the header (long reads). */
+  readingProgress?: boolean;
 }
 
 const {
@@ -36,7 +39,21 @@ const {
   noindex = false,
   ogImage = DEFAULT_OG_IMAGE,
   breadcrumbs,
+  readingProgress = false,
 } = Astro.props;
+
+const navItems = [
+  { href: "/learn/", label: "Learn" },
+  { href: "/calculators/", label: "Tools" },
+  { href: "/compare/", label: "Compare" },
+  { href: "/about", label: "About" },
+];
+const sectionOf = (href: string) => href.replace(/\/$/, "");
+function current(href: string): "page" | "true" | undefined {
+  if (slug === href) return "page";
+  return slug.startsWith(sectionOf(href) + "/") ? "true" : undefined;
+}
+const year = new Date().getFullYear();
 
 const canonical = canonicalUrl(slug);
 const ogType = ["explainer", "comparison"].includes(pageType) ? "article" : "website";
@@ -139,66 +156,87 @@ const graph = {
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Inter+Tight:wght@600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=Instrument+Sans:wght@400..700&display=swap"
       rel="stylesheet"
     />
-    <link
-      rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%230B4F4A'/%3E%3Ccircle cx='32' cy='32' r='16' fill='%23C9971F'/%3E%3C/svg%3E"
-    />
+    <link rel="icon" type="image/svg+xml" href={loonFaviconHref} />
+    <meta name="theme-color" content="#0b1f1c" />
     <script type="application/ld+json" set:html={JSON.stringify(graph)} />
   </head>
   <body>
+    <a class="skip-link" href="#main">Skip to content</a>
     <header class="site-header">
       <div class="wrap">
         <a class="brand" href="/" aria-label="LoonieLogic home">
-          <span class="loonie">Loonie</span>Logic
+          <Fragment set:html={loonMarkSvg({ size: 32 })} />
+          <span class="wordmark" aria-hidden="true">Loonie<em>Logic</em></span>
         </a>
         <nav class="main-nav" aria-label="Primary">
-          <a href="/learn/">Learn</a>
-          <a href="/calculators/">Tools</a>
-          <a href="/compare/">Compare</a>
-          <a href="/about">About</a>
+          {navItems.map((n) => (
+            <a href={n.href} aria-current={current(n.href)}>{n.label}</a>
+          ))}
         </nav>
       </div>
+      {readingProgress && <div class="read-progress" aria-hidden="true"></div>}
     </header>
 
-    <main>
+    <main id="main" tabindex="-1">
       <slot />
     </main>
 
     <footer class="site-footer">
       <div class="wrap">
-        <div class="footer-grid">
-          <div>
-            <h4>Learn</h4>
-            <ul>
-              <li><a href="/learn/tfsa">TFSA basics</a></li>
-              <li><a href="/learn/">All explainers</a></li>
-            </ul>
+        <div class="footer-top">
+          <div class="footer-brand">
+            <Fragment set:html={loonMarkSvg({ size: 72 })} />
+            <div>
+              <p class="footer-statement">Canadian money, decoded. From first paycheque to <em>first home</em>.</p>
+              <p>
+                Plain-English explainers, honest comparisons, and tools that do real
+                Canadian math. Every figure is sourced and dated, and we show our work.
+              </p>
+            </div>
           </div>
-          <div>
-            <h4>Tools</h4>
-            <ul>
-              <li><a href="/calculators/">All tools</a></li>
-            </ul>
+          <div class="footer-grid">
+            <div>
+              <h2>Learn</h2>
+              <ul>
+                <li><a href="/learn/tfsa">TFSA basics</a></li>
+                <li><a href="/learn/">All explainers</a></li>
+              </ul>
+            </div>
+            <div>
+              <h2>Tools</h2>
+              <ul>
+                <li><a href="/calculators/">All tools</a></li>
+              </ul>
+            </div>
+            <div>
+              <h2>Compare</h2>
+              <ul>
+                <li><a href="/compare/tfsa-vs-rrsp">TFSA vs RRSP</a></li>
+                <li><a href="/compare/">All comparisons</a></li>
+              </ul>
+            </div>
+            <div>
+              <h2>Company</h2>
+              <ul>
+                <li><a href="/about">About</a></li>
+                <li><a href="/privacy">Privacy</a></li>
+                <li><a href="/affiliate-disclosure">Affiliate disclosure</a></li>
+                <li><a href="/terms">Terms of use</a></li>
+              </ul>
+            </div>
           </div>
-          <div>
-            <h4>Compare</h4>
-            <ul>
-              <li><a href="/compare/tfsa-vs-rrsp">TFSA vs RRSP</a></li>
-              <li><a href="/compare/">All comparisons</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4>Company</h4>
-            <ul>
-              <li><a href="/about">About</a></li>
-              <li><a href="/privacy">Privacy</a></li>
-              <li><a href="/affiliate-disclosure">Affiliate disclosure</a></li>
-              <li><a href="/terms">Terms of use</a></li>
-            </ul>
-          </div>
+        </div>
+        <div class="footer-status" role="note">
+          <span class="dot" aria-hidden="true"></span>
+          <p>
+            <strong>Honest status:</strong> LoonieLogic is an early build. Pages go up
+            only once their figures are checked against official sources, so the
+            library is small on purpose. Anything not yet published is listed as
+            "coming next", never linked.
+          </p>
         </div>
         <div class="footer-disclaimers">
           <p>
@@ -210,6 +248,10 @@ const graph = {
             against official sources on the dates shown. Check the linked official
             pages before acting.
           </p>
+        </div>
+        <div class="footer-base">
+          <span>© {year} LoonieLogic</span>
+          <span>Made for Canadians, in plain English.</span>
         </div>
       </div>
     </footer>

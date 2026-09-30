@@ -4,8 +4,10 @@
  * affiliate-link spec §4: the short commission disclosure when the page
  * carries live affiliate links, the explicit non-affiliate line otherwise
  * (a page that discloses commissions it cannot earn misleads in reverse).
+ * Layout and reading chrome live in ArticleShell.
  */
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import ArticleShell from "../../components/ArticleShell.astro";
 import RelatedCards from "../../components/RelatedCards.astro";
 import ComparisonDisclosure from "../../components/ComparisonDisclosure.astro";
 import AffiliateCTA from "../../components/AffiliateCTA.astro";
@@ -21,7 +23,7 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
 const d = entry.data;
 
 // Pages that actually exist in this build — related cards link only to
@@ -45,21 +47,26 @@ const srcSlug = d.slug.replace(/^\//, "");
   pageType={d.page_type}
   dateModified={d.last_reviewed}
   breadcrumbs={[{ name: "Compare", slug: "/compare/" }, { name: d.title, slug: d.slug }]}
+  readingProgress
 >
-  <div class="wrap">
-    <nav aria-label="Breadcrumb" class="page-meta" style="margin-top:1.5rem">
-      <a href="/">Home</a> › <a href="/compare/">Compare</a> › {d.title}
-    </nav>
-    <article class="prose">
-      <h1>{d.title}</h1>
-      <p class="page-meta">
-        Last reviewed: {d.last_reviewed} · {d.review_cadence} review
-      </p>
+  <ArticleShell
+    eyebrow="Compare · Head to head"
+    title={d.title}
+    lastReviewed={String(d.last_reviewed)}
+    reviewCadence={d.review_cadence}
+    trail={[{ name: "Compare", slug: "/compare/" }, { name: d.title, slug: d.slug }]}
+    headings={headings}
+    body={entry.body}
+    variant="compare"
+  >
+    <Fragment slot="lead">
       <ComparisonDisclosure hasLiveLinks={hasLiveLinks} />
       {liveMerchants.map((l) => (
         <AffiliateCTA merchant={l.merchant} position={l.position} label={l.label} src={srcSlug} />
       ))}
-      <Content />
+    </Fragment>
+    <Content />
+    <Fragment slot="after">
       {hasLiveLinks && (
         <div class="disclosure-bar" role="note">
           <p>
@@ -72,7 +79,7 @@ const srcSlug = d.slug.replace(/^\//, "");
           </p>
         </div>
       )}
-    </article>
-    <RelatedCards slugs={d.related} builtSlugs={builtSlugs} />
-  </div>
+    </Fragment>
+    <RelatedCards slot="below" slugs={d.related} builtSlugs={builtSlugs} />
+  </ArticleShell>
 </BaseLayout>

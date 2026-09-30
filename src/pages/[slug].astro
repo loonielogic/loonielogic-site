@@ -5,6 +5,7 @@
  * win over this dynamic route, so future hand-built root pages take priority.
  */
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ArticleShell from "../components/ArticleShell.astro";
 import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
@@ -16,7 +17,7 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
 const d = entry.data;
 ---
 
@@ -28,16 +29,16 @@ const d = entry.data;
   dateModified={d.last_reviewed}
   breadcrumbs={[{ name: d.title, slug: d.slug }]}
 >
-  <div class="wrap">
-    <nav aria-label="Breadcrumb" class="page-meta" style="margin-top:1.5rem">
-      <a href="/">Home</a> › {d.title}
-    </nav>
-    <article class="prose">
-      <h1>{d.title}</h1>
-      <p class="page-meta">
-        Last reviewed: {d.last_reviewed} · {d.review_cadence} review
-      </p>
-      <Content />
-    </article>
-  </div>
+  <ArticleShell
+    eyebrow={d.slug === "/about" ? "About LoonieLogic" : "The fine print, in plain English"}
+    title={d.title}
+    lastReviewed={String(d.last_reviewed)}
+    reviewCadence={d.review_cadence}
+    trail={[{ name: d.title, slug: d.slug }]}
+    headings={headings}
+    variant="legal"
+    honestyFoot={false}
+  >
+    <Content />
+  </ArticleShell>
 </BaseLayout>

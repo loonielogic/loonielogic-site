@@ -8,6 +8,7 @@
  */
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import RelatedCards from "../../components/RelatedCards.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import DownPaymentPlanner from "../../components/calculators/DownPaymentPlanner.astro";
 import { getCollection } from "astro:content";
 import manifests from "../../data/calculator-manifests.json";
@@ -42,22 +43,42 @@ const webApp = {
   jsonLdExtra={webApp}
   breadcrumbs={[{ name: "Tools", slug: "/calculators/" }, { name: "Down Payment Planner", slug: SLUG }]}
 >
-  <div class="wrap">
-    <nav aria-label="Breadcrumb" class="page-meta" style="margin-top:1.5rem">
-      <a href="/">Home</a> › <a href="/calculators/">Tools</a> › Down Payment Planner
-    </nav>
-    <h1>First Home Savings Planner</h1>
-    <p class="lede" style="max-width:44rem;color:var(--ink-soft)">
-      See when a down payment plan reaches its target, or how much a month it takes to buy by a date.
-      The planner adds up the full cash stack (down payment plus closing costs), shows how the FHSA,
-      the Home Buyers' Plan, and a TFSA can fund it, and compares minimum down with 20% down.
-    </p>
-    <p class="page-meta">
-      Last reviewed: {m.last_reviewed} · 2026 tax year · Educational only: these are scenarios you choose, not advice.
-    </p>
+  <section class="page-hero planner-hero">
+    <div class="wrap">
+      <Breadcrumbs trail={[{ name: "Tools", slug: "/calculators/" }, { name: "Down Payment Planner", slug: SLUG }]} />
+      <div class="planner-tags">
+        <p class="eyebrow">Tools · First home</p>
+        {m.status !== "live" && <span class="chip chip-draft">Draft</span>}
+      </div>
+      <h1>First Home Savings Planner</h1>
+      <p class="lede">
+        See when a down payment plan reaches its target, or how much a month it takes to buy by a date.
+        The planner adds up the full cash stack (down payment plus closing costs), shows how the FHSA,
+        the Home Buyers' Plan, and a TFSA can fund it, and compares minimum down with 20% down.
+      </p>
+      <p class="page-meta planner-meta">
+        <span>Last reviewed: <time datetime={m.last_reviewed}>{m.last_reviewed}</time></span>
+        <span>2026 tax year</span>
+        <span>Educational only: these are scenarios you choose, not advice.</span>
+      </p>
+    </div>
+  </section>
 
+  <div class="wrap planner-body">
     <DownPaymentPlanner />
 
     <RelatedCards slugs={m.related} builtSlugs={builtSlugs} />
   </div>
 </BaseLayout>
+
+<style>
+  .planner-hero { padding-bottom: clamp(4.5rem, 9vw, 6.5rem); }
+  .planner-hero h1 { max-width: 16ch; font-size: clamp(2.4rem, 6vw, 4.2rem); line-height: 1; letter-spacing: -0.03em; }
+  .planner-hero .lede { max-width: 46rem; }
+  .planner-tags { display: flex; align-items: center; gap: 0.9rem; margin-bottom: 1rem; }
+  .planner-tags .eyebrow { margin: 0; }
+  .planner-meta { display: flex; flex-wrap: wrap; gap: 0.35rem 1.25rem; margin: 1.5rem 0 0; }
+  .planner-meta span + span::before { content: "·"; margin-right: 1.25rem; color: var(--gold-bright); }
+  @media (max-width: 40rem) { .planner-meta span + span::before { display: none; } .planner-meta { flex-direction: column; } }
+  .planner-body { position: relative; margin-top: clamp(-4rem, -6vw, -2.5rem); }
+</style>

@@ -267,40 +267,204 @@ const isAssumption = (s: string) => s === "assumption" || s === "needs_reverific
 </script>
 
 <style>
-  .dpp { display: grid; gap: 1.5rem; margin-top: 1.5rem; }
+  /* Visual treatment only: markup, inputs, and results HTML are unchanged.
+     The form reads as a numbered control panel; results read as a statement
+     whose panels (A to D) match the homepage's planner anatomy. */
+
+  .dpp { display: grid; gap: 1.5rem; }
   @media (min-width: 60rem) {
-    .dpp { grid-template-columns: minmax(18rem, 24rem) 1fr; align-items: start; }
-    .dpp-results { position: sticky; top: 5rem; }
+    .dpp { grid-template-columns: minmax(19rem, 25rem) 1fr; gap: 2rem; align-items: start; }
+    .dpp-results { position: sticky; top: calc(var(--header-h) + 1rem); }
   }
-  .dpp-form fieldset { border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem 1.1rem; margin: 0 0 1rem; background: #fff; }
-  .dpp-form fieldset.dpp-inline { border: 0; padding: 0; margin: 0.5rem 0; background: none; display: flex; gap: 1rem; flex-wrap: wrap; }
-  .dpp-form legend { font-family: var(--font-display); font-weight: 700; color: var(--pine-ink); padding: 0 0.3rem; }
-  .dpp-form label { display: block; font-size: 0.92rem; font-weight: 600; margin: 0.6rem 0; }
-  .dpp-form label[hidden] { display: none; }
+
+  /* ---------- control panel ---------- */
+  .dpp-form {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg);
+    padding: 0.5rem 1.35rem 1rem;
+    counter-reset: step;
+    accent-color: var(--pine-700);
+  }
+  .dpp-form > fieldset {
+    counter-increment: step;
+    border: 0;
+    border-top: 1px solid var(--line);
+    padding: 1.25rem 0 0.5rem;
+    margin: 0;
+    min-width: 0;
+  }
+  .dpp-form > fieldset:first-child { border-top: 0; }
+  .dpp-form > fieldset > legend {
+    display: flex; align-items: center; gap: 0.6rem;
+    float: left; width: 100%;
+    font-family: var(--font-display); font-optical-sizing: auto;
+    font-weight: 600; font-size: 1.12rem; color: var(--lake-900);
+    padding: 0; margin: 0 0 0.35rem;
+  }
+  .dpp-form > fieldset > legend::before {
+    content: counter(step);
+    flex: none;
+    width: 1.6rem; height: 1.6rem; border-radius: 50%;
+    display: grid; place-items: center;
+    font-family: var(--font-body); font-size: 0.78rem; font-weight: 700;
+    background: var(--lake-900); color: var(--gold-bright);
+  }
+  .dpp-form > fieldset > legend + * { clear: both; }
+  .dpp-form fieldset.dpp-inline {
+    border: 0; padding: 0; margin: 0.85rem 0; background: none;
+    display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;
+  }
+  .dpp-form fieldset.dpp-inline legend {
+    float: left; width: 100%;
+    font-size: 0.92rem; font-weight: 600; color: var(--ink); padding: 0; margin-bottom: 0.4rem;
+  }
+
+  .dpp-form label { display: block; font-size: 0.92rem; font-weight: 600; margin: 0.85rem 0; color: var(--ink); clear: both; }
+  /* !important: .dpp-check's display:flex !important must not override [hidden]. */
+  .dpp-form label[hidden] { display: none !important; }
   .dpp-form input[type="number"], .dpp-form input[type="month"], .dpp-form select {
-    display: block; width: 100%; margin-top: 0.25rem; padding: 0.6rem 0.7rem; font: inherit; font-weight: 400;
-    border: 1px solid #c9c5b8; border-radius: 8px; background: #fff; min-height: 2.75rem;
+    display: block; width: 100%; margin-top: 0.35rem; padding: 0.65rem 0.8rem;
+    font: inherit; font-weight: 500; font-size: 1rem; font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    border: 1px solid var(--line-strong); border-radius: 10px;
+    background: var(--paper);
+    min-height: 2.9rem;
+    transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
   }
-  .dpp-form small { display: block; font-weight: 400; color: var(--ink-soft); font-size: 0.8rem; margin-top: 0.25rem; }
-  .dpp-radio, .dpp-check { font-weight: 400 !important; display: flex !important; gap: 0.5rem; align-items: flex-start; }
-  .dpp-radio input, .dpp-check input { margin-top: 0.35rem; width: 1.1rem; height: 1.1rem; flex: none; }
-  .dpp-results :global(.dpp-headline) { font-size: 1.15rem; background: #eef4f3; border: 2px solid var(--pine); border-radius: var(--radius); padding: 1rem 1.25rem; }
-  .dpp-results :global(.dpp-card) { border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem 1.25rem; background: #fff; margin-bottom: 1rem; }
-  .dpp-results :global(h3) { margin-top: 0; }
-  .dpp-results :global(h4) { margin: 1.25rem 0 0.5rem; }
-  .dpp-results :global(.dpp-table) { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
-  .dpp-results :global(.dpp-table th), .dpp-results :global(.dpp-table td) { padding: 0.45rem 0.4rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
-  .dpp-results :global(.dpp-table td) { text-align: right; white-space: nowrap; }
-  .dpp-results :global(.dpp-table th[scope="row"]) { font-weight: 400; }
-  .dpp-results :global(.dpp-compare thead th) { text-align: right; font-family: var(--font-display); }
-  .dpp-results :global(.dpp-total th), .dpp-results :global(.dpp-total td) { font-weight: 700 !important; border-top: 2px solid var(--pine-ink); }
-  .dpp-results :global(.dpp-warn td), .dpp-results :global(.dpp-warn th) { color: var(--danger); font-weight: 700; }
-  .dpp-results :global(.dpp-note) { font-size: 0.85rem; color: var(--ink-soft); margin: 0.6rem 0 0; }
-  .dpp-results :global(.dpp-scroll) { overflow-x: auto; }
+  .dpp-form input:hover, .dpp-form select:hover { border-color: var(--pine-500); }
+  .dpp-form input[type="number"]:focus-visible, .dpp-form input[type="month"]:focus-visible, .dpp-form select:focus-visible {
+    outline: none;
+    background: var(--card);
+    border-color: var(--pine-700);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 55%, transparent);
+  }
+  .dpp-form small { display: block; font-weight: 400; color: var(--ink-soft); font-size: 0.8rem; line-height: 1.45; margin-top: 0.35rem; }
+
+  .dpp-radio, .dpp-check { font-weight: 450 !important; display: flex !important; gap: 0.6rem; align-items: flex-start; line-height: 1.45; }
+  .dpp-radio input, .dpp-check input { margin: 0.12rem 0 0; width: 1.15rem; height: 1.15rem; flex: none; }
+
+  /* "What do you want to know?" and "Down payment" read as segmented choices. */
+  .dpp-form > fieldset:first-child .dpp-radio,
+  .dpp-form .dpp-inline .dpp-radio {
+    margin: 0.4rem 0;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--paper);
+    cursor: pointer;
+    transition: border-color 0.15s, background-color 0.15s, box-shadow 0.15s;
+  }
+  .dpp-form .dpp-inline .dpp-radio { margin: 0; flex: 1 1 8rem; }
+  .dpp-form > fieldset:first-child .dpp-radio:hover,
+  .dpp-form .dpp-inline .dpp-radio:hover { border-color: var(--pine-500); }
+  .dpp-form > fieldset:first-child .dpp-radio:has(input:checked),
+  .dpp-form .dpp-inline .dpp-radio:has(input:checked) {
+    border-color: var(--pine-700);
+    background: var(--moss-100);
+    box-shadow: inset 0 0 0 1px var(--pine-700);
+    font-weight: 600 !important;
+    color: var(--lake-900);
+  }
+  .dpp-check { cursor: pointer; }
+
+  /* ---------- results statement ---------- */
+  .dpp-results { counter-reset: panel; font-variant-numeric: tabular-nums; }
+  .dpp-results :global(.dpp-headline) {
+    position: relative;
+    margin: 0 0 1.25rem;
+    padding: 1.6rem 1.75rem;
+    border-radius: 20px;
+    background: var(--grain), radial-gradient(130% 140% at 100% 0%, var(--pine-800), var(--lake-950) 70%);
+    color: var(--on-dark);
+    font-family: var(--font-display); font-optical-sizing: auto;
+    font-size: clamp(1.25rem, 2.3vw, 1.6rem); line-height: 1.35; letter-spacing: -0.01em;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+  .dpp-results :global(.dpp-headline)::after {
+    content: ""; position: absolute; right: -5rem; top: -5rem; width: 14rem; height: 14rem; border-radius: 50%;
+    background: repeating-radial-gradient(circle, transparent 0 18px, rgba(228, 185, 78, 0.12) 18px 19px);
+    pointer-events: none;
+  }
+  .dpp-results :global(.dpp-headline strong) { color: var(--gold-bright); font-weight: 650; white-space: nowrap; }
+
+  .dpp-results :global(.dpp-card) {
+    counter-increment: panel;
+    border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 1.35rem 1.5rem 1.25rem; background: var(--card);
+    margin-bottom: 1rem; box-shadow: var(--shadow-sm);
+  }
+  .dpp-results :global(h3) {
+    display: flex; align-items: center; gap: 0.65rem;
+    margin: 0 0 0.85rem; font-size: 1.3rem;
+  }
+  .dpp-results :global(h3)::before {
+    content: counter(panel, upper-alpha);
+    flex: none; width: 1.9rem; height: 1.9rem; border-radius: 50%;
+    display: grid; place-items: center;
+    font-size: 0.95rem; font-style: italic; font-weight: 600;
+    background: var(--gold-btn); color: var(--ink);
+  }
+  .dpp-results :global(h4) {
+    margin: 1.5rem 0 0.5rem; padding-top: 1rem; border-top: 1px dashed var(--line);
+    font-size: 1.05rem;
+  }
+  .dpp-results :global(.dpp-table) { width: 100%; border-collapse: collapse; font-size: 0.93rem; }
+  .dpp-results :global(.dpp-table th), .dpp-results :global(.dpp-table td) {
+    padding: 0.55rem 0.4rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top;
+  }
+  .dpp-results :global(.dpp-table td) { text-align: right; white-space: nowrap; font-weight: 550; color: var(--ink); }
+  .dpp-results :global(.dpp-table th[scope="row"]) { font-weight: 400; color: var(--ink-soft); }
+  .dpp-results :global(.dpp-compare thead th) {
+    text-align: right; font-family: var(--font-body); font-size: 0.74rem; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--lake-900);
+    border-bottom: 2px solid var(--lake-900); white-space: nowrap;
+  }
+  .dpp-results :global(.dpp-total th), .dpp-results :global(.dpp-total td) {
+    font-weight: 700 !important; color: var(--lake-900) !important;
+    border-top: 2px solid var(--lake-900); border-bottom: 0; padding-top: 0.75rem;
+  }
+  .dpp-results :global(.dpp-total td) {
+    font-family: var(--font-display); font-optical-sizing: auto; font-size: 1.3rem; font-weight: 650 !important; letter-spacing: -0.01em;
+  }
+  .dpp-results :global(.dpp-warn td), .dpp-results :global(.dpp-warn th) { color: var(--danger) !important; font-weight: 700; background: var(--red-wash); }
+  .dpp-results :global(.dpp-note) { font-size: 0.86rem; line-height: 1.55; color: var(--ink-soft); margin: 0.75rem 0 0; }
+  .dpp-results :global(.dpp-scroll) { overflow-x: auto; margin: 0 -0.25rem; padding: 0 0.25rem; }
+
   .dpp :global(.dpp-flag), .dpp-assumptions .dpp-flag, .dpp-sources .dpp-flag {
-    display: inline-block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
-    background: var(--gold-soft); color: var(--pine-ink); border-radius: 999px; padding: 0.05rem 0.5rem; margin-left: 0.3rem; white-space: nowrap;
+    display: inline-block; vertical-align: 0.1em;
+    font-family: var(--font-body); font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; line-height: 1.5;
+    background: var(--gold-wash); color: var(--gold-deep);
+    border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+    border-radius: 999px; padding: 0 0.5rem; margin-left: 0.35rem; white-space: nowrap;
   }
-  .dpp-assumptions, .dpp-sources { max-width: 50rem; }
-  .dpp-assumptions li, .dpp-sources li { margin-bottom: 0.5rem; font-size: 0.92rem; }
+
+  /* ---------- assumptions + sources ---------- */
+  .dpp-assumptions, .dpp-sources { max-width: 52rem; margin-top: 3.5rem; }
+  .dpp-assumptions h2, .dpp-sources h2 { position: relative; padding-top: 1.25rem; margin: 0 0 1rem; font-size: clamp(1.5rem, 3vw, 1.9rem); }
+  .dpp-assumptions h2::before, .dpp-sources h2::before {
+    content: ""; position: absolute; left: 0; top: 0; width: 2.5rem; height: 3px; border-radius: 3px; background: var(--gold);
+  }
+  .dpp-assumptions ul {
+    list-style: none; padding: 0; margin: 0 0 1rem;
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm);
+  }
+  .dpp-assumptions li {
+    position: relative; margin: 0; padding: 0.9rem 1.25rem 0.9rem 2.75rem;
+    font-size: 0.93rem; line-height: 1.6; border-top: 1px solid var(--line);
+  }
+  .dpp-assumptions li:first-child { border-top: 0; }
+  .dpp-assumptions li::before {
+    content: ""; position: absolute; left: 1.2rem; top: 1.45rem;
+    width: 0.5rem; height: 0.5rem; border-radius: 50%; border: 2px solid var(--gold);
+  }
+  .dpp-assumptions strong { color: var(--lake-900); }
+  .dpp-sources ul { list-style: none; padding: 0; margin: 0; }
+  .dpp-sources li {
+    margin: 0; padding: 0.65rem 0; border-top: 1px solid var(--line);
+    font-size: 0.9rem; color: var(--ink-soft); overflow-wrap: anywhere;
+  }
+  .dpp-sources li:last-child { border-bottom: 1px solid var(--line); }
 </style>

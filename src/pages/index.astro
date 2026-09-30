@@ -4,14 +4,22 @@
  * Everything on this page describes what is live in this build: Learn/Try/Do
  * cards list only built pages, and guided-path items that aren't built yet
  * collapse into a "Coming next" line (no dead links, no implied promises).
+ *
+ * The hero's worked example is computed at build time by the planner's own
+ * functions (src/lib/calculators/), using its default inputs, so the numbers
+ * shown always match what the planner itself shows on first load.
  */
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
 import { pageBySlug } from "../lib/site";
+import { plan, defaultInput } from "../lib/calculators/down-payment-planner";
+import { $, pct } from "../lib/calculators/down-payment-planner-render";
 
 const title = "LoonieLogic: Canadian Money, Explained in Plain English";
 const metaDescription =
   "Canadian money made simple: plain-English explainers and comparisons with real 2026 numbers, the math shown, and a clear pick at the end. No jargon.";
+
+const PLANNER = "/calculators/down-payment-planner";
 
 // Pages that actually exist in this build. Guided-path items and the
 // Learn/Try/Do cards link only to these.
@@ -33,6 +41,36 @@ function liveIn(prefix: string) {
 const liveExplainers = liveIn("/learn/");
 const liveCalculators = liveIn("/calculators/");
 const liveComparisons = liveIn("/compare/");
+
+// Teasers: every published explainer and comparison, newest review first.
+const readingMinutes = (body = "") => Math.max(1, Math.round(body.split(/\s+/).filter(Boolean).length / 220));
+const teasers = [
+  ...(await getCollection("explainers")).map((e) => ({ e, kind: "Explainer" })),
+  ...(await getCollection("comparisons")).map((e) => ({ e, kind: "Comparison" })),
+]
+  .map(({ e, kind }) => ({
+    kind,
+    slug: e.data.slug,
+    title: pageBySlug.get(e.data.slug)?.title ?? e.data.title,
+    dek: pageBySlug.get(e.data.slug)?.card_dek ?? e.data.meta_description,
+    reviewed: String(e.data.last_reviewed),
+    minutes: readingMinutes(e.body),
+  }))
+  .sort((a, b) => b.reviewed.localeCompare(a.reviewed));
+
+// Worked example for the hero, straight from the planner's defaults.
+const example = plan(defaultInput());
+const ex = example.chosen;
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const exSources = ex.sources.lines
+  .filter((l) => l.amount > 0.5)
+  .map((l) => ({
+    label: { fhsa: "FHSA", hbp: "Home Buyers' Plan", tfsa: "TFSA", taxable: "Savings", gift: "Gift" }[l.source] ?? l.source,
+    key: l.source,
+    amount: l.amount,
+    share: (l.amount / Math.max(1, ex.stack.cashTarget)) * 100,
+  }));
+const exReached = Number.isFinite(ex.months) && ex.months > 0;
 
 const paths: { heading: string; items: { label: string; slug: string }[] }[] = [
   {
@@ -61,166 +99,534 @@ const paths: { heading: string; items: { label: string; slug: string }[] }[] = [
     ],
   },
 ];
+// The planner page is built (in draft), so the home path may link it.
+builtSlugs.add(PLANNER);
 ---
 
 <BaseLayout title={title} metaDescription={metaDescription} slug="/" pageType="home">
-  <section class="hero">
-    <div class="wrap">
-      <h1>Canadian money, decoded.</h1>
-      <p class="lede">
-        Not American money translated. Not bank marketing. Just plain-English
-        explainers and comparisons that tell you which one to pick, with the
-        math shown.
-      </p>
-      <div class="btn-row">
-        <a class="btn btn-gold" href="/compare/tfsa-vs-rrsp">Settle TFSA vs RRSP →</a>
-        <a class="btn btn-outline" href="/learn/">Browse the explainers →</a>
+  <!-- ============================== HERO ============================== -->
+  <section class="home-hero section-dark" aria-labelledby="hero-h">
+    <div class="ripples" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow rise">Canadian money, decoded</p>
+        <h1 id="hero-h" class="rise rise-1">From first paycheque to <em>first&nbsp;home</em>.</h1>
+        <p class="lede rise rise-2">
+          Plain-English explainers with real 2026 numbers and the math shown. Start with
+          the First Home Savings Planner: see how an FHSA, the Home Buyers' Plan, and a
+          TFSA can stack up to a down payment, and when.
+        </p>
+        <div class="btn-row rise rise-3">
+          <a class="btn btn-gold" href={PLANNER}>Plan your first home <span class="arrow" aria-hidden="true">→</span></a>
+          <a class="hero-alt" href="/learn/">or browse the explainers</a>
+        </div>
+        <p class="trust rise rise-4">
+          <em>
+            Educational content only, not financial advice. We may earn a
+            commission from some links, and we always disclose it before you click.
+          </em>
+        </p>
       </div>
-      <p class="trust">
-        <em>
-          Educational content only, not financial advice. We may earn a
-          commission from some links, and we always disclose it before you click.
-        </em>
-      </p>
+
+      <figure class="ledger rise rise-2" aria-labelledby="ledger-cap">
+        <div class="ledger-head">
+          <span class="chip chip-badge">Worked example</span>
+          <span class="ledger-where">{$(example.input.price)} home · Ontario</span>
+        </div>
+        <dl class="ledger-rows">
+          <div><dt>Down payment ({pct(ex.stack.downPct, 1)})</dt><dd>{$(ex.stack.downPayment)}</dd></div>
+          <div><dt>Closing costs, itemized</dt><dd>{$(ex.stack.closingTotal)}</dd></div>
+          <div class="ledger-total"><dt>Cash needed at closing</dt><dd>{$(ex.stack.cashTarget)}</dd></div>
+        </dl>
+        {exSources.length > 0 && (
+          <div class="stack">
+            <p class="stack-label">Where it comes from</p>
+            <div class="stack-bar" aria-hidden="true">
+              {exSources.map((s) => <span class={`seg seg-${s.key}`} style={`width:${s.share.toFixed(2)}%`}></span>)}
+            </div>
+            <ul class="stack-legend">
+              {exSources.map((s) => <li><span class={`sw seg-${s.key}`} aria-hidden="true"></span>{s.label} <strong>{$(s.amount)}</strong></li>)}
+            </ul>
+          </div>
+        )}
+        {exReached && (
+          <p class="ledger-when">
+            Saving {$(example.input.monthly)} a month: about <strong>{ex.monthsWhole} months</strong>
+            {" "}(around {MONTHS[ex.purchaseMonth]} {ex.purchaseYear}).
+          </p>
+        )}
+        <figcaption id="ledger-cap">
+          The planner's default scenario, computed with its 2026 figures. Illustrative, not advice: your numbers will differ.
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="wrap">
+      <ul class="trust-strip" aria-label="How we work">
+        <li><strong>Sourced</strong> against CRA, canada.ca, and provincial pages</li>
+        <li><strong>Dated</strong> with the day every figure was checked</li>
+        <li><strong>Honest:</strong> education, never personal advice</li>
+      </ul>
     </div>
   </section>
 
-  <section class="wrap">
-    <div class="card-grid">
-      <article class="card">
-        <h3><a href="/learn/">Learn</a></h3>
-        <p class="dek">
-          Plain-English explainers on the accounts and rules Canadians 18 to 40
-          actually need, with real 2026 numbers and the mistakes that cost money.
-        </p>
-        {liveExplainers.length > 0 && (
-          <p class="meta">
-            <strong>Live now:</strong>{" "}
-            {liveExplainers.map((p, i) => (
-              <>{i > 0 && ", "}<a href={p.slug}>{p.title}</a></>
-            ))}
+  <!-- ========================= HOW IT WORKS ========================== -->
+  <section class="section" aria-labelledby="how-h">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">How LoonieLogic works</p>
+        <h2 id="how-h">Learn the rules. Try the math. Then decide.</h2>
+      </div>
+      <ol class="steps">
+        <li class="step">
+          <span class="step-num" aria-hidden="true">01</span>
+          <h3><a href="/learn/">Learn</a></h3>
+          <p class="dek">
+            Plain-English explainers on the accounts and rules Canadians 18 to 40
+            actually need, with real 2026 numbers and the mistakes that cost money.
           </p>
-        )}
-        <p><a href="/learn/">Read the explainers →</a></p>
-      </article>
-      <article class="card">
-        <h3><a href="/calculators/">Try</a></h3>
-        {liveCalculators.length > 0 ? (
-          <>
-            <p class="dek">Calculators that do real Canadian math, with the assumptions shown.</p>
-            <p class="meta">
-              <strong>Live now:</strong>{" "}
-              {liveCalculators.map((p, i) => (
-                <>{i > 0 && ", "}<a href={p.slug}>{p.title}</a></>
-              ))}
+          {liveExplainers.length > 0 && (
+            <p class="step-live">
+              <span>Live now</span>
+              {liveExplainers.map((p) => <a href={p.slug}>{p.title}</a>)}
             </p>
-            <p><a href="/calculators/">Try the tools →</a></p>
-          </>
-        ) : (
-          <>
-            <p class="dek">
-              Calculators are in progress and none are live yet. Until they
-              launch, the TFSA vs RRSP comparison works through the math by hand.
-            </p>
-            <p><a href="/calculators/">See what's coming →</a></p>
-          </>
-        )}
-      </article>
-      <article class="card">
-        <h3><a href="/compare/">Do</a></h3>
-        <p class="dek">
-          Comparisons where we actually recommend. Verdict first, math second,
-          edge cases third.
-        </p>
-        {liveComparisons.length > 0 && (
-          <p class="meta">
-            <strong>Live now:</strong>{" "}
-            {liveComparisons.map((p, i) => (
-              <>{i > 0 && ", "}<a href={p.slug}>{p.title}</a></>
-            ))}
-          </p>
-        )}
-        <p><a href="/compare/">See the comparisons →</a></p>
-      </article>
-    </div>
-  </section>
-
-  <section class="wrap prose">
-    <h2>What makes this site different</h2>
-    <p>
-      Most Canadian finance sites describe your options and leave you to guess.
-      We don't. <strong>We're the site that says which one to pick and why, with
-      the math shown.</strong>
-    </p>
-    <ol>
-      <li>
-        <strong>Verdicts, not vibes.</strong> Every comparison ends with a
-        recommendation for specific situations. If a topic genuinely has no
-        winner, we say exactly when each side wins.
-      </li>
-      <li>
-        <strong>Sourced numbers.</strong> Every factual claim about limits,
-        dates, tax rules, and payouts is verified against official pages (CRA,
-        canada.ca, provincial sources) and stamped with a verification date.
-        Anything we can't verify is flagged, not buried.
-      </li>
-      <li>
-        <strong>Canadian in the bones.</strong> Every dollar is CAD. Every rule
-        is CRA, BoC, or OSFI. The provinces are in the math, not a footnote.
-      </li>
-    </ol>
-  </section>
-
-  <section class="wrap">
-    <h2>Start here</h2>
-    <div class="card-grid">
-      {paths.map((group) => {
-        const live = group.items.filter((item) => link(item.slug));
-        const upcoming = group.items.filter((item) => !link(item.slug));
-        return (
-          <article class="card">
-            <h3>“{group.heading}”</h3>
-            {live.length > 0 && (
-              <ol>
-                {live.map((item) => <li><a href={item.slug}>{item.label}</a></li>)}
-              </ol>
-            )}
-            {upcoming.length > 0 && (
-              <p class="meta">
-                <strong>Coming next:</strong> {upcoming.map((item) => item.label).join("; ")}.
+          )}
+          <a class="link-arrow" href="/learn/">Read the explainers <span class="arrow" aria-hidden="true">→</span></a>
+        </li>
+        <li class="step">
+          <span class="step-num" aria-hidden="true">02</span>
+          <h3><a href="/calculators/">Try</a></h3>
+          {liveCalculators.length > 0 ? (
+            <>
+              <p class="dek">Calculators that do real Canadian math, with the assumptions shown.</p>
+              <p class="step-live">
+                <span>Live now</span>
+                {liveCalculators.map((p) => <a href={p.slug}>{p.title}</a>)}
               </p>
-            )}
-          </article>
-        );
-      })}
+              <a class="link-arrow" href="/calculators/">Try the tools <span class="arrow" aria-hidden="true">→</span></a>
+            </>
+          ) : (
+            <>
+              <p class="dek">
+                Calculators that do real Canadian math, with every assumption
+                flagged. The First Home Savings Planner is open in draft; the rest
+                are in progress.
+              </p>
+              <p class="step-live">
+                <span>In draft</span>
+                <a href={PLANNER}>First Home Savings Planner</a>
+              </p>
+              <a class="link-arrow" href="/calculators/">See what's coming <span class="arrow" aria-hidden="true">→</span></a>
+            </>
+          )}
+        </li>
+        <li class="step">
+          <span class="step-num" aria-hidden="true">03</span>
+          <h3><a href="/compare/">Do</a></h3>
+          <p class="dek">
+            Comparisons where we actually recommend. Verdict first, math second,
+            edge cases third.
+          </p>
+          {liveComparisons.length > 0 && (
+            <p class="step-live">
+              <span>Live now</span>
+              {liveComparisons.map((p) => <a href={p.slug}>{p.title}</a>)}
+            </p>
+          )}
+          <a class="link-arrow" href="/compare/">See the comparisons <span class="arrow" aria-hidden="true">→</span></a>
+        </li>
+      </ol>
     </div>
   </section>
 
-  <section class="wrap prose">
-    <h2>How this site makes money</h2>
-    <p>
-      Running LoonieLogic costs money, and honest revenue keeps it free. Some
-      links, mostly on the comparison pages, are affiliate links: if you open
-      an account through one, the provider may pay us a commission at no extra
-      cost to you.
-    </p>
-    <p>What that does NOT change:</p>
-    <ul>
-      <li>
-        Our recommendations come from the math, not from which provider pays.
-      </li>
-      <li>
-        We never recommend a specific investment product ("buy this ETF").
-        Rules and tools, not picks.
-      </li>
-      <li>
-        We never publish an unverified rate or promo end date. It's flagged or
-        left out.
-      </li>
-    </ul>
-    <p>
-      Full wording and our editorial policy live on the <a href="/about">About
-      page</a> and the <a href="/affiliate-disclosure">affiliate disclosure page</a>.
-    </p>
+  <!-- ========================= PLANNER FEATURE ========================= -->
+  <section class="section section-tint feature" aria-labelledby="planner-h">
+    <div class="wrap feature-grid">
+      <div class="feature-copy">
+        <p class="eyebrow">The flagship tool</p>
+        <h2 id="planner-h">The First Home Savings Planner</h2>
+        <p class="lede">
+          See when a down payment plan reaches its target, or how much a month it
+          takes to buy by a date.
+        </p>
+        <p>
+          The planner adds up the full cash stack (down payment plus closing costs),
+          shows how the FHSA, the Home Buyers' Plan, and a TFSA can fund it, and
+          compares minimum down with 20% down. Every assumption is flagged, every
+          figure is sourced and dated, and it never tells you which option to pick.
+        </p>
+        <div class="btn-row">
+          <a class="btn btn-ink" href={PLANNER}>Open the planner <span class="arrow" aria-hidden="true">→</span></a>
+          <span class="chip chip-draft">Draft: still in review</span>
+        </div>
+      </div>
+      <ol class="anatomy" aria-label="What the planner shows">
+        <li>
+          <span class="n" aria-hidden="true">A</span>
+          <div><h3>Your cash stack</h3><p>Down payment, land transfer tax, rebates, and fees, itemized to one closing number.</p></div>
+        </li>
+        <li>
+          <span class="n" aria-hidden="true">B</span>
+          <div><h3>Where the money comes from</h3><p>FHSA, the Home Buyers' Plan, TFSA, savings, and gifts, in one sequence you can compare.</p></div>
+        </li>
+        <li>
+          <span class="n" aria-hidden="true">C</span>
+          <div><h3>The 20%-down tradeoff</h3><p>Minimum down and 20% down side by side: time to save, insurance premium, and payment.</p></div>
+        </li>
+        <li>
+          <span class="n" aria-hidden="true">D</span>
+          <div><h3>After you buy: the budget shock</h3><p>The monthly cost of owning, compared with rent, plus Home Buyers' Plan repayments.</p></div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- =========================== READ FIRST ============================ -->
+  {teasers.length > 0 && (
+    <section class="section" aria-labelledby="read-h">
+      <div class="wrap">
+        <div class="section-head split">
+          <div>
+            <p class="eyebrow">Read first</p>
+            <h2 id="read-h">Published, sourced, and dated</h2>
+          </div>
+          <a class="link-arrow" href="/learn/">All explainers <span class="arrow" aria-hidden="true">→</span></a>
+        </div>
+        <div class="teasers">
+          {teasers.map((t, i) => (
+            <article class:list={["card", "is-linked", "teaser", { "teaser-lead": i === 0 }]}>
+              <p class="card-eyebrow">{t.kind}</p>
+              <h3><a href={t.slug}>{t.title}</a></h3>
+              <p class="dek">{t.dek}</p>
+              <div class="card-foot">
+                <span>Reviewed <time datetime={t.reviewed}>{t.reviewed}</time> · {t.minutes} min read</span>
+                <span class="go" aria-hidden="true">Read →</span>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- =========================== START HERE ============================ -->
+  <section class="section section-tint" aria-labelledby="start-h">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Start here</p>
+        <h2 id="start-h">Pick the sentence that sounds like you</h2>
+      </div>
+      <div class="paths">
+        {paths.map((group) => {
+          const live = group.items.filter((item) => link(item.slug));
+          const upcoming = group.items.filter((item) => !link(item.slug));
+          return (
+            <article class="path">
+              <h3>“{group.heading}”</h3>
+              {live.length > 0 && (
+                <ol>
+                  {live.map((item) => <li><a href={item.slug}>{item.label}</a></li>)}
+                </ol>
+              )}
+              {upcoming.length > 0 && (
+                <p class="coming-line">
+                  <strong>Coming next:</strong> {upcoming.map((item) => item.label).join("; ")}.
+                </p>
+              )}
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================= DIFFERENT / TRUST ======================= -->
+  <section class="section section-dark principles" aria-labelledby="diff-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="diff-h" class="eyebrow">What makes this site different</h2>
+        <p class="pull">
+          Most Canadian finance sites describe your options and leave you to guess.
+          We don't. <strong>We're the site that says which one to pick and why, with
+          the math shown.</strong>
+        </p>
+      </div>
+      <ol class="principle-list">
+        <li>
+          <h3>Verdicts, not vibes.</h3>
+          <p>
+            Every comparison ends with a recommendation for specific situations. If
+            a topic genuinely has no winner, we say exactly when each side wins.
+          </p>
+        </li>
+        <li>
+          <h3>Sourced numbers.</h3>
+          <p>
+            Every factual claim about limits, dates, tax rules, and payouts is
+            verified against official pages (CRA, canada.ca, provincial sources)
+            and stamped with a verification date. Anything we can't verify is
+            flagged, not buried.
+          </p>
+        </li>
+        <li>
+          <h3>Canadian in the bones.</h3>
+          <p>
+            Every dollar is CAD. Every rule is CRA, BoC, or OSFI. The provinces are
+            in the math, not a footnote.
+          </p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- =========================== MONEY =============================== -->
+  <section class="section" aria-labelledby="money-h">
+    <div class="wrap money">
+      <div>
+        <p class="eyebrow">Straight talk</p>
+        <h2 id="money-h">How this site makes money</h2>
+        <p>
+          Running LoonieLogic costs money, and honest revenue keeps it free. Some
+          links, mostly on the comparison pages, are affiliate links: if you open
+          an account through one, the provider may pay us a commission at no extra
+          cost to you.
+        </p>
+        <p>
+          Full wording and our editorial policy live on the <a href="/about">About
+          page</a> and the <a href="/affiliate-disclosure">affiliate disclosure page</a>.
+        </p>
+      </div>
+      <div class="not-change">
+        <p class="not-change-title">What that does NOT change:</p>
+        <ul>
+          <li>Our recommendations come from the math, not from which provider pays.</li>
+          <li>We never recommend a specific investment product ("buy this ETF"). Rules and tools, not picks.</li>
+          <li>We never publish an unverified rate or promo end date. It's flagged or left out.</li>
+        </ul>
+      </div>
+    </div>
   </section>
 </BaseLayout>
+
+<style>
+  /* ---------- hero ---------- */
+  .home-hero {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(3rem, 8vw, 6rem) 0 2.5rem;
+  }
+  .hero-grid {
+    position: relative;
+    display: grid;
+    gap: 3rem;
+    align-items: center;
+  }
+  @media (min-width: 62rem) {
+    .hero-grid { grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.85fr); gap: 4rem; }
+  }
+  .home-hero h1 {
+    font-size: clamp(2.8rem, 7.4vw, 5.4rem);
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    max-width: 13ch;
+  }
+  .home-hero h1 em {
+    font-style: italic;
+    font-weight: 450;
+    color: var(--gold-bright);
+  }
+  .home-hero .lede { font-size: clamp(1.15rem, 2vw, 1.35rem); max-width: 36rem; }
+  .hero-alt { font-weight: 600; }
+  .home-hero .trust { font-size: 0.88rem; color: var(--on-dark-soft); margin: 1.75rem 0 0; max-width: 34rem; }
+
+  /* expanding rings, like water after a loon dives */
+  .ripples { position: absolute; right: -10%; top: 50%; width: 60rem; height: 60rem; transform: translateY(-50%); pointer-events: none; }
+  .ripples span {
+    position: absolute; inset: 0; margin: auto; border-radius: 50%;
+    border: 1px solid rgba(228, 185, 78, 0.14);
+    width: 30%; height: 30%;
+  }
+  .ripples span:nth-child(2) { width: 55%; height: 55%; border-color: rgba(228, 185, 78, 0.09); }
+  .ripples span:nth-child(3) { width: 82%; height: 82%; border-color: rgba(228, 185, 78, 0.05); }
+  @media (prefers-reduced-motion: no-preference) {
+    .ripples span { animation: ripple 9s ease-in-out infinite; }
+    .ripples span:nth-child(2) { animation-delay: -3s; }
+    .ripples span:nth-child(3) { animation-delay: -6s; }
+    @keyframes ripple { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+  }
+
+  /* worked-example ledger card */
+  .ledger {
+    margin: 0;
+    background: var(--card);
+    color: var(--ink);
+    border-radius: 18px;
+    padding: 1.5rem 1.5rem 1.25rem;
+    box-shadow: var(--shadow-lg), 0 0 0 1px rgba(255, 255, 255, 0.06);
+    transform: rotate(-1.2deg);
+    transition: transform 0.5s var(--ease);
+    font-variant-numeric: tabular-nums;
+    max-width: 30rem;
+    width: 100%;
+    justify-self: center;
+  }
+  .ledger:hover { transform: rotate(0); }
+  .ledger-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .ledger-where { font-size: 0.85rem; color: var(--ink-soft); font-weight: 600; }
+  .ledger-rows { margin: 0; }
+  .ledger-rows > div {
+    display: flex; justify-content: space-between; gap: 1rem;
+    padding: 0.6rem 0; border-bottom: 1px dashed var(--line);
+    font-size: 0.95rem;
+  }
+  .ledger-rows dt { color: var(--ink-soft); }
+  .ledger-rows dd { margin: 0; font-weight: 600; }
+  .ledger-rows .ledger-total { border-bottom: 0; padding-top: 0.9rem; align-items: baseline; }
+  .ledger-total dt { color: var(--lake-900); font-weight: 650; }
+  .ledger-total dd {
+    font-family: var(--font-display); font-optical-sizing: auto;
+    font-size: clamp(2rem, 4vw, 2.6rem); font-weight: 600; letter-spacing: -0.03em; color: var(--lake-900);
+    line-height: 1;
+  }
+  .stack { margin-top: 1rem; }
+  .stack-label { font-size: 0.72rem; font-weight: 650; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold-deep); margin: 0 0 0.5rem; }
+  .stack-bar { display: flex; height: 0.85rem; border-radius: 999px; overflow: hidden; background: var(--paper-2); gap: 2px; }
+  .seg { display: block; height: 100%; }
+  .seg-fhsa { background: var(--pine-700); }
+  .seg-hbp { background: var(--pine-500); }
+  .seg-tfsa { background: var(--gold); }
+  .seg-taxable { background: var(--line-strong); }
+  .seg-gift { background: var(--red); }
+  .stack-legend { list-style: none; padding: 0; margin: 0.7rem 0 0; display: flex; flex-wrap: wrap; gap: 0.35rem 1.25rem; font-size: 0.86rem; color: var(--ink-soft); }
+  .stack-legend strong { color: var(--ink); margin-left: 0.2rem; }
+  .sw { display: inline-block; width: 0.65rem; height: 0.65rem; border-radius: 3px; margin-right: 0.4rem; vertical-align: -0.05rem; }
+  .ledger-when { margin: 1rem 0 0; padding: 0.75rem 0.9rem; background: var(--moss-100); border-radius: 10px; font-size: 0.92rem; color: var(--lake-900); }
+  .ledger figcaption { font-size: 0.78rem; color: var(--ink-soft); margin-top: 0.9rem; line-height: 1.45; }
+
+  .trust-strip {
+    list-style: none; padding: 1.5rem 0 0; margin: clamp(2.5rem, 6vw, 4rem) 0 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    display: grid; gap: 0.75rem 2rem;
+    font-size: 0.92rem; color: var(--on-dark-soft);
+  }
+  @media (min-width: 48rem) { .trust-strip { grid-template-columns: repeat(3, 1fr); } }
+  .trust-strip li { display: flex; gap: 0.6rem; align-items: baseline; }
+  .trust-strip li::before { content: "✓"; color: var(--gold-bright); font-weight: 700; }
+  .trust-strip strong { color: var(--on-dark); font-weight: 650; }
+
+  /* ---------- steps ---------- */
+  .steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 1.25rem; counter-reset: none; }
+  @media (min-width: 56rem) { .steps { grid-template-columns: repeat(3, 1fr); gap: 0; } }
+  .step {
+    position: relative;
+    padding: 2rem 1.75rem 1.75rem;
+    background: var(--card);
+    border: 1px solid var(--line);
+    display: flex; flex-direction: column;
+  }
+  @media (max-width: 55.99rem) { .step { border-radius: var(--radius); } }
+  @media (min-width: 56rem) {
+    .step:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+    .step:last-child { border-radius: 0 var(--radius) var(--radius) 0; }
+    .step + .step { border-left: 0; }
+    .step:not(:last-child)::after {
+      content: "→"; position: absolute; right: -0.95rem; top: 2.3rem; z-index: 1;
+      width: 1.9rem; height: 1.9rem; border-radius: 50%; display: grid; place-items: center;
+      background: var(--gold-btn); color: var(--ink); font-weight: 700; font-size: 0.9rem;
+    }
+  }
+  .step-num {
+    font-family: var(--font-display); font-optical-sizing: auto; font-weight: 400; font-style: italic;
+    font-size: 3.4rem; line-height: 1; color: var(--gold-deep); letter-spacing: -0.04em;
+  }
+  .step h3 { font-size: 1.8rem; margin: 0.5rem 0 0.6rem; }
+  .step h3 a { color: var(--lake-900); text-decoration: none; }
+  .step h3 a:hover { text-decoration: underline; text-decoration-color: var(--gold); }
+  .step .dek { color: var(--ink-soft); flex: 1; }
+  .step-live { display: flex; flex-wrap: wrap; gap: 0.35rem 0.75rem; align-items: baseline; font-size: 0.88rem; margin: 0 0 1.25rem; }
+  .step-live span { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--pine-700); background: var(--moss-100); padding: 0.1rem 0.5rem; border-radius: 999px; }
+
+  /* ---------- planner feature ---------- */
+  .feature-grid { display: grid; gap: 3rem; align-items: center; }
+  @media (min-width: 60rem) { .feature-grid { grid-template-columns: 1fr 1fr; gap: 4.5rem; } }
+  .feature-copy h2 { margin-top: 0; font-size: clamp(2rem, 4vw, 2.8rem); }
+  .feature-copy .lede { margin-bottom: 1.25rem; color: var(--lake-900); }
+  .feature-copy > p:not(.lede):not(.eyebrow) { color: var(--ink-soft); }
+  .anatomy {
+    list-style: none; padding: 1.25rem; margin: 0;
+    background: var(--grain), var(--lake-900);
+    border-radius: 20px; box-shadow: var(--shadow-lg);
+    display: grid; gap: 0.6rem;
+  }
+  .anatomy li {
+    display: flex; gap: 1rem; align-items: flex-start;
+    padding: 1rem 1.1rem; border-radius: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: background-color 0.25s, transform 0.3s var(--ease);
+  }
+  .anatomy li:hover { background: rgba(255, 255, 255, 0.07); transform: translateX(4px); }
+  .anatomy .n {
+    flex: none; width: 2.2rem; height: 2.2rem; border-radius: 50%; display: grid; place-items: center;
+    font-family: var(--font-display); font-weight: 600; font-style: italic;
+    background: var(--gold-btn); color: var(--ink);
+  }
+  .anatomy h3 { color: var(--on-dark); font-size: 1.12rem; margin: 0.15rem 0 0.25rem; }
+  .anatomy p { color: var(--on-dark-soft); font-size: 0.92rem; margin: 0; }
+
+  /* ---------- teasers ---------- */
+  .section-head.split { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 1rem 2rem; max-width: none; }
+  .teasers { display: grid; gap: 1.25rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr)); }
+  .teaser h3 { font-size: 1.45rem; }
+  @media (min-width: 56rem) {
+    .teasers:has(.teaser:nth-child(2)) { grid-template-columns: 1.35fr 1fr; }
+    .teaser-lead { padding: 2.25rem; }
+    .teaser-lead h3 { font-size: clamp(1.7rem, 2.6vw, 2.1rem); }
+  }
+
+  /* ---------- paths ---------- */
+  .paths { display: grid; gap: 1.25rem; }
+  @media (min-width: 56rem) { .paths { grid-template-columns: repeat(3, 1fr); } }
+  .path { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.6rem; }
+  .path h3 { font-style: italic; font-weight: 500; font-size: 1.35rem; margin: 0 0 1rem; color: var(--lake-900); }
+  .path ol { margin: 0; padding-left: 1.3rem; }
+  .path li { margin-bottom: 0.4rem; }
+  .path li::marker { color: var(--gold-deep); font-weight: 700; }
+
+  /* ---------- principles ---------- */
+  .principles .section-head { max-width: 58rem; }
+  .pull {
+    font-family: var(--font-display); font-optical-sizing: auto;
+    font-size: clamp(1.6rem, 3.6vw, 2.5rem) !important; line-height: 1.2; letter-spacing: -0.02em;
+    color: var(--on-dark) !important; font-weight: 400; margin: 0;
+  }
+  .pull strong { color: var(--gold-bright); font-weight: 550; }
+  .principle-list { list-style: none; counter-reset: p; padding: 0; margin: 3rem 0 0; display: grid; gap: 2rem; }
+  @media (min-width: 56rem) { .principle-list { grid-template-columns: repeat(3, 1fr); gap: 2.5rem; } }
+  .principle-list li { counter-increment: p; padding-top: 1.25rem; border-top: 1px solid rgba(255, 255, 255, 0.15); }
+  .principle-list li::before {
+    content: counter(p, decimal-leading-zero);
+    font-family: var(--font-display); font-style: italic; color: var(--gold-bright); font-size: 1.1rem;
+  }
+  .principle-list h3 { font-size: 1.35rem; margin: 0.4rem 0 0.5rem; }
+  .principle-list p { color: var(--on-dark-soft); font-size: 0.97rem; margin: 0; }
+
+  /* ---------- money ---------- */
+  .money { display: grid; gap: 2.5rem; align-items: start; }
+  @media (min-width: 56rem) { .money { grid-template-columns: 1.1fr 1fr; gap: 4rem; } }
+  .money h2 { margin-top: 0; }
+  .not-change {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 1.75rem; box-shadow: var(--shadow-md);
+  }
+  .not-change-title { font-family: var(--font-display); font-size: 1.3rem; font-weight: 600; color: var(--lake-900); }
+  .not-change ul { list-style: none; padding: 0; margin: 0; }
+  .not-change li { position: relative; padding: 0.75rem 0 0.75rem 2rem; border-top: 1px solid var(--line); }
+  .not-change li::before {
+    content: "✓"; position: absolute; left: 0; top: 0.75rem;
+    width: 1.35rem; height: 1.35rem; border-radius: 50%; display: grid; place-items: center;
+    background: var(--moss-100); color: var(--pine-700); font-size: 0.8rem; font-weight: 700;
+  }
+</style>

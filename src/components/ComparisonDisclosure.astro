@@ -14,7 +14,7 @@ interface Props {
 const { hasLiveLinks } = Astro.props;
 ---
 
-<div class="disclosure-bar" role="note">
+<div class:list={["disclosure-bar", { "is-clean": !hasLiveLinks }]} role="note">
   {hasLiveLinks ? (
     <p>
       <strong>Heads up:</strong> some links on this page are affiliate links.

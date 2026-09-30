@@ -19,24 +19,30 @@ const cards = slugs
   .filter((p): p is NonNullable<typeof p> => Boolean(p));
 const live = cards.filter((p) => builtSlugs.has(p.slug));
 const upcoming = cards.filter((p) => !builtSlugs.has(p.slug));
+
+const kindOf = (slug: string) =>
+  slug.startsWith("/learn/") ? "Explainer" : slug.startsWith("/compare/") ? "Comparison" : slug.startsWith("/calculators/") ? "Tool" : "Page";
 ---
 
 {
   cards.length > 0 && (
     <section class="related-cards" aria-label={heading}>
+      <p class="eyebrow">Next up</p>
       <h2>{heading}</h2>
       {live.length > 0 && (
         <div class="card-grid">
           {live.map((p) => (
-            <article class="card">
+            <article class="card is-linked">
+              <p class="card-eyebrow">{kindOf(p.slug)}</p>
               <h3><a href={p.slug}>{p.title}</a></h3>
               <p class="dek">{p.card_dek ?? p.meta_description}</p>
+              <div class="card-foot"><span class="go" aria-hidden="true">Read →</span></div>
             </article>
           ))}
         </div>
       )}
       {upcoming.length > 0 && (
-        <p class="page-meta">
+        <p class="coming-line">
           <strong>Coming next:</strong> {upcoming.map((p) => p.title).join("; ")}.
         </p>
       )}

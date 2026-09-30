@@ -1,0 +1,94 @@
+---
+/**
+ * ArticleShell: the long-form reading layout shared by /learn/*, /compare/*,
+ * and the root legal pages. One H1 from the title, the "Last reviewed" stamp
+ * (must match schema dateModified), an "On this page" contents list built
+ * from the MDX h2s (sticky rail on wide screens, <details> on narrow ones;
+ * no JS), and an optional sources/dates/no-advice footer.
+ *
+ * Slots: `lead` renders above the body (disclosures, CTAs); default is the
+ * article body; `after` renders below the body inside the reading column.
+ */
+import Breadcrumbs from "./Breadcrumbs.astro";
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  lastReviewed: string;
+  reviewCadence: string;
+  trail: { name: string; slug: string }[];
+  headings?: { depth: number; slug: string; text: string }[];
+  body?: string;
+  honestyFoot?: boolean;
+  /** "compare" turns on the head-to-head table treatment. */
+  variant?: "explainer" | "compare" | "legal";
+}
+
+const {
+  eyebrow, title, lastReviewed, reviewCadence, trail,
+  headings = [], body = "", honestyFoot = true, variant = "explainer",
+} = Astro.props;
+
+const toc = headings.filter((h) => h.depth === 2);
+const words = body.split(/\s+/).filter(Boolean).length;
+const minutes = Math.max(1, Math.round(words / 220));
+const hasSources = toc.some((h) => h.slug === "sources");
+---
+
+<div class="wrap">
+  <header class="article-head">
+    <Breadcrumbs trail={trail} />
+    <p class="eyebrow">{eyebrow}</p>
+    <h1>{title}</h1>
+    <p class="meta-row page-meta">
+      <span class="stamp">Last reviewed: <time datetime={lastReviewed}>{lastReviewed}</time></span>
+      <span>{reviewCadence} review</span>
+      {words > 0 && <span>{minutes} min read</span>}
+    </p>
+  </header>
+
+  <div class="article-layout">
+    <article class:list={["prose", `prose-${variant}`]}>
+      {toc.length > 2 && (
+        <details class="toc-mobile">
+          <summary>On this page</summary>
+          <ul class="toc-list">
+            {toc.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}
+          </ul>
+        </details>
+      )}
+      <slot name="lead" />
+      <slot />
+      <slot name="after" />
+      {honestyFoot && (
+        <aside class="article-foot" aria-label="How this page is made">
+          <p>
+            <strong>Sourced</strong>
+            {hasSources ? <>Figures are checked against the sources <a href="#sources">listed above</a>, with the date of each check.</> : <>Figures are checked against their sources, with the date of each check.</>}
+          </p>
+          <p>
+            <strong>Dated</strong>
+            Last reviewed <time datetime={lastReviewed}>{lastReviewed}</time>. Rules and limits change, so check the current year before acting.
+          </p>
+          <p>
+            <strong>Education, not advice</strong>
+            General information only, not a substitute for a licensed professional.
+          </p>
+        </aside>
+      )}
+    </article>
+
+    {toc.length > 2 && (
+      <aside class="toc-rail">
+        <nav aria-label="On this page">
+          <p class="toc-title">On this page</p>
+          <ul class="toc-list">
+            {toc.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}
+          </ul>
+        </nav>
+      </aside>
+    )}
+  </div>
+
+  <slot name="below" />
+</div>
