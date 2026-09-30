@@ -156,6 +156,9 @@ export const comparisonSchema = pageManifestBase.extend({
     message: "comparisons must set affiliate_disclosure: true",
   }),
   quiz_spec: z.string().min(1, "comparisons ship a decision quiz"),
+  // One-line verdict printed on the page's share card (src/lib/og.ts).
+  // Optional: without it the card uses the meta description.
+  og_verdict: z.string().min(20).max(120).optional(),
 });
 
 /** Calculators: manifests live in src/data/calculator-manifests.json (one per

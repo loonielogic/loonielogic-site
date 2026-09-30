@@ -5,8 +5,9 @@
  * per hidden_files/seo-technical-spec.md §1.
  */
 import "../styles/global.css";
-import { canonicalUrl, SITE_URL, DEFAULT_OG_IMAGE } from "../lib/site";
+import { canonicalUrl, SITE_URL, DEFAULT_OG_IMAGE, WEBFONT_CSS } from "../lib/site";
 import { loonMarkSvg, loonFaviconHref } from "../lib/loon-mark";
+import { ogImageFor, OG_WIDTH, OG_HEIGHT } from "../lib/og";
 
 interface Crumb {
   name: string;
@@ -21,7 +22,7 @@ interface Props {
   dateModified?: string;
   jsonLdExtra?: Record<string, unknown>;
   noindex?: boolean;
-  /** Absolute URL; defaults to the loon avatar. */
+  /** Absolute URL override; defaults to the page's share card, then the loon avatar. */
   ogImage?: string;
   /** Trail below Home, ending with the current page. Emits BreadcrumbList. */
   breadcrumbs?: Crumb[];
@@ -37,7 +38,7 @@ const {
   dateModified,
   jsonLdExtra,
   noindex = false,
-  ogImage = DEFAULT_OG_IMAGE,
+  ogImage,
   breadcrumbs,
   readingProgress = false,
 } = Astro.props;
@@ -56,6 +57,12 @@ function current(href: string): "page" | "true" | undefined {
 const year = new Date().getFullYear();
 
 const canonical = canonicalUrl(slug);
+
+// Share image: an explicit override, else the page's 1200x630 card
+// (src/lib/og.ts, rendered by `npm run og`), else the square loon avatar.
+const card = ogImage ? undefined : ogImageFor(slug);
+const shareImage = ogImage ?? (card ? `${SITE_URL}${card.image}` : DEFAULT_OG_IMAGE);
+const shareAlt = card?.alt ?? "LoonieLogic logo: a gold common loon in a coin-style ring";
 const ogType = ["explainer", "comparison"].includes(pageType) ? "article" : "website";
 const today = new Date().toISOString().slice(0, 10);
 const modified = dateModified ?? today;
@@ -146,20 +153,22 @@ const graph = {
     <meta property="og:title" content={title} />
     <meta property="og:description" content={metaDescription} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={ogImage} />
-    <meta property="og:image:alt" content="LoonieLogic logo: a gold common loon in a coin-style ring" />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content={shareImage} />
+    {card && <meta property="og:image:width" content={String(OG_WIDTH)} />}
+    {card && <meta property="og:image:height" content={String(OG_HEIGHT)} />}
+    <meta property="og:image:alt" content={shareAlt} />
+    <meta name="twitter:card" content={card ? "summary_large_image" : "summary"} />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={metaDescription} />
-    <meta name="twitter:image" content={ogImage} />
-    <meta name="twitter:image:alt" content="LoonieLogic logo: a gold common loon in a coin-style ring" />
+    <meta name="twitter:image" content={shareImage} />
+    <meta name="twitter:image:alt" content={shareAlt} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=Instrument+Sans:wght@400..700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="icon" type="image/svg+xml" href={loonFaviconHref} />
+    <link href={WEBFONT_CSS} rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" sizes="any" href={loonFaviconHref} />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <meta name="theme-color" content="#0b1f1c" />
     <script type="application/ld+json" set:html={JSON.stringify(graph)} />
   </head>

@@ -32,6 +32,11 @@ export const SITE_URL = "https://loonielogic-site.pages.dev";
 // Default share image (the loon avatar) for og:image / twitter:image.
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/loonielogic-og.png`;
 
+// The site webfont stack (Fraunces + Instrument Sans). BaseLayout links it;
+// the share-card renderer loads the same sheet so cards match the pages.
+export const WEBFONT_CSS =
+  "https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=Instrument+Sans:wght@400..700&display=swap";
+
 export function canonicalUrl(slug: string): string {
   return `${SITE_URL}${slug === "/" ? "" : slug}`;
 }
