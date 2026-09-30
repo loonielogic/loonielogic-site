@@ -1,0 +1,638 @@
+---
+/**
+ * TfsaRoomChecker: the TFSA Over-Contribution Risk Checker island. Plain
+ * Astro markup plus one TypeScript <script> (no framework). With JS off, all
+ * six questions show as one form and the results area shows the worked
+ * example, rendered at build time. With JS on, the questions run one per
+ * screen and the results render from the user's answers with the same
+ * functions.
+ */
+import {
+  ANNUAL_LIMIT,
+  CURRENT_YEAR,
+  CUMULATIVE_MAX,
+  EXCESS_TAX_RATE,
+  FIRST_TFSA_YEAR,
+  FORMAL_TRANSFER,
+  RC243_DEADLINE,
+  check,
+  josieExample,
+  tfsaFigures,
+} from "../../lib/calculators/tfsa-room-checker";
+import { renderResults, sourceTag, longDate, pct, $, RESTORE_DATE, MY_ACCOUNT_URL } from "../../lib/calculators/tfsa-room-checker-render";
+
+interface Props {
+  /** Target for "fixing an over-contribution" links. */
+  fixGuideHref: string;
+}
+const { fixGuideHref } = Astro.props;
+
+const asOf = longDate(new Date().toISOString().slice(0, 10));
+const initialHtml = renderResults(check(josieExample()), { fixGuideHref, asOf, example: true });
+const years = Array.from({ length: CURRENT_YEAR - FIRST_TFSA_YEAR + 1 }, (_, k) => FIRST_TFSA_YEAR + k);
+const sources = [...tfsaFigures.values()];
+const src = (key: string) => sourceTag(key);
+const TOTAL = 6;
+---
+
+<div class="trc" id="trc" data-fix-href={fixGuideHref}>
+  <form class="trc-form" id="trc-form" novalidate>
+    <ol class="trc-progress" id="trc-progress" hidden aria-label="Questions">
+      {["Birth year", "Residency", "Years away", "Deposits", "Past withdrawals", `${CURRENT_YEAR} withdrawals`].map((t, k) => (
+        <li><button type="button" data-goto={k + 1} disabled={k > 0}><span class="trc-num">{k + 1}</span><span class="trc-step-name">{t}</span></button></li>
+      ))}
+    </ol>
+
+    <fieldset class="trc-step" data-step="1">
+      <legend>What year were you born?</legend>
+      <label>Birth year
+        <input type="number" name="birthYear" inputmode="numeric" min="1900" max={CURRENT_YEAR} step="1" placeholder="e.g. 1990" />
+      </label>
+      <p class="trc-derived" data-derived="age18" aria-live="polite"></p>
+      <p class="trc-error" data-error-for="birthYear" hidden></p>
+      <small>TFSA room starts the year you turn 18, with the full limit for that year even if your birthday is late in the year. You also need to be a Canadian resident with a valid SIN <Fragment set:html={src("tfsa.eligibility")} />.</small>
+    </fieldset>
+
+    <fieldset class="trc-step" data-step="2">
+      <legend>Did you become a Canadian tax resident after turning 18?</legend>
+      <label class="trc-radio"><input type="radio" name="residentLater" value="no" checked /> No, I was a resident when I turned 18 (or since 2009)</label>
+      <label class="trc-radio"><input type="radio" name="residentLater" value="yes" /> Yes, I became a resident later</label>
+      <label data-show="residency" hidden>Year you became a Canadian tax resident
+        <input type="number" name="residencyYear" inputmode="numeric" min="1900" max={CURRENT_YEAR} step="1" placeholder={`e.g. ${CURRENT_YEAR - 2}`} />
+      </label>
+      <p class="trc-error" data-error-for="residencyYear" hidden></p>
+      <small>Newcomers start building room the year they become a Canadian resident, not from 2009 <Fragment set:html={src("tfsa.eligibility")} />. Room starts in whichever is later: the year you turn 18 or the year you became a resident.</small>
+    </fieldset>
+
+    <fieldset class="trc-step" data-step="3">
+      <legend>Any full years as a non-resident since then?</legend>
+      <p class="trc-help">Tick each calendar year you were a non-resident of Canada for the <strong>whole</strong> year. No room builds for those years, so the checker takes out that year's limit. Leave them all blank if none.</p>
+      <div class="trc-years-grid">
+        {years.map((y) => (
+          <label class="trc-check" data-year={y}><input type="checkbox" name="nonResidentYears" value={y} /> {y}</label>
+        ))}
+      </div>
+      <p class="trc-error" data-error-for="nonResidentYears" hidden></p>
+    </fieldset>
+
+    <fieldset class="trc-step" data-step="4">
+      <legend>How much have you deposited into TFSAs, ever?</legend>
+      <label>Total lifetime contributions ($)
+        <input type="number" name="lifetimeContributions" inputmode="numeric" min="0" step="100" placeholder="0" />
+      </label>
+      <p class="trc-error" data-error-for="lifetimeContributions" hidden></p>
+      <p class="trc-warning" data-warning-for="lifetimeContributions" hidden></p>
+      <small><strong>Contributions means every dollar you ever deposited, even if you later withdrew it.</strong> Include all banks and brokerages, all years. Do not include direct institution-to-institution transfers; they don't affect room <Fragment set:html={src("tfsa.formal_transfer")} />. Enter Canadian dollars; deposits made in another currency count at that day's exchange rate.</small>
+      <label class="trc-check"><input type="checkbox" name="bestGuess" /> I'm not sure of my totals. Use my best guess.</label>
+      <p class="trc-help" data-show="guess" hidden>CRA My Account has the official record of your TFSA deposits and withdrawals, but it can be months behind: banks report last year's transactions by the end of February. Enter your best estimate here and the result will be labelled a guess.</p>
+    </fieldset>
+
+    <fieldset class="trc-step" data-step="5">
+      <legend>How much did you withdraw before {CURRENT_YEAR}?</legend>
+      <label>Total withdrawals up to December 31, {CURRENT_YEAR - 1} ($)
+        <input type="number" name="priorWithdrawals" inputmode="numeric" min="0" step="100" placeholder="0" />
+      </label>
+      <p class="trc-error" data-error-for="priorWithdrawals" hidden></p>
+      <p class="trc-warning" data-warning-for="priorWithdrawals" hidden></p>
+      <small>All TFSAs, all years before {CURRENT_YEAR}. These came back as room on January 1 after each withdrawal, including any growth. Leave out direct transfers between institutions.</small>
+    </fieldset>
+
+    <fieldset class="trc-step" data-step="6">
+      <legend>Have you withdrawn anything in {CURRENT_YEAR}?</legend>
+      <label>Withdrawals so far in {CURRENT_YEAR} ($)
+        <input type="number" name="thisYearWithdrawals" inputmode="numeric" min="0" step="100" placeholder="0" />
+      </label>
+      <p class="trc-error" data-error-for="thisYearWithdrawals" hidden></p>
+      <p class="trc-warning" data-warning-for="thisYearWithdrawals" hidden></p>
+      <small>These are not room yet. They come back on {RESTORE_DATE} <Fragment set:html={src("tfsa.withdrawal_restore")} />.</small>
+      <label>Optional: a deposit you're thinking about making this year ($)
+        <input type="number" name="plannedDeposit" inputmode="numeric" min="0" step="100" placeholder="Leave blank to skip" />
+      </label>
+      <p class="trc-error" data-error-for="plannedDeposit" hidden></p>
+      <p class="trc-warning" data-warning-for="plannedDeposit" hidden></p>
+      <small>Including money you took out earlier this year and want to put back.</small>
+    </fieldset>
+
+    <div class="trc-nav" id="trc-nav" hidden>
+      <p class="trc-count" id="trc-count" aria-live="polite">Question 1 of {TOTAL}</p>
+      <div class="trc-buttons">
+        <button type="button" class="trc-back" id="trc-back">Back</button>
+        <button type="button" class="trc-next" id="trc-next">Next</button>
+      </div>
+    </div>
+    <noscript><p class="trc-help">Turn on JavaScript to check your own numbers. The worked example shows how the math works.</p></noscript>
+  </form>
+
+  <div class="trc-results" id="trc-results" aria-live="polite" tabindex="-1" set:html={initialHtml} />
+</div>
+
+<section class="trc-assumptions" aria-labelledby="trc-h-assumptions">
+  <h2 id="trc-h-assumptions">Assumptions behind this estimate</h2>
+  <ul>
+    <li><strong>Your lifetime totals are taken as entered <span class="trc-flag">estimate</span>.</strong> The result is only as accurate as those totals. It is never CRA's figure; CRA My Account has the official number, and it can lag by months <Fragment set:html={src("tfsa.my_account_lag")} />.</li>
+    <li><strong>Room builds a full year's limit for each year you were 18 or older and a resident.</strong> The {CURRENT_YEAR} limit is {$(ANNUAL_LIMIT)}; someone eligible since {FIRST_TFSA_YEAR} who never contributed has {$(CUMULATIVE_MAX)} <Fragment set:html={src("tfsa.cumulative_max.2026")} />. Year-by-year limits: <Fragment set:html={src("tfsa.bands.history")} />.</li>
+    <li><strong>Withdrawals come back on January 1 of the next year, never the same year</strong> <Fragment set:html={src("tfsa.withdrawal_restore")} />. The {CURRENT_YEAR + 1} annual limit is not announced yet and is left out.</li>
+    <li><strong>Over-contributions are taxed at {pct(EXCESS_TAX_RATE)} a month</strong> on the highest excess in each month <Fragment set:html={src("tfsa.excess_tax")} />, reported on Form RC243 by {longDate(RC243_DEADLINE)} <Fragment set:html={src("tfsa.rc243_deadline")} />.</li>
+    <li><strong>Only whole years as a non-resident remove room.</strong> Deposits made while a non-resident being taxed at {pct(EXCESS_TAX_RATE)} a month comes from a secondary source <span class="trc-flag">re-verify</span>.</li>
+    <li><strong>Transfers are left out.</strong> {FORMAL_TRANSFER} <Fragment set:html={src("tfsa.formal_transfer")} />.</li>
+    <li><strong>Canadian dollars only.</strong> Deposits made in another currency count at that day's exchange rate for CRA purposes; this version does not convert them.</li>
+    <li><strong>Not covered here:</strong> successor holders and inherited TFSAs follow different rules (see <a href="https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/tax-free-savings-account.html" rel="noopener">CRA's TFSA pages</a>). The checker does not connect to CRA and never asks for a CRA login, and it does not model investment returns.</li>
+  </ul>
+  <p class="page-meta">
+    This checker is education, not advice. It shows an estimate from your answers and does not tell you what to do. For your official room, see <a href={MY_ACCOUNT_URL} rel="noopener">CRA My Account</a>.
+  </p>
+</section>
+
+<section class="trc-sources" aria-labelledby="trc-h-sources-list">
+  <h2 id="trc-h-sources-list">Sources and dates</h2>
+  <p class="page-meta">Figures from CRA pages on canada.ca, checked 2026-09-29; {CURRENT_YEAR} tax year.</p>
+  <ul>
+    {sources.map((s) => (
+      <li>
+        {s.label}: {s.source.startsWith("http") ? <a href={s.source} rel="noopener">{new URL(s.source).hostname}</a> : <span>{s.source}</span>}, verified {s.verified_date}
+        {s.expires && <> (refresh due {s.expires})</>}
+      </li>
+    ))}
+  </ul>
+</section>
+
+<script>
+  import { CURRENT_YEAR, check, validate, eligibilityStart, type CheckerInput, type Field } from "../../lib/calculators/tfsa-room-checker";
+  import { renderResults, longDate } from "../../lib/calculators/tfsa-room-checker-render";
+  import { track } from "../../lib/analytics";
+
+  const CALC = "tfsa_room_checker";
+  const TOTAL = 6;
+  const STEP_FIELDS: Record<number, Field[]> = {
+    1: ["birthYear"],
+    2: ["residencyYear"],
+    3: ["nonResidentYears"],
+    4: ["lifetimeContributions"],
+    5: ["priorWithdrawals"],
+    6: ["thisYearWithdrawals", "plannedDeposit"],
+  };
+
+  const root = document.getElementById("trc");
+  const form = document.getElementById("trc-form") as HTMLFormElement | null;
+  const out = document.getElementById("trc-results");
+  const nav = document.getElementById("trc-nav");
+  const progress = document.getElementById("trc-progress");
+  const count = document.getElementById("trc-count");
+  const back = document.getElementById("trc-back") as HTMLButtonElement | null;
+  const next = document.getElementById("trc-next") as HTMLButtonElement | null;
+  const fixGuideHref = root?.dataset.fixHref ?? "/learn/tfsa";
+
+  let current = 1;
+  let reached = 1;
+  let done = false;
+  let started = false;
+  let resultViewed = false;
+  const firedOnce = new Set<string>();
+
+  function num(fd: FormData, name: string): number | null {
+    const raw = String(fd.get(name) ?? "").trim();
+    if (raw === "") return null;
+    const v = Number(raw);
+    return Number.isFinite(v) ? v : NaN;
+  }
+
+  function read(f: HTMLFormElement): CheckerInput {
+    const fd = new FormData(f);
+    const residentLater = fd.get("residentLater") === "yes";
+    return {
+      birthYear: num(fd, "birthYear"),
+      residentLater,
+      residencyYear: residentLater ? num(fd, "residencyYear") : null,
+      nonResidentYears: fd.getAll("nonResidentYears").map(Number),
+      lifetimeContributions: num(fd, "lifetimeContributions"),
+      priorWithdrawals: num(fd, "priorWithdrawals"),
+      thisYearWithdrawals: num(fd, "thisYearWithdrawals"),
+      plannedDeposit: num(fd, "plannedDeposit"),
+      bestGuess: fd.get("bestGuess") === "on",
+    };
+  }
+
+  function validBirth(i: CheckerInput): boolean {
+    return i.birthYear !== null && Number.isInteger(i.birthYear) && i.birthYear >= 1900 && i.birthYear + 18 <= CURRENT_YEAR;
+  }
+
+  /** Show derived facts and hide questions that don't apply. */
+  function sync(f: HTMLFormElement, i: CheckerInput) {
+    const derived = f.querySelector<HTMLElement>('[data-derived="age18"]');
+    if (derived) {
+      const y = i.birthYear !== null && Number.isInteger(i.birthYear) ? i.birthYear + 18 : null;
+      derived.textContent =
+        y === null || i.birthYear! < 1900 ? "" : y <= CURRENT_YEAR ? `You turn${y < CURRENT_YEAR ? "ed" : ""} 18 in ${y}.` : `You turn 18 in ${y}.`;
+    }
+    f.querySelectorAll<HTMLElement>("[data-show]").forEach((el) => {
+      el.hidden = el.dataset.show === "residency" ? !i.residentLater : el.dataset.show === "guess" ? !i.bestGuess : el.hidden;
+    });
+    const start = validBirth(i) ? eligibilityStart(i.birthYear!, i.residencyYear) : null;
+    f.querySelectorAll<HTMLElement>("[data-year]").forEach((el) => {
+      el.hidden = start !== null && Number(el.dataset.year) < start;
+    });
+  }
+
+  function showMessages(f: HTMLFormElement, i: CheckerInput, fields: Field[]): boolean {
+    const v = validate(i);
+    let ok = true;
+    for (const field of fields) {
+      const err = f.querySelector<HTMLElement>(`[data-error-for="${field}"]`);
+      const warn = f.querySelector<HTMLElement>(`[data-warning-for="${field}"]`);
+      const e = v.errors[field];
+      if (err) { err.textContent = e ?? ""; err.hidden = !e; }
+      if (warn) { const w = v.warnings[field]; warn.textContent = w ?? ""; warn.hidden = !w; }
+      if (e) ok = false;
+    }
+    return ok;
+  }
+
+  function allValid(i: CheckerInput): boolean {
+    return Object.keys(validate(i).errors).length === 0;
+  }
+
+  function show(step: number) {
+    if (!form) return;
+    current = step;
+    reached = Math.max(reached, step);
+    form.querySelectorAll<HTMLElement>(".trc-step").forEach((el) => {
+      el.classList.toggle("is-current", Number(el.dataset.step) === step);
+    });
+    progress?.querySelectorAll<HTMLButtonElement>("[data-goto]").forEach((b) => {
+      const n = Number(b.dataset.goto);
+      b.disabled = n > reached && !done;
+      if (n === step) b.setAttribute("aria-current", "step");
+      else b.removeAttribute("aria-current");
+    });
+    if (count) count.textContent = `Question ${step} of ${TOTAL}`;
+    if (back) back.hidden = step === 1;
+    if (next) next.textContent = step === TOTAL ? (done ? "Update my result" : "See my result") : "Next";
+  }
+
+  function focusStep(step: number) {
+    form?.querySelector<HTMLElement>(`.trc-step[data-step="${step}"] input:not([type="hidden"])`)?.focus({ preventScroll: true });
+  }
+
+  function render(i: CheckerInput) {
+    if (!out) return;
+    const r = check(i);
+    out.innerHTML = renderResults(r, { fixGuideHref, asOf: longDate(localIsoDate()) });
+    if (!resultViewed) {
+      resultViewed = true;
+      track("calc_result_viewed", { calculator: CALC, outcome: r.outcome });
+    }
+  }
+
+  function localIsoDate(): string {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  }
+
+  function onNext() {
+    if (!form) return;
+    const i = read(form);
+    if (!showMessages(form, i, STEP_FIELDS[current])) {
+      focusStep(current);
+      return;
+    }
+    if (current < TOTAL) {
+      show(current + 1);
+      focusStep(current);
+      return;
+    }
+    // Last question: every earlier answer must still be valid.
+    for (let s = 1; s <= TOTAL; s++) {
+      if (!showMessages(form, i, STEP_FIELDS[s])) {
+        show(s);
+        focusStep(s);
+        return;
+      }
+    }
+    done = true;
+    show(current);
+    render(i);
+    out?.focus({ preventScroll: true });
+    out?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function onUserInput(e: Event) {
+    if (!started) {
+      started = true;
+      track("calc_started", { calculator: CALC });
+    }
+    const t = e.target;
+    if (!(t instanceof HTMLInputElement)) return;
+    if (t.name === "residentLater" && !firedOnce.has("residentLater")) {
+      firedOnce.add("residentLater");
+      // field rolled into the value token: 2-prop budget per event.
+      track("calc_input_set", { calculator: CALC, value: `resident_later_${t.value === "yes" ? "yes" : "no"}` });
+    } else if (t.name === "bestGuess" && t.checked && !firedOnce.has("bestGuess")) {
+      firedOnce.add("bestGuess");
+      track("calc_input_set", { calculator: CALC, value: "best_guess_on" });
+    }
+  }
+
+  /** Spec: ticking every eligible year zeroes the room, so confirm first. */
+  function confirmAllYears(f: HTMLFormElement, t: HTMLInputElement) {
+    if (t.name !== "nonResidentYears" || !t.checked) return;
+    const visible = [...f.querySelectorAll<HTMLElement>("[data-year]")].filter((el) => !el.hidden);
+    const allChecked = visible.length > 0 && visible.every((el) => el.querySelector("input")?.checked);
+    if (allChecked && !window.confirm("You've marked every year as a full year away from Canada. That means no TFSA room at all. Is that right?")) {
+      t.checked = false;
+    }
+  }
+
+  function onChange(e: Event) {
+    if (!form) return;
+    onUserInput(e);
+    if (e.type === "change" && e.target instanceof HTMLInputElement) confirmAllYears(form, e.target);
+    const i = read(form);
+    sync(form, i);
+    if (done) {
+      showMessages(form, i, STEP_FIELDS[current]);
+      if (allValid(i)) render(i);
+    }
+  }
+
+  if (root && form && nav && progress) {
+    root.classList.add("is-wizard");
+    nav.hidden = false;
+    progress.hidden = false;
+    form.addEventListener("input", onChange);
+    form.addEventListener("change", onChange);
+    form.addEventListener("submit", (e) => { e.preventDefault(); onNext(); });
+    form.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && e.target instanceof HTMLInputElement && e.target.type !== "checkbox" && e.target.type !== "radio") {
+        e.preventDefault();
+        onNext();
+      }
+    });
+    next?.addEventListener("click", onNext);
+    back?.addEventListener("click", () => { if (current > 1) { show(current - 1); focusStep(current); } });
+    progress.addEventListener("click", (e) => {
+      const b = (e.target as Element | null)?.closest<HTMLButtonElement>("[data-goto]");
+      if (b && !b.disabled) { show(Number(b.dataset.goto)); focusStep(current); }
+    });
+    sync(form, read(form));
+    show(1);
+  }
+</script>
+
+<style>
+  /* Same visual system as the First Home Savings Planner: a control panel on
+     the left, a results statement on the right. */
+
+  .trc { display: grid; gap: 1.5rem; }
+  @media (min-width: 60rem) {
+    .trc { grid-template-columns: minmax(19rem, 25rem) 1fr; gap: 2rem; align-items: start; }
+    .trc-results { position: sticky; top: calc(var(--header-h) + 1rem); }
+  }
+  .trc-results:focus { outline: none; }
+
+  /* ---------- control panel ---------- */
+  .trc-form {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg);
+    padding: 0.5rem 1.35rem 1rem;
+    counter-reset: step;
+    accent-color: var(--pine-700);
+  }
+  .trc-form > fieldset {
+    counter-increment: step;
+    border: 0;
+    border-top: 1px solid var(--line);
+    padding: 1.25rem 0 0.5rem;
+    margin: 0;
+    min-width: 0;
+  }
+  .trc-form > fieldset:first-of-type { border-top: 0; }
+  .trc-form > fieldset > legend {
+    display: flex; align-items: center; gap: 0.6rem;
+    float: left; width: 100%;
+    font-family: var(--font-display); font-optical-sizing: auto;
+    font-weight: 600; font-size: 1.12rem; color: var(--lake-900);
+    padding: 0; margin: 0 0 0.35rem;
+  }
+  .trc-form > fieldset > legend::before {
+    content: counter(step);
+    flex: none;
+    width: 1.6rem; height: 1.6rem; border-radius: 50%;
+    display: grid; place-items: center;
+    font-family: var(--font-body); font-size: 0.78rem; font-weight: 700;
+    background: var(--lake-900); color: var(--gold-bright);
+  }
+  .trc-form > fieldset > legend + * { clear: both; }
+
+  .trc-form label { display: block; font-size: 0.92rem; font-weight: 600; margin: 0.85rem 0; color: var(--ink); clear: both; }
+  .trc-form label[hidden], .trc-form [hidden] { display: none !important; }
+  .trc-form input[type="number"] {
+    display: block; width: 100%; margin-top: 0.35rem; padding: 0.65rem 0.8rem;
+    font: inherit; font-weight: 500; font-size: 1rem; font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    border: 1px solid var(--line-strong); border-radius: 10px;
+    background: var(--paper);
+    min-height: 2.9rem;
+    transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+  }
+  .trc-form input:hover { border-color: var(--pine-500); }
+  .trc-form input[type="number"]:focus-visible {
+    outline: none;
+    background: var(--card);
+    border-color: var(--pine-700);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 55%, transparent);
+  }
+  .trc-form small, .trc-help { display: block; font-weight: 400; color: var(--ink-soft); font-size: 0.8rem; line-height: 1.45; margin: 0.35rem 0 0; }
+  .trc-help { font-size: 0.86rem; margin: 0.5rem 0; }
+  .trc-derived { margin: 0.25rem 0; font-size: 0.9rem; font-weight: 600; color: var(--pine-700); }
+  .trc-derived:empty { display: none; }
+  .trc-error, .trc-warning { margin: 0.35rem 0; font-size: 0.86rem; font-weight: 600; }
+  .trc-error { color: var(--danger); }
+  .trc-warning { color: var(--gold-deep); }
+
+  .trc-radio, .trc-check { font-weight: 450 !important; display: flex !important; gap: 0.6rem; align-items: flex-start; line-height: 1.45; cursor: pointer; }
+  .trc-radio input, .trc-check input { margin: 0.12rem 0 0; width: 1.15rem; height: 1.15rem; flex: none; }
+  .trc-form .trc-radio {
+    margin: 0.4rem 0;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--paper);
+    transition: border-color 0.15s, background-color 0.15s, box-shadow 0.15s;
+  }
+  .trc-form .trc-radio:hover { border-color: var(--pine-500); }
+  .trc-form .trc-radio:has(input:checked) {
+    border-color: var(--pine-700);
+    background: var(--moss-100);
+    box-shadow: inset 0 0 0 1px var(--pine-700);
+    font-weight: 600 !important;
+    color: var(--lake-900);
+  }
+  .trc-years-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr)); gap: 0.25rem 0.75rem; margin: 0.5rem 0; }
+  .trc-years-grid .trc-check { margin: 0.3rem 0; font-variant-numeric: tabular-nums; }
+
+  /* ---------- wizard mode (JS on): one question per screen ---------- */
+  .trc.is-wizard .trc-step { display: none; }
+  .trc.is-wizard .trc-step.is-current { display: block; border-top: 0; }
+  .trc-progress {
+    list-style: none; display: flex; gap: 0.3rem; padding: 0.85rem 0 0.25rem; margin: 0;
+  }
+  .trc-progress li { flex: 1; }
+  .trc-progress button {
+    width: 100%; display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
+    padding: 0.2rem 0; border: 0; background: none; cursor: pointer;
+    font: inherit; font-size: 0.66rem; color: var(--ink-soft); line-height: 1.2;
+  }
+  .trc-progress button:disabled { cursor: default; opacity: 0.45; }
+  .trc-num {
+    width: 1.5rem; height: 1.5rem; border-radius: 50%; display: grid; place-items: center;
+    font-size: 0.75rem; font-weight: 700; border: 1px solid var(--line-strong); background: var(--paper); color: var(--ink);
+  }
+  .trc-progress button[aria-current="step"] .trc-num { background: var(--lake-900); color: var(--gold-bright); border-color: var(--lake-900); }
+  .trc-progress button[aria-current="step"] { color: var(--lake-900); font-weight: 700; }
+  @media (max-width: 30rem) { .trc-step-name { display: none; } }
+  .trc-nav { border-top: 1px solid var(--line); margin-top: 1rem; padding-top: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .trc-count { margin: 0; font-size: 0.85rem; color: var(--ink-soft); }
+  .trc-buttons { display: flex; gap: 0.5rem; }
+  .trc-buttons button {
+    font: inherit; font-weight: 650; font-size: 0.95rem; padding: 0.6rem 1.2rem; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--line-strong); background: var(--paper); color: var(--ink); min-height: 2.75rem;
+  }
+  .trc-buttons .trc-next { background: var(--gold-btn); border-color: transparent; color: var(--ink); }
+  .trc-buttons button:hover { border-color: var(--pine-500); }
+  .trc-buttons button:focus-visible, .trc-progress button:focus-visible { outline: 3px solid color-mix(in srgb, var(--gold) 70%, transparent); outline-offset: 2px; }
+  .trc-buttons button[hidden] { display: none; }
+
+  /* ---------- results statement ---------- */
+  .trc-results { counter-reset: panel; font-variant-numeric: tabular-nums; }
+  .trc-results :global(.trc-example) {
+    border: 1px dashed var(--line-strong); border-radius: var(--radius); padding: 1rem 1.25rem; margin: 0 0 1rem;
+    font-size: 0.92rem; line-height: 1.55; background: var(--paper);
+  }
+  .trc-results :global(.trc-example p) { margin: 0 0 0.5rem; }
+  .trc-results :global(.trc-example p:last-child) { margin: 0; color: var(--ink-soft); }
+  .trc-results :global(.trc-headline) {
+    position: relative;
+    margin: 0 0 1.25rem;
+    padding: 1.5rem 1.75rem;
+    border-radius: 20px;
+    background: var(--grain), radial-gradient(130% 140% at 100% 0%, var(--pine-800), var(--lake-950) 70%);
+    color: var(--on-dark);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+  .trc-results :global(.trc-headline)::after {
+    content: ""; position: absolute; right: -5rem; top: -5rem; width: 14rem; height: 14rem; border-radius: 50%;
+    background: repeating-radial-gradient(circle, transparent 0 18px, rgba(228, 185, 78, 0.12) 18px 19px);
+    pointer-events: none;
+  }
+  .trc-results :global(.trc-kicker) { margin: 0 0 0.5rem; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold-bright); }
+  .trc-results :global(.trc-lead) {
+    margin: 0 0 1rem; font-family: var(--font-display); font-optical-sizing: auto;
+    font-size: clamp(1.2rem, 2.2vw, 1.5rem); line-height: 1.35; letter-spacing: -0.01em;
+  }
+  .trc-results :global(.trc-lead strong) { color: var(--gold-bright); font-weight: 650; white-space: nowrap; }
+  .trc-results :global(.trc-stats) { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: 0.75rem; margin: 0 0 0.75rem; position: relative; z-index: 1; }
+  .trc-results :global(.trc-stat) { background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 14px; padding: 0.75rem 1rem; }
+  .trc-results :global(.trc-stat-label) { display: block; font-size: 0.8rem; opacity: 0.85; margin-bottom: 0.2rem; }
+  .trc-results :global(.trc-stat strong) { font-family: var(--font-display); font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 650; color: var(--gold-bright); letter-spacing: -0.01em; }
+  .trc-results :global(.trc-sub) { margin: 0; font-size: 0.85rem; opacity: 0.85; }
+  .trc-results :global(.trc-headline-over .trc-stat strong) { color: #ffb4a8; }
+
+  .trc-results :global(.trc-alert) {
+    border: 2px solid var(--danger); background: var(--red-wash); color: var(--ink);
+    border-radius: var(--radius); padding: 1rem 1.25rem; margin: 0 0 1rem; font-size: 1rem; line-height: 1.5;
+  }
+  .trc-results :global(.trc-alert p) { margin: 0 0 0.4rem; }
+  .trc-results :global(.trc-alert p:last-child) { margin: 0; font-size: 0.9rem; }
+  .trc-results :global(.trc-alert strong) { color: var(--danger); }
+
+  .trc-results :global(.trc-card) {
+    counter-increment: panel;
+    border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 1.35rem 1.5rem 1.25rem; background: var(--card);
+    margin-bottom: 1rem; box-shadow: var(--shadow-sm);
+  }
+  .trc-results :global(.trc-card-warn) { border-color: var(--danger); }
+  .trc-results :global(h3) {
+    display: flex; align-items: center; gap: 0.65rem;
+    margin: 0 0 0.85rem; font-size: 1.3rem;
+  }
+  .trc-results :global(h3)::before {
+    content: counter(panel, upper-alpha);
+    flex: none; width: 1.9rem; height: 1.9rem; border-radius: 50%;
+    display: grid; place-items: center;
+    font-size: 0.95rem; font-style: italic; font-weight: 600;
+    background: var(--gold-btn); color: var(--ink);
+  }
+  .trc-results :global(.trc-table) { width: 100%; border-collapse: collapse; font-size: 0.93rem; }
+  .trc-results :global(.trc-table th), .trc-results :global(.trc-table td) {
+    padding: 0.55rem 0.4rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top;
+  }
+  .trc-results :global(.trc-table td) { text-align: right; white-space: nowrap; font-weight: 550; color: var(--ink); }
+  .trc-results :global(.trc-table th[scope="row"]) { font-weight: 400; color: var(--ink-soft); }
+  .trc-results :global(.trc-total th), .trc-results :global(.trc-total td) {
+    font-weight: 700 !important; color: var(--lake-900) !important;
+    border-top: 2px solid var(--lake-900); border-bottom: 0; padding-top: 0.75rem;
+  }
+  .trc-results :global(.trc-total td) {
+    font-family: var(--font-display); font-optical-sizing: auto; font-size: 1.3rem; font-weight: 650 !important; letter-spacing: -0.01em;
+  }
+  .trc-results :global(.trc-warn td), .trc-results :global(.trc-warn th) { color: var(--danger) !important; font-weight: 700; background: var(--red-wash); }
+  .trc-results :global(.trc-note) { font-size: 0.86rem; line-height: 1.55; color: var(--ink-soft); margin: 0.75rem 0 0; }
+  .trc-results :global(.trc-years) { margin-top: 0.75rem; font-size: 0.88rem; }
+  .trc-results :global(.trc-years summary) { cursor: pointer; font-weight: 600; color: var(--lake-900); }
+  .trc-results :global(.trc-list) { margin: 0; padding-left: 1.1rem; font-size: 0.92rem; line-height: 1.55; }
+  .trc-results :global(.trc-list li) { margin: 0 0 0.5rem; }
+  .trc-results :global(.trc-stale) { margin: 0 0 0.75rem; font-size: 0.95rem; line-height: 1.55; }
+  .trc-results :global(.trc-stale strong) { color: var(--lake-900); font-weight: 600; }
+  .trc-results :global(.trc-links) { margin: 0; padding-left: 1.1rem; font-size: 0.92rem; line-height: 1.6; }
+  .trc-results :global(.trc-disclaimer) { font-size: 0.84rem; color: var(--ink-soft); margin: 0.5rem 0 0; font-style: italic; }
+
+  .trc :global(.trc-src) {
+    display: inline-block; vertical-align: 0.1em;
+    font-family: var(--font-body); font-size: 0.66rem; font-weight: 600; letter-spacing: 0.02em; line-height: 1.5;
+    color: var(--pine-700); text-decoration: none;
+    border: 1px solid var(--line-strong); border-radius: 999px; padding: 0 0.45rem; margin-left: 0.2rem; white-space: nowrap;
+  }
+  .trc :global(.trc-src:hover) { border-color: var(--pine-500); text-decoration: underline; }
+  .trc :global(.trc-flag), .trc-assumptions .trc-flag {
+    display: inline-block; vertical-align: 0.1em;
+    font-family: var(--font-body); font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; line-height: 1.5;
+    background: var(--gold-wash); color: var(--gold-deep);
+    border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+    border-radius: 999px; padding: 0 0.5rem; margin-left: 0.35rem; white-space: nowrap;
+  }
+  .trc-assumptions :global(.trc-src) {
+    display: inline-block; vertical-align: 0.1em; font-size: 0.66rem; font-weight: 600; color: var(--pine-700); text-decoration: none;
+    border: 1px solid var(--line-strong); border-radius: 999px; padding: 0 0.45rem; margin-left: 0.2rem; white-space: nowrap;
+  }
+
+  /* ---------- assumptions + sources ---------- */
+  .trc-assumptions, .trc-sources { max-width: 52rem; margin-top: 3.5rem; }
+  .trc-assumptions h2, .trc-sources h2 { position: relative; padding-top: 1.25rem; margin: 0 0 1rem; font-size: clamp(1.5rem, 3vw, 1.9rem); }
+  .trc-assumptions h2::before, .trc-sources h2::before {
+    content: ""; position: absolute; left: 0; top: 0; width: 2.5rem; height: 3px; border-radius: 3px; background: var(--gold);
+  }
+  .trc-assumptions ul {
+    list-style: none; padding: 0; margin: 0 0 1rem;
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm);
+  }
+  .trc-assumptions li {
+    position: relative; margin: 0; padding: 0.9rem 1.25rem 0.9rem 2.75rem;
+    font-size: 0.93rem; line-height: 1.6; border-top: 1px solid var(--line);
+  }
+  .trc-assumptions li:first-child { border-top: 0; }
+  .trc-assumptions li::before {
+    content: ""; position: absolute; left: 1.2rem; top: 1.45rem;
+    width: 0.5rem; height: 0.5rem; border-radius: 50%; border: 2px solid var(--gold);
+  }
+  .trc-assumptions strong { color: var(--lake-900); }
+  .trc-sources ul { list-style: none; padding: 0; margin: 0; }
+  .trc-sources li {
+    margin: 0; padding: 0.65rem 0; border-top: 1px solid var(--line);
+    font-size: 0.9rem; color: var(--ink-soft); overflow-wrap: anywhere;
+  }
+  .trc-sources li:last-child { border-bottom: 1px solid var(--line); }
+</style>

@@ -157,7 +157,7 @@
       "quiz_spec": "hidden_files/tfsa-vs-rrsp-quiz-spec.md",
       "related": [
         "/compare/tfsa-vs-rrsp",
-        "/calculators/tfsa-room",
+        "/calculators/tfsa-room-checker",
         "/calculators/rrsp-room"
       ],
       "review_cadence": "annual",
@@ -204,11 +204,35 @@
           "key": "tfsa.withdrawal_restore",
           "source": "canada.ca \u2014 TFSA withdrawal room restore",
           "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "tfsa.eligibility",
+          "source": "canada.ca: Before you contribute to a TFSA (eligibility, newcomer rule)",
+          "verified": "2026-09-29"
+        },
+        {
+          "expires": null,
+          "key": "tfsa.rc243_deadline",
+          "source": "canada.ca: If you owe tax on excess TFSA amounts (RC243 deadline)",
+          "verified": "2026-09-29"
+        },
+        {
+          "expires": null,
+          "key": "tfsa.my_account_lag",
+          "source": "canada.ca: Calculate your TFSA contribution room (My Account update lag)",
+          "verified": "2026-09-29"
+        },
+        {
+          "expires": null,
+          "key": "tfsa.formal_transfer",
+          "source": "canada.ca: TFSA direct transfers between institutions",
+          "verified": "2026-09-29"
         }
       ],
       "hub": "/calculators/",
       "last_reviewed": "2026-09-28",
-      "meta_description": "Enter your birth year, residency, and contributions to find your exact 2026 TFSA room. Handles withdrawals, over-contribution warnings, and the age-18 rule.",
+      "meta_description": "Can you still add to your TFSA this year without going over? Estimate your 2026 room, see what returns Jan 1, and catch the same-year withdrawal trap.",
       "newsletter_placement": "soft-link",
       "next_review_due": "2026-12-01",
       "page_type": "calculator",
@@ -221,9 +245,9 @@
       ],
       "review_cadence": "annual",
       "schema_primary": "WebApplication",
-      "slug": "/calculators/tfsa-room",
+      "slug": "/calculators/tfsa-room-checker",
       "status": "draft",
-      "title": "TFSA Contribution Room Tracker 2026: Find Your Limit",
+      "title": "TFSA Over-Contribution Risk Checker: Find Your Safe Limit",
       "wave": 2
     },
     {
@@ -681,7 +705,7 @@
       "related": [
         "/learn/cpp-oas",
         "/compare/tfsa-vs-rrsp",
-        "/calculators/tfsa-room"
+        "/calculators/tfsa-room-checker"
       ],
       "review_cadence": "annual",
       "schema_primary": "WebApplication",

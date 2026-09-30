@@ -102,7 +102,7 @@
       "page_type": "calculator",
       "related": [
         "/compare/tfsa-vs-rrsp",
-        "/calculators/tfsa-room",
+        "/calculators/tfsa-room-checker",
         "/calculators/rrsp-room"
       ],
       "review_cadence": "annual",
@@ -114,7 +114,7 @@
     {
       "cluster": "retirement",
       "hub": "/calculators/",
-      "meta_description": "Enter your birth year, residency years, and contributions to find your exact 2026 TFSA room. Handles withdrawals, over-contribution warnings, and the age-18 rule.",
+      "meta_description": "Can you still add to your TFSA this year without going over? Estimate your 2026 room, see what returns Jan 1, and catch the same-year withdrawal trap.",
       "page_type": "calculator",
       "related": [
         "/learn/tfsa",
@@ -122,9 +122,9 @@
         "/calculators/compound-growth"
       ],
       "review_cadence": "annual",
-      "slug": "/calculators/tfsa-room",
-      "card_dek": "Find your exact 2026 TFSA room from your birth year and history.",
-      "title": "TFSA Contribution Room Tracker 2026: Find Your Limit",
+      "slug": "/calculators/tfsa-room-checker",
+      "card_dek": "Check your 2026 TFSA room, and what comes back Jan 1, before you deposit.",
+      "title": "TFSA Over-Contribution Risk Checker: Find Your Safe Limit",
       "wave": 2
     },
     {
@@ -197,7 +197,7 @@
       "related": [
         "/learn/cpp-oas",
         "/compare/tfsa-vs-rrsp",
-        "/calculators/tfsa-room"
+        "/calculators/tfsa-room-checker"
       ],
       "review_cadence": "annual",
       "slug": "/calculators/compound-growth",
@@ -227,7 +227,7 @@
       "meta_description": "The plain-English TFSA guide: 2026 limit $7,000, how contribution room works, withdrawals, what you can hold, and the 1%-a-month over-contribution penalty.",
       "page_type": "explainer",
       "related": [
-        "/calculators/tfsa-room",
+        "/calculators/tfsa-room-checker",
         "/compare/tfsa-vs-rrsp",
         "/learn/tfsa-overcontribution-fix",
         "/learn/glossary"
@@ -327,7 +327,7 @@
       "page_type": "explainer",
       "related": [
         "/learn/tfsa",
-        "/calculators/tfsa-room",
+        "/calculators/tfsa-room-checker",
         "/learn/glossary"
       ],
       "review_cadence": "annual",

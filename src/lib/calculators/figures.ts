@@ -37,19 +37,26 @@ const FILES: Record<string, { entries: FigureEntry[] }> = {
   "tfsa-2026.json": tfsa as { entries: FigureEntry[] },
 };
 
-/** Keys read through figure(), in first-use order, for the sources footer. */
-export const usedFigures = new Map<string, FigureEntry & { file: string }>();
+export type FigureLog = Map<string, FigureEntry & { file: string }>;
 
-export function figureEntry(file: string, key: string): FigureEntry {
+/** Keys read through figure(), in first-use order, for the sources footer. */
+export const usedFigures: FigureLog = new Map();
+
+/**
+ * Look up a registry entry and record it in `log` (default: usedFigures).
+ * A calculator that renders its own sources footer passes its own log so
+ * its keys do not leak into another page's footer during a shared build.
+ */
+export function figureEntry(file: string, key: string, log: FigureLog = usedFigures): FigureEntry {
   const data = FILES[file];
   if (!data) throw new Error(`figure file ${file} is not registered in figures.ts`);
   const entry = data.entries.find((e) => e.key === key);
   if (!entry) throw new Error(`figure key "${key}" not found in ${file}`);
   if (entry.status === "rejected") throw new Error(`figure key "${key}" is REJECTED; do not use it`);
-  if (!usedFigures.has(key)) usedFigures.set(key, { ...entry, file });
+  if (!log.has(key)) log.set(key, { ...entry, file });
   return entry;
 }
 
-export function figure<T>(file: string, key: string): T {
-  return figureEntry(file, key).value as T;
+export function figure<T>(file: string, key: string, log: FigureLog = usedFigures): T {
+  return figureEntry(file, key, log).value as T;
 }
