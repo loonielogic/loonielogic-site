@@ -1,0 +1,104 @@
+{
+  "/": {
+    "image": "/og/home.png",
+    "alt": "LoonieLogic home page: LoonieLogic: Canadian Money, Explained in Plain English",
+    "title": "LoonieLogic: Canadian Money, Explained in Plain English",
+    "line": "Canadian money made simple: plain-English explainers and comparisons with real 2026 numbers, the math shown…"
+  },
+  "/404": {
+    "image": "/og/wordmark.png",
+    "alt": "LoonieLogic wordmark beside the gold loon coin mark",
+    "title": "LoonieLogic",
+    "line": ""
+  },
+  "/about": {
+    "image": "/og/about.png",
+    "alt": "LoonieLogic page: About LoonieLogic: Canadian Money Education, Done Honestly",
+    "title": "About LoonieLogic: Canadian Money Education, Done Honestly",
+    "line": "Who runs LoonieLogic, how we make money, and why we recommend instead of sitting on the fence."
+  },
+  "/affiliate-disclosure": {
+    "image": "/og/affiliate-disclosure.png",
+    "alt": "LoonieLogic page: Affiliate Disclosure: How LoonieLogic Earns Money",
+    "title": "Affiliate Disclosure: How LoonieLogic Earns Money",
+    "line": "How LoonieLogic makes money: affiliate commissions on broker, bank, and tax-software links…"
+  },
+  "/calculators/": {
+    "image": "/og/calculators.png",
+    "alt": "LoonieLogic section page: Canadian Tax & Savings Calculators 2026",
+    "title": "Canadian Tax & Savings Calculators 2026",
+    "line": "Canadian money calculators in progress: income tax, TFSA vs RRSP, room trackers, and home buying."
+  },
+  "/calculators/down-payment-planner": {
+    "image": "/og/calculators-down-payment-planner.png",
+    "alt": "LoonieLogic tool: Down Payment Planner Canada 2026: Timeline + FHSA/HBP Stack",
+    "title": "Down Payment Planner Canada 2026: Timeline + FHSA/HBP Stack",
+    "line": "Plan your down payment month by month: timeline or target-date mode, closing costs…"
+  },
+  "/compare/": {
+    "image": "/og/compare.png",
+    "alt": "LoonieLogic section page: TFSA vs RRSP, Brokerages & Banks Compared",
+    "title": "TFSA vs RRSP, Brokerages & Banks Compared",
+    "line": "Honest Canadian comparisons with verdicts, starting with TFSA vs RRSP."
+  },
+  "/compare/tfsa-vs-rrsp": {
+    "image": "/og/compare-tfsa-vs-rrsp.png",
+    "alt": "LoonieLogic comparison: TFSA vs RRSP Canada 2026: The Comparison That Recommends. Verdict: Employer match first. Then a higher tax rate now means RRSP; lower now, or a tie, means TFSA.",
+    "title": "TFSA vs RRSP Canada 2026: The Comparison That Recommends",
+    "line": "Employer match first. Then a higher tax rate now means RRSP; lower now, or a tie, means TFSA."
+  },
+  "/go/fintel-connect/": {
+    "image": "/og/wordmark.png",
+    "alt": "LoonieLogic wordmark beside the gold loon coin mark",
+    "title": "LoonieLogic",
+    "line": ""
+  },
+  "/go/maxbounty/": {
+    "image": "/og/wordmark.png",
+    "alt": "LoonieLogic wordmark beside the gold loon coin mark",
+    "title": "LoonieLogic",
+    "line": ""
+  },
+  "/go/questrade/": {
+    "image": "/og/wordmark.png",
+    "alt": "LoonieLogic wordmark beside the gold loon coin mark",
+    "title": "LoonieLogic",
+    "line": ""
+  },
+  "/go/turbotax/": {
+    "image": "/og/wordmark.png",
+    "alt": "LoonieLogic wordmark beside the gold loon coin mark",
+    "title": "LoonieLogic",
+    "line": ""
+  },
+  "/go/wealthsimple/": {
+    "image": "/og/wordmark.png",
+    "alt": "LoonieLogic wordmark beside the gold loon coin mark",
+    "title": "LoonieLogic",
+    "line": ""
+  },
+  "/learn/": {
+    "image": "/og/learn.png",
+    "alt": "LoonieLogic section page: Learn Canadian Money: Explainers 2026",
+    "title": "Learn Canadian Money: Explainers 2026",
+    "line": "Plain-English guides to Canadian money, starting with the TFSA: real 2026 numbers, the expensive mistakes…"
+  },
+  "/learn/tfsa": {
+    "image": "/og/learn-tfsa.png",
+    "alt": "LoonieLogic explainer: TFSA Canada 2026: How It Works, Limits, and Rules",
+    "title": "TFSA Canada 2026: How It Works, Limits, and Rules",
+    "line": "The plain-English TFSA guide: 2026 limit $7,000, how contribution room works, withdrawals…"
+  },
+  "/privacy": {
+    "image": "/og/privacy.png",
+    "alt": "LoonieLogic page: Privacy Policy: What LoonieLogic Collects (Almost Nothing)",
+    "title": "Privacy Policy: What LoonieLogic Collects (Almost Nothing)",
+    "line": "LoonieLogic's privacy policy: what we collect (almost nothing), your rights under PIPEDA…"
+  },
+  "/terms": {
+    "image": "/og/terms.png",
+    "alt": "LoonieLogic page: Terms of Use: Educational Content, Not Financial Advice",
+    "title": "Terms of Use: Educational Content, Not Financial Advice",
+    "line": "LoonieLogic's terms of use: estimates are not recommendations, content is educational only…"
+  }
+}
