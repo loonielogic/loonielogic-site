@@ -11,7 +11,8 @@
  *   3. every figures[].key exists in src/data/figures/*.json with a usable
  *      status (verified | needs_reverification | assumption; never rejected)
  *   4. every affiliate_links[].merchant exists in src/data/affiliates/*.json
- *   5. calculator_spec / quiz_spec paths exist on disk
+ *   5. calculator_spec / quiz_spec paths exist on disk (skipped when the
+ *      private authoring workspace is absent — bare-repo CI builds)
  *   6. FAQPage gates: faq_pages including FAQPage requires a non-empty faq
  *      array; calculators require >= 3 (seo-technical-spec.md)
  *   7. freshness: live pages must have publish_date; next_review_due in the
@@ -42,6 +43,10 @@ import {
 const ROOT = resolve(import.meta.dirname, "..", ".."); // skeleton root (hidden_files/)
 const WORKSPACE = resolve(ROOT, ".."); // goal workspace — spec paths like
 // "hidden_files/foo.md" resolve against this, matching frontend-build-spec.md §6
+// Authoring specs live in the PRIVATE workspace's hidden_files/, which is
+// intentionally never committed to the public repo. In a bare-repo checkout
+// (e.g. Cloudflare Pages builds from GitHub) that sibling dir is absent —
+// check #5 is then skipped instead of failing the build.
 const FIGURES_DIR = join(ROOT, "src", "data", "figures");
 const AFFILIATES_DIR = join(ROOT, "src", "data", "affiliates");
 const SITEMAP_PATH = join(ROOT, "src", "data", "sitemap.json");
@@ -49,6 +54,9 @@ const CALC_MANIFESTS_PATH = join(ROOT, "src", "data", "calculator-manifests.json
 const CONTENT_BASE = join(ROOT, "src", "content");
 
 const QUIZ_OUTCOME_PAGES = new Set(["/compare/tfsa-vs-rrsp"]); // quiz widgets live on comparisons
+
+const SPECS_DIR = join(WORKSPACE, "hidden_files");
+const SPECS_AVAILABLE = existsSync(SPECS_DIR); // false in bare-repo CI checkouts
 
 /* ------------------------------------------------------------------ */
 /* Loaders                                                             */
@@ -233,13 +241,16 @@ function validatePage(
     }
   }
 
-  /* 5. spec paths exist */
-  for (const [label, p] of [
-    ["calculator_spec", m.calculator_spec],
-    ["quiz_spec", m.quiz_spec],
-  ] as const) {
-    if (p && !existsSync(join(WORKSPACE, p))) {
-      fail(where, `${label} points at missing file "${p}"`);
+  /* 5. spec paths exist (skipped when the private authoring workspace is
+     absent, e.g. Cloudflare Pages building the bare public repo) */
+  if (SPECS_AVAILABLE) {
+    for (const [label, p] of [
+      ["calculator_spec", m.calculator_spec],
+      ["quiz_spec", m.quiz_spec],
+    ] as const) {
+      if (p && !existsSync(join(WORKSPACE, p))) {
+        fail(where, `${label} points at missing file "${p}"`);
+      }
     }
   }
 
@@ -282,6 +293,11 @@ function main() {
   console.log(
     `Validating content: ${bySlug.size} sitemap pages, ${figures.size} figure keys, ${merchants.size} affiliate merchants.`,
   );
+  if (!SPECS_AVAILABLE) {
+    console.log(
+      "Note: private authoring specs (hidden_files/) not present in this checkout — skipping spec-path checks.",
+    );
+  }
 
   /* 1. MDX content collections */
   for (const file of listMdxFiles(CONTENT_BASE)) {
