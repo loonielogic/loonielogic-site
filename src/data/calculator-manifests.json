@@ -401,8 +401,8 @@
         },
         {
           "expires": null,
-          "key": "hbp.extended_grace_2026_2028",
-          "source": "Spring Economic Update 2026: HBP grace extension (DISPUTED, confirm)",
+          "key": "hbp.repayment_start_offset",
+          "source": "CRA HBP page: standard 2nd-year repayment start; 2022-2025 5-year grace does not apply to future withdrawals",
           "verified": "2026-09-30"
         },
         {

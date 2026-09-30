@@ -158,15 +158,13 @@ function budgetPanel(p: Plan): string {
   let hbp = "";
   if (b.standardSchedule.length > 0) {
     const std = b.standardSchedule[0];
-    const ext = b.extendedSchedule[0];
     hbp = `<h4>Home Buyers' Plan repayments</h4>
 <p class="dpp-note">Repaying the ${$(p.chosen.hbpUsed)} withdrawn takes ${$(std.amount)} a year (about ${$(b.hbpRepaymentMonthly)} a month) for ${HBP_REPAY_YEARS} years. Missed amounts are added to taxable income.</p>
 <table class="dpp-table"><tbody>
 ${row("Standard rule: first repayment year", `${std.year} to ${b.standardSchedule[b.standardSchedule.length - 1].year}`)}
-${row(`Extended 5-year grace <span class="dpp-flag">confirm before relying on it</span>`, `${ext.year} to ${b.extendedSchedule[b.extendedSchedule.length - 1].year}`)}
 ${row("Monthly cost of owning plus HBP repayment", $(b.totalWithHbp), "dpp-total")}
 </tbody></table>
-<p class="dpp-note">The extended grace period for 2026 to 2028 withdrawals was described in the Spring Economic Update 2026, but whether it is law is not yet confirmed. This planner treats the standard schedule as the baseline until it is.</p>`;
+<p class="dpp-note">The temporary 5-year repayment grace applied only to withdrawals made in 2022 to 2025. This plan covers a future purchase, so it uses the standard schedule.</p>`;
   }
   return `<table class="dpp-table"><tbody>${rows.join("")}</tbody></table>
 <p class="dpp-note">Utilities and moving costs are not included. The money you were setting aside for the down payment (${$(p.chosen.monthly)} a month in this plan) is freed up after closing.</p>${hbp}`;

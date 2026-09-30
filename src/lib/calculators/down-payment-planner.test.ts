@@ -222,11 +222,10 @@ describe("Edge case: HBP 90-day rule and repayment", () => {
     assert.equal(std[0].amount, 4_000);
     assert.equal(hbpRepaymentSchedule(60_000, 2027, 5)[0].year, 2032);
   });
-  test("planner exposes both schedules from the registry offsets", () => {
+  test("planner uses the standard HBP repayment schedule", () => {
     const p = plan(exampleA({ rrspBalance: 20_000, tfsaBalance: 0 }));
     assert.ok(p.chosen.hbpUsed > 0);
     assert.equal(p.budget.standardSchedule[0].year, p.chosen.purchaseYear + 2);
-    assert.equal(p.budget.extendedSchedule[0].year, p.chosen.purchaseYear + 5);
   });
 });
 

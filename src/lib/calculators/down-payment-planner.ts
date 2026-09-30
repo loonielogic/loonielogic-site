@@ -29,16 +29,13 @@ export const FHSA_FIRST_YEAR = 2023;
 
 export const HBP_LIMIT = figure<number>("fhsa-hbp-2026.json", "hbp.limit.2026");
 export const HBP_REPAY_YEARS = figure<{ years: number }>("fhsa-hbp-2026.json", "hbp.repayment_period").years;
-/** Standard rule: repayments start the 2nd calendar year after withdrawal. */
+/** Standard rule: repayments start the 2nd calendar year after withdrawal.
+ * The legislated 5-year grace applied only to 2022-2025 withdrawals (Budget 2024);
+ * this planner models future (2026+) withdrawals, so the standard rule always applies. */
 export const HBP_STANDARD_OFFSET = figure<{ standard_first_repayment_year_offset: number }>(
   "closing-costs-2026.json",
-  "hbp.extended_grace_2026_2028",
+  "hbp.repayment_start_offset",
 ).standard_first_repayment_year_offset;
-/** DISPUTED extended grace: confirm before relying on it. */
-export const HBP_EXTENDED_OFFSET = figure<{ first_repayment_year_offset: number }>(
-  "closing-costs-2026.json",
-  "hbp.extended_grace_2026_2028",
-).first_repayment_year_offset;
 /** hbp.rules: 90-day RRSP holding rule. */
 export const HBP_HOLDING_DAYS = 90;
 
@@ -698,7 +695,6 @@ export interface BudgetShock {
   totalWithHbp: number;
   vsRent: number;
   standardSchedule: RepaymentYear[];
-  extendedSchedule: RepaymentYear[];
 }
 
 export function budgetShock(i: PlannerInput, s: Scenario): BudgetShock {
@@ -717,7 +713,6 @@ export function budgetShock(i: PlannerInput, s: Scenario): BudgetShock {
     totalWithHbp: total + hbpRepaymentMonthly,
     vsRent: total - i.rent,
     standardSchedule: hbpRepaymentSchedule(s.hbpUsed, s.purchaseYear, HBP_STANDARD_OFFSET),
-    extendedSchedule: hbpRepaymentSchedule(s.hbpUsed, s.purchaseYear, HBP_EXTENDED_OFFSET),
   };
 }
 
