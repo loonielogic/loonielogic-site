@@ -1,0 +1,137 @@
+---
+/**
+ * NewsletterLeadMagnetForm: the gated-asset form (newsletter spec §8).
+ *
+ * Two separate consents on one form: the address is used to deliver the
+ * asset (transactional), and the newsletter is a separate UNTICKED checkbox.
+ * The asset is sent whether or not the box is ticked; the box is the only
+ * path onto the marketing list. Same unconfigured behaviour as
+ * NewsletterCapture: disabled submit, no action URL, honest status line.
+ *
+ * Not placed on any page yet: no assets are hosted.
+ */
+import {
+  COPY_VERSION,
+  ESP_FIELDS,
+  NEWSLETTER_COPY as C,
+  PRIVACY_HREF,
+  formState,
+  leadMagnetDeliveryLine,
+  type NewsletterPlacementToken,
+} from "../config/newsletter";
+
+interface Props {
+  /** Plain-language asset name, e.g. "TFSA room worksheet". */
+  assetName: string;
+  /** Submit label for the asset request, e.g. "Send me the worksheet". */
+  submitLabel: string;
+  placement: NewsletterPlacementToken;
+}
+
+const { assetName, submitLabel, placement } = Astro.props;
+const s = formState();
+const id = `nl-magnet-${placement}`;
+---
+
+<div class="nlm">
+  <form
+    class="nlm-form"
+    method="post"
+    action={s.action}
+    data-newsletter-form="lead_magnet"
+    data-state={s.configured ? "open" : "unconfigured"}
+    data-placement={s.configured ? placement : undefined}
+  >
+    <label class="nlm-field" for={`${id}-email`}>
+      <span data-nl-copy="emailLabel">{C.emailLabel}</span>
+      <input
+        id={`${id}-email`}
+        type="email"
+        name={ESP_FIELDS.email}
+        required
+        autocomplete="email"
+        inputmode="email"
+        autocapitalize="off"
+        spellcheck="false"
+        placeholder={C.emailPlaceholder}
+        aria-describedby={`${id}-delivery`}
+      />
+    </label>
+    <p class="nlm-delivery" id={`${id}-delivery`} data-nl-copy="leadMagnetDelivery">{leadMagnetDeliveryLine(assetName)}</p>
+
+    <label class="nlm-optin" for={`${id}-optin`}>
+      <input id={`${id}-optin`} type="checkbox" name={ESP_FIELDS.newsletterOptIn} value="yes" />
+      <span data-nl-copy="leadMagnetOptIn">{C.leadMagnetOptIn}</span>
+    </label>
+
+    {s.configured && ESP_FIELDS.source && <input type="hidden" name={ESP_FIELDS.source} value={placement} />}
+    {s.configured && ESP_FIELDS.consentVersion && (
+      <input type="hidden" name={ESP_FIELDS.consentVersion} value={COPY_VERSION} />
+    )}
+
+    <button
+      class="btn btn-gold nlm-submit"
+      type="submit"
+      disabled={s.submitDisabled}
+      aria-describedby={s.statusLine ? `${id}-status` : undefined}
+    >{submitLabel}</button>
+
+    {s.statusLine && <p class="nlm-status" id={`${id}-status`} data-nl-copy="unconfigured">{s.statusLine}</p>}
+
+    <p class="nlm-privacy">
+      <span data-nl-copy="privacyNotice">{C.privacyNotice}</span>{" "}
+      <a href={PRIVACY_HREF} data-nl-copy="privacyLinkLabel">{C.privacyLinkLabel}</a>.
+    </p>
+  </form>
+</div>
+
+<style>
+  .nlm {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: clamp(1.25rem, 3vw, 1.75rem);
+    max-width: 34rem;
+  }
+  .nlm-field { display: block; }
+  .nlm-field span {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-size: 0.86rem;
+    font-weight: 650;
+    color: var(--lake-900);
+  }
+  .nlm input[type="email"] {
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.65rem 0.85rem;
+    font: inherit;
+    font-size: 1rem;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+  }
+  .nlm input:focus-visible { outline: 3px solid var(--gold); outline-offset: 1px; }
+  .nlm input[type="email"]:user-invalid { border-color: var(--red); background: var(--red-wash); }
+  .nlm-delivery { margin: 0.5rem 0 1rem; font-size: 0.92rem; color: var(--ink-soft); }
+  .nlm-optin {
+    display: flex;
+    gap: 0.65rem;
+    align-items: flex-start;
+    margin: 0 0 1.25rem;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+  .nlm-optin input { width: 1.15rem; height: 1.15rem; margin-top: 0.2rem; flex: none; accent-color: var(--pine-700); }
+  .nlm-submit[disabled] {
+    background: var(--paper-2);
+    color: var(--ink-soft);
+    border: 1.5px dashed var(--line-strong);
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+  .nlm-status { margin: 0.85rem 0 0; font-size: 0.9rem; font-weight: 650; color: var(--gold-deep); }
+  .nlm-privacy { margin: 0.9rem 0 0; font-size: 0.84rem; color: var(--ink-soft); }
+  .nlm-privacy a { color: var(--pine-700); }
+</style>

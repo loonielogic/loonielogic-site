@@ -14,7 +14,11 @@
  *   anything else is dropped before it leaves the page. Use band() to turn an
  *   amount into a token.
  *
- * Hooks not wired yet (no UI exists in this build): quiz_*, newsletter_*,
+ * Newsletter events carry only a placement token (NEWSLETTER_PLACEMENTS in
+ * src/config/newsletter.ts), never an address or name, and fire only once
+ * the signup provider is configured.
+ *
+ * Hooks not wired yet (no UI exists in this build): quiz_*,
  * affiliate_link_clicked, calc_reset. When that UI ships, either call track()
  * from its script or put `data-analytics-event="<name>"` plus
  * `data-analytics-<prop>="<token>"` on the clickable element and call
@@ -60,6 +64,7 @@ export const EVENTS = {
   quiz_started: ["quiz"],
   quiz_completed: ["quiz", "result_class"],
   newsletter_signup_submitted: ["placement"],
+  newsletter_confirmed: ["placement"],
   affiliate_link_clicked: ["merchant", "placement", "position"],
 } as const satisfies Record<string, readonly string[]>;
 

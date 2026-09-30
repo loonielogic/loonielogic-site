@@ -12,6 +12,7 @@ import {
   slugToken,
   EVENTS,
 } from "./analytics.ts";
+import { NEWSLETTER_PLACEMENTS } from "../config/newsletter.ts";
 
 describe("isSafeValue", () => {
   it("accepts class tokens and booleans", () => {
@@ -120,6 +121,8 @@ describe("event budget (spec section 2b)", () => {
       calc_input_set: ["calculator", "value"],
       hub_card_clicked: ["hub", "card"],
       guided_path_clicked: ["path", "target"],
+      newsletter_signup_submitted: ["placement"],
+      newsletter_confirmed: ["placement"],
     };
     for (const [event, props] of Object.entries(wired)) {
       assert.ok(event in EVENTS, `${event} must be in the taxonomy`);
@@ -131,5 +134,36 @@ describe("event budget (spec section 2b)", () => {
         );
       }
     }
+  });
+});
+
+describe("newsletter events", () => {
+  it("both newsletter events are in the taxonomy with a placement prop only", () => {
+    assert.deepEqual([...EVENTS.newsletter_signup_submitted], ["placement"]);
+    assert.deepEqual([...EVENTS.newsletter_confirmed], ["placement"]);
+  });
+
+  it("every placement token passes the class-token check", () => {
+    for (const p of NEWSLETTER_PLACEMENTS) assert.equal(isSafeValue(p), true, p);
+  });
+
+  it("no newsletter event can carry a PII-shaped prop", () => {
+    const pii = /email|mail|name|address|phone|ip/i;
+    for (const [event, props] of Object.entries(EVENTS)) {
+      if (!event.startsWith("newsletter_")) continue;
+      assert.ok(props.length <= 2, `${event} allowlists ${props.length} props, budget is 2`);
+      for (const p of props) assert.ok(!pii.test(p), `${event}: prop "${p}" looks like PII`);
+    }
+  });
+
+  it("an address or name slipped into the props is dropped", () => {
+    const out = sanitizeProps("newsletter_signup_submitted", {
+      placement: "home_inline",
+      email: "someone@example.ca",
+      first_name: "sam",
+    });
+    assert.deepEqual(out, { placement: "home_inline" });
+    assert.equal(isSafeValue("someone@example.ca"), false);
+    assert.deepEqual(sanitizeProps("newsletter_confirmed", { placement: "Someone@Example.ca" }), {});
   });
 });

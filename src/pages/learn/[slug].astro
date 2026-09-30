@@ -46,6 +46,7 @@ for (const coll of ["explainers", "comparisons", "legal"] as const) {
     trail={[{ name: "Learn", slug: "/learn/" }, { name: d.title, slug: d.slug }]}
     headings={headings}
     body={entry.body}
+    newsletter={d.newsletter_placement}
   >
     <Content />
     <RelatedCards slot="below" slugs={d.related} builtSlugs={builtSlugs} />

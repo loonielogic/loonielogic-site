@@ -20,6 +20,15 @@
  *      (the rollover watch decides warn-vs-auto-expire per page)
  *   8. newsletter placement rules from newsletter-email-capture-spec.md
  *      (no inline forms on calculators, quiz outcomes, or the glossary)
+ *   9. newsletter capture gates (src/lib/newsletter-gates.ts): provider URL
+ *      (placeholder WARNS, malformed FAILS), no hard-coded newsletter copy
+ *      outside the registry, no popup/timer machinery
+ *
+ * Post-build:  npm run validate-content -- --dist   (last step of npm run build)
+ *   Checks the rendered HTML in dist/: every newsletter form carries the
+ *   purpose line + privacy-policy link, registry copy renders verbatim,
+ *   no forms on banned page types, honest unconfigured state, draft
+ *   newsletter pages noindex and off sitemap.xml.
  *
  * Deps (dev): astro, zod, js-yaml, typescript. package.json below.
  */
@@ -35,6 +44,14 @@ import {
   homeSchema,
   calculatorManifestSchema,
 } from "../schemas/page-manifest.js";
+import { ESP_FORM_ACTION_URL, isNewsletterConfigured } from "../config/newsletter.js";
+import {
+  checkEspConfig,
+  checkRenderedPage,
+  checkSitemapXml,
+  checkSourceFile,
+  routeOf,
+} from "../lib/newsletter-gates.js";
 
 /* ------------------------------------------------------------------ */
 /* Paths — repo root is two levels up from src/scripts/                */
@@ -52,6 +69,7 @@ const AFFILIATES_DIR = join(ROOT, "src", "data", "affiliates");
 const SITEMAP_PATH = join(ROOT, "src", "data", "sitemap.json");
 const CALC_MANIFESTS_PATH = join(ROOT, "src", "data", "calculator-manifests.json");
 const CONTENT_BASE = join(ROOT, "src", "content");
+const DIST_DIR = join(ROOT, "dist");
 
 const QUIZ_OUTCOME_PAGES = new Set(["/compare/tfsa-vs-rrsp"]); // quiz widgets live on comparisons
 
@@ -281,10 +299,69 @@ function validatePage(
 }
 
 /* ------------------------------------------------------------------ */
+/* Newsletter gates                                                    */
+/* ------------------------------------------------------------------ */
+
+function listFiles(dir: string, match: RegExp): string[] {
+  if (!existsSync(dir)) return [];
+  const out: string[] = [];
+  for (const entry of readdirSync(dir)) {
+    const full = join(dir, entry);
+    if (statSync(full).isDirectory()) out.push(...listFiles(full, match));
+    else if (match.test(entry)) out.push(full);
+  }
+  return out;
+}
+
+function validateNewsletterSource() {
+  const cfg = checkEspConfig(ESP_FORM_ACTION_URL);
+  for (const e of cfg.errors) fail("src/config/newsletter.ts", e);
+  for (const w of cfg.warnings) warn("src/config/newsletter.ts", w);
+
+  for (const sub of ["components", "pages", "layouts"]) {
+    for (const file of listFiles(join(ROOT, "src", sub), /\.(astro|ts)$/)) {
+      const rel = file.replace(ROOT + "/", "");
+      for (const e of checkSourceFile(rel, readFileSync(file, "utf8"))) fail("newsletter", e);
+    }
+  }
+}
+
+function validateDist() {
+  if (!existsSync(DIST_DIR)) {
+    fail("dist", "no build output found; run astro build first");
+    return;
+  }
+  const configured = isNewsletterConfigured();
+  const legalRoutes = new Set(
+    listFiles(join(CONTENT_BASE, "legal"), /\.mdx?$/).map((f) => "/" + f.split("/").pop()!.replace(/\.mdx?$/, "")),
+  );
+  const pages = listFiles(DIST_DIR, /\.html$/);
+  let forms = 0;
+  for (const file of pages) {
+    const html = readFileSync(file, "utf8");
+    forms += (html.match(/\sdata-newsletter-form="/g) ?? []).length;
+    const route = routeOf(file.slice(DIST_DIR.length + 1));
+    for (const e of checkRenderedPage({ route, html, configured, legalRoutes })) fail("dist", e);
+  }
+  const sitemap = join(DIST_DIR, "sitemap.xml");
+  if (existsSync(sitemap)) {
+    for (const e of checkSitemapXml(readFileSync(sitemap, "utf8"), configured)) fail("dist", e);
+  }
+  console.log(`Checked ${pages.length} built pages, ${forms} newsletter forms (provider ${configured ? "configured" : "not configured"}).`);
+}
+
+/* ------------------------------------------------------------------ */
 /* Main                                                                */
 /* ------------------------------------------------------------------ */
 
 function main() {
+  if (process.argv.includes("--dist")) {
+    validateDist();
+    console.log(`\nDone: ${errors} errors, ${warnings} warnings.`);
+    if (errors > 0) process.exit(1);
+    return;
+  }
+
   const { bySlug } = loadSitemap();
   const figures = loadFigureIndex();
   const merchants = loadMerchants();
@@ -359,6 +436,9 @@ function main() {
       if (!reached.has(p.slug)) warn(`sitemap:${p.slug}`, "orphan: not reachable within 2 clicks from home");
     }
   }
+
+  /* 5. Newsletter capture gates */
+  validateNewsletterSource();
 
   console.log(`\nDone: ${errors} errors, ${warnings} warnings.`);
   if (errors > 0) process.exit(1);
