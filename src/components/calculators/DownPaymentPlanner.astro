@@ -194,7 +194,7 @@ const isAssumption = (s: string) => s === "assumption" || s === "needs_reverific
 <script>
   import { defaultInput, plan, type PlannerInput, type Province } from "../../lib/calculators/down-payment-planner";
   import { renderResults } from "../../lib/calculators/down-payment-planner-render";
-  import { track } from "../../lib/analytics";
+  import { track, band } from "../../lib/analytics";
 
   const CALC = "down_payment_planner";
   // snake_case tokens for the assumption-row fields (spec: banded/class values only).
@@ -230,6 +230,14 @@ const isAssumption = (s: string) => s === "assumption" || s === "needs_reverific
         firedOnce.add("province");
         // field rolled into the value token: 2-prop budget per spec section 2b.
         track("calc_input_set", { calculator: CALC, value: `province_${t.value.toLowerCase()}` });
+      } else if (t.name === "price" && !firedOnce.has("price_band")) {
+        firedOnce.add("price_band");
+        // most prominent input, class token only (never the raw dollar amount).
+        const raw = Number((t as HTMLInputElement).value);
+        track("calc_input_set", {
+          calculator: CALC,
+          value: band("price_band", raw / 1000, [300, 500, 750, 1000], { suffix: "k" }),
+        });
       }
     }
   }
