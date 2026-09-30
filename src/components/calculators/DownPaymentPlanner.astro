@@ -183,9 +183,9 @@ const isAssumption = (s: string) => s === "assumption" || s === "needs_reverific
         {s.label.replace(/\s*—\s*/g, ": ")}:{" "}
         {s.source.startsWith("http")
           ? <a href={s.source} rel="noopener">{new URL(s.source).hostname}</a>
-          : <span>internal design default</span>}, checked {s.verified_date}
+          : <span>internal design default</span>}, checked <span class="nowrap">{s.verified_date}</span>
         {isAssumption(s.status) && <span class="dpp-flag">{s.status === "assumption" ? "assumption" : "re-verify"}</span>}
-        {s.expires && s.expires < "2027-01-01" && <> (expires {s.expires})</>}
+        {s.expires && s.expires < "2027-01-01" && <> (expires <span class="nowrap">{s.expires}</span>)</>}
       </li>
     ))}
   </ul>
@@ -322,7 +322,9 @@ const isAssumption = (s: string) => s === "assumption" || s === "needs_reverific
      The form reads as a numbered control panel; results read as a statement
      whose panels (A to D) match the homepage's planner anatomy. */
 
-  .dpp { display: grid; gap: 1.5rem; }
+  /* minmax(0, 1fr): the wide comparison table must scroll inside its card,
+     not stretch the column past a 320px phone. */
+  .dpp { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
   @media (min-width: 60rem) {
     .dpp { grid-template-columns: minmax(19rem, 25rem) 1fr; gap: 2rem; align-items: start; }
     .dpp-results { position: sticky; top: calc(var(--header-h) + 1rem); }
@@ -489,7 +491,9 @@ const isAssumption = (s: string) => s === "assumption" || s === "needs_reverific
     font-family: var(--font-body); font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; line-height: 1.5;
     background: var(--gold-wash); color: var(--gold-deep);
     border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
-    border-radius: 999px; padding: 0 0.5rem; margin-left: 0.35rem; white-space: nowrap;
+    /* A long flag ("verified against toronto.ca …") may wrap on a 320px
+       phone rather than overflow; the em radius stays pill-round on one line. */
+    border-radius: 0.85em; padding: 0 0.5rem; margin-left: 0.35rem; max-width: 100%;
   }
 
   /* ---------- assumptions + sources ---------- */

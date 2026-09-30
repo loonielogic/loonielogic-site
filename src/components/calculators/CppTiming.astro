@@ -142,8 +142,8 @@ const src = (key: string) => sourceTag(key);
   <ul>
     {sources.map((s) => (
       <li>
-        {s.label}: <a href={s.source} rel="noopener">{new URL(s.source).hostname}</a>, verified {s.verified_date}
-        {s.expires && <> (refresh due {s.expires})</>}
+        {s.label}: <a href={s.source} rel="noopener">{new URL(s.source).hostname}</a>, verified <span class="nowrap">{s.verified_date}</span>
+        {s.expires && <> (refresh due <span class="nowrap">{s.expires}</span>)</>}
       </li>
     ))}
   </ul>
