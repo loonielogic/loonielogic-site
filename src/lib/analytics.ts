@@ -30,7 +30,7 @@ export const UMAMI_SCRIPT_SRC = "https://cloud.umami.is/script.js";
  * Second opinion only: baseline pageviews + real-user Core Web Vitals.
  * Replace the placeholder with the real token.
  */
-export const CF_BEACON_TOKEN = "REPLACE_WITH_CLOUDFLARE_BEACON_TOKEN";
+export const CF_BEACON_TOKEN = "6c2eb7c27d304355a4c232f3feaf92f8";
 export const CF_BEACON_SCRIPT_SRC = "https://static.cloudflareinsights.com/beacon.min.js";
 
 /** Kill switch: false removes every snippet from every page and silences track(). */

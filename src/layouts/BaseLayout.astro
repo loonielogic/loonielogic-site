@@ -184,8 +184,9 @@ const graph = {
       </>
     )}
     {isCfBeaconEnabled && (
+      /* Cloudflare Web Analytics snippet, verbatim from the dashboard. */
       <script
-        defer
+        type="module"
         src={CF_BEACON_SCRIPT_SRC}
         data-cf-beacon={JSON.stringify({ token: CF_BEACON_TOKEN })}
       ></script>
