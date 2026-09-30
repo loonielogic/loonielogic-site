@@ -515,6 +515,9 @@ main:focus { outline: none; }
 
 .article-layout {
   display: grid;
+  /* minmax(0, …) so a wide table scrolls inside itself instead of
+     stretching the whole article past the viewport on phones. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 2.5rem;
   padding: 2.5rem 0 1rem;
 }
