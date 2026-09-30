@@ -161,6 +161,9 @@ main:focus { outline: none; }
   white-space: nowrap; border: 0;
 }
 
+/* Keeps an ISO date like 2026-09-30 from breaking at its hyphens on phones. */
+.nowrap { white-space: nowrap; }
+
 /* ------------------------------------------------------------------ */
 /* Layout shell                                                        */
 /* ------------------------------------------------------------------ */
@@ -299,6 +302,12 @@ main:focus { outline: none; }
   .main-nav a { padding: 0.45rem 0.75rem; font-size: 0.95rem; }
   :root { --header-h: 3.5rem; }
 }
+/* 320px phones: tighter tabs so the last one ("About") is not cut off. */
+@media (max-width: 22rem) {
+  .main-nav { margin-inline: -0.5rem; }
+  .main-nav a { padding-inline: 0.5rem; }
+  .main-nav a::after { left: 0.5rem; right: 0.5rem; }
+}
 
 /* Reading progress (articles only; progressive enhancement, no JS). */
 .read-progress { display: none; }
@@ -426,7 +435,7 @@ main:focus { outline: none; }
   margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--line);
   font-size: 0.85rem; color: var(--ink-soft);
 }
-.card .card-foot .go { font-weight: 650; color: var(--pine-700); }
+.card .card-foot .go { font-weight: 650; color: var(--pine-700); white-space: nowrap; }
 .card .verdict {
   font-size: 0.92rem; color: var(--ink);
   border-left: 3px solid var(--gold); padding: 0.2rem 0 0.2rem 0.75rem; margin: 0.5rem 0 0.9rem;
@@ -577,7 +586,9 @@ main:focus { outline: none; }
 
 /* The 30-second version: the page's opening summary becomes a pull card. */
 .prose #the-30-second-version {
-  margin-top: 0;
+  /* margin-bottom 0: the heading and the paragraph below are one card; the
+     generic h2 bottom margin would split it with a strip of page background. */
+  margin: 0;
   padding: 1.5rem 1.6rem 0;
   font-size: 0.78rem; font-family: var(--font-body); font-weight: 650;
   letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold-deep);
@@ -594,7 +605,8 @@ main:focus { outline: none; }
   border: 1px solid color-mix(in srgb, var(--gold) 40%, transparent);
   border-top: 0;
   border-radius: 0 0 var(--radius) var(--radius);
-  padding: 0.5rem 1.6rem 1.5rem;
+  padding: 0.6rem 1.6rem 1.5rem;
+  margin-top: 0;
   margin-bottom: 2rem;
 }
 
@@ -892,6 +904,9 @@ a[rel~="sponsored"] .sponsored-marker { font-size: 0.75em; font-weight: 600; opa
 
 .footer-disclaimers { margin-top: 1.5rem; font-size: 0.84rem; line-height: 1.6; color: var(--on-dark-soft); }
 .footer-disclaimers strong { color: var(--on-dark); }
+/* HTML compression drops the source line break before each run-in label,
+   which glued "professional.Affiliate disclosure:" together. */
+.footer-disclaimers strong:not(:first-child) { margin-left: 0.3em; }
 .footer-base {
   display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; justify-content: space-between;
   margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1);

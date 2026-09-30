@@ -149,8 +149,8 @@ const TOTAL = 6;
   <ul>
     {sources.map((s) => (
       <li>
-        {s.label}: {s.source.startsWith("http") ? <a href={s.source} rel="noopener">{new URL(s.source).hostname}</a> : <span>{s.source}</span>}, verified {s.verified_date}
-        {s.expires && <> (refresh due {s.expires})</>}
+        {s.label}: {s.source.startsWith("http") ? <a href={s.source} rel="noopener">{new URL(s.source).hostname}</a> : <span>{s.source}</span>}, verified <span class="nowrap">{s.verified_date}</span>
+        {s.expires && <> (refresh due <span class="nowrap">{s.expires}</span>)</>}
       </li>
     ))}
   </ul>
@@ -382,7 +382,8 @@ const TOTAL = 6;
   /* Same visual system as the First Home Savings Planner: a control panel on
      the left, a results statement on the right. */
 
-  .trc { display: grid; gap: 1.5rem; }
+  /* minmax(0, 1fr): results must not stretch the column past a 320px phone. */
+  .trc { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
   @media (min-width: 60rem) {
     .trc { grid-template-columns: minmax(19rem, 25rem) 1fr; gap: 2rem; align-items: start; }
     .trc-results { position: sticky; top: calc(var(--header-h) + 1rem); }
@@ -594,7 +595,9 @@ const TOTAL = 6;
     display: inline-block; vertical-align: 0.1em;
     font-family: var(--font-body); font-size: 0.66rem; font-weight: 600; letter-spacing: 0.02em; line-height: 1.5;
     color: var(--pine-700); text-decoration: none;
-    border: 1px solid var(--line-strong); border-radius: 999px; padding: 0 0.45rem; margin-left: 0.2rem; white-space: nowrap;
+    /* No nowrap: in a results-table row label the pill must be able to wrap
+       on a 320px phone; the em radius stays pill-round on one line. */
+    border: 1px solid var(--line-strong); border-radius: 0.85em; padding: 0 0.45rem; margin-left: 0.2rem; max-width: 100%;
   }
   .trc :global(.trc-src:hover) { border-color: var(--pine-500); text-decoration: underline; }
   .trc :global(.trc-flag), .trc-assumptions .trc-flag {
@@ -602,11 +605,11 @@ const TOTAL = 6;
     font-family: var(--font-body); font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; line-height: 1.5;
     background: var(--gold-wash); color: var(--gold-deep);
     border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
-    border-radius: 999px; padding: 0 0.5rem; margin-left: 0.35rem; white-space: nowrap;
+    border-radius: 0.85em; padding: 0 0.5rem; margin-left: 0.35rem; max-width: 100%;
   }
   .trc-assumptions :global(.trc-src) {
     display: inline-block; vertical-align: 0.1em; font-size: 0.66rem; font-weight: 600; color: var(--pine-700); text-decoration: none;
-    border: 1px solid var(--line-strong); border-radius: 999px; padding: 0 0.45rem; margin-left: 0.2rem; white-space: nowrap;
+    border: 1px solid var(--line-strong); border-radius: 0.85em; padding: 0 0.45rem; margin-left: 0.2rem; max-width: 100%;
   }
 
   /* ---------- assumptions + sources ---------- */
