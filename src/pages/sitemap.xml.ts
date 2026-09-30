@@ -24,6 +24,9 @@ export const GET: APIRoute = async () => {
   const lastmod = new Map<string, string>();
   for (const coll of ["explainers", "comparisons", "legal"] as const) {
     for (const e of await getCollection(coll)) {
+      // Non-live pages are built with noindex and stay out of the XML,
+      // matching the calculator shells.
+      if (e.data.status !== "live") continue;
       const v = (e.data as { last_reviewed?: unknown }).last_reviewed;
       lastmod.set(e.data.slug, v instanceof Date ? v.toISOString().slice(0, 10) : String(v ?? today));
     }

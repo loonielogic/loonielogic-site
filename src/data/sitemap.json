@@ -334,7 +334,32 @@
       "slug": "/learn/tfsa-overcontribution-fix",
       "card_dek": "Over-contributed? The exact steps to stop the 1% monthly penalty.",
       "title": "TFSA Over-Contribution Canada: How to Fix It (2026)",
-      "wave": 3
+      "wave": 3,
+      "faq_pages": [
+        "FAQPage"
+      ],
+      "faq": [
+        {
+          "q": "How is the TFSA over-contribution penalty calculated?",
+          "a": "The CRA charges 1% per month on your highest excess amount in each calendar month, and a partial month counts as a full month. Over-contribute $2,000 in June and remove it in September and you owe $20 a month for four months, $80 total. A $10,000 excess left in for a full year costs $1,200 in tax, plus interest."
+        },
+        {
+          "q": "What is the first step when I over-contribute to my TFSA?",
+          "a": "Withdraw the excess immediately. Do not wait for a CRA letter: the CRA usually notifies people about excesses in late spring, and every month of delay adds another 1%. No CRA form is required to make the withdrawal itself. Then file Form RC243 with Schedule A by June 30 of the following year and pay what you owe."
+        },
+        {
+          "q": "Can the CRA waive the TFSA over-contribution tax?",
+          "a": "Yes, when the tax arose from a reasonable error and you fixed it quickly. Send a letter to the TFSA Processing Unit explaining what happened and why relief is fair: a waiver covers tax not yet assessed and a cancellation covers tax already charged. If refused, you can request a second review, and you can object to the assessment itself within 90 days using Form T400A."
+        },
+        {
+          "q": "Why is my CRA My Account TFSA room number wrong?",
+          "a": "Banks file TFSA records only once a year by the end of February, so the CRA's figures can be stale for months, especially early in the year. Always subtract this year's contributions from the CRA's number and keep your own records. For newcomers, room only accrues for years of Canadian tax residency: contributing the full $109,000 lifetime maximum right after arriving is one of the most common and most expensive mistakes."
+        },
+        {
+          "q": "Does January's new TFSA room erase my over-contribution?",
+          "a": "January 1 room absorbs any excess still in the account and stops the 1% monthly tax from that point, but it is not retroactive: a $4,000 excess left in October through December costs $120 in tax versus $40 if you withdraw it right away. Withdrawing now is almost always cheaper, and the excess eats the January room you were saving for new contributions."
+        }
+      ]
     },
     {
       "cluster": "retirement",
