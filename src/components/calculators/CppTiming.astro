@@ -1,0 +1,678 @@
+---
+/**
+ * CppTiming: the CPP timing calculator island (start at 60, 65, or 70).
+ * Plain Astro markup plus one TypeScript <script> (no framework). Results
+ * are rendered once at build time from the defaults, so the page is useful
+ * with JS off; the script recomputes on every input change with the same
+ * functions (no calculate button).
+ */
+import {
+  AVERAGE_AT_65,
+  CHILD_YEARS_MAX,
+  DEFAULT_RETURN,
+  FIGURE_YEAR,
+  HORIZON_MAX,
+  HORIZON_MIN,
+  HORIZON_PRESETS,
+  LATEST_AGE,
+  MAX_AT_65,
+  MAX_BOOST,
+  MAX_REDUCTION,
+  AGE_MAX,
+  AGE_MIN,
+  compute,
+  cppFigures,
+  defaultInput,
+} from "../../lib/calculators/cpp-timing";
+import { renderResults, sourceTag, pct, $c, ACCURACY_BANNER, MSCA_URL, CRIC_URL, type RenderOptions } from "../../lib/calculators/cpp-timing-render";
+
+interface Props {
+  /** "Learn: CPP + OAS basics" target; null until that explainer is built. */
+  basicsHref: string | null;
+  /** Income tax estimator; null until that tool is built. */
+  taxToolHref: string | null;
+}
+const { basicsHref, taxToolHref } = Astro.props;
+
+const opts: RenderOptions = { basicsHref, taxToolHref };
+const d = defaultInput();
+const initialHtml = renderResults(compute(d), opts);
+const sources = [...cppFigures.values()];
+const src = (key: string) => sourceTag(key);
+---
+
+<aside class="cpt-banner" role="note" aria-label="Accuracy">
+  <p><strong>{ACCURACY_BANNER}</strong> <a href={MSCA_URL} rel="noopener">My Service Canada Account</a> · <a href={CRIC_URL} rel="noopener">Canadian Retirement Income Calculator</a></p>
+</aside>
+
+<div class="cpt" id="cpt" data-basics-href={basicsHref ?? ""} data-tax-href={taxToolHref ?? ""}>
+  <form class="cpt-form" id="cpt-form" novalidate>
+    <fieldset>
+      <legend>You (or the person you're running it for)</legend>
+      <label>Current age
+        <input type="number" name="currentAge" inputmode="numeric" min={AGE_MIN} max={AGE_MAX} step="1" value={d.currentAge} />
+      </label>
+      <p class="cpt-error" data-error-for="currentAge" hidden></p>
+      <p class="cpt-warning" data-warning-for="currentAge" hidden></p>
+
+      <label>Estimated monthly <span data-plan>CPP</span> at 65 ($)
+        <input type="number" name="est65" inputmode="decimal" min="0" max="1508" step="1" value={d.est65} />
+      </label>
+      <p class="cpt-error" data-error-for="est65" hidden></p>
+      <p class="cpt-warning" data-warning-for="est65" hidden></p>
+      <small>Default {$c(877)} is close to the {FIGURE_YEAR} average new pension ({$c(AVERAGE_AT_65)}) <Fragment set:html={src("cpp.average_new_benefit")} />. The maximum, {$c(MAX_AT_65)} a month (Jan {FIGURE_YEAR}) <Fragment set:html={src("cpp.max_benefit_65")} />, takes about 39 years at or above the earnings ceiling; most Canadians get far less. Your own figure is in <a href={MSCA_URL} rel="noopener">My Service Canada Account</a>.</small>
+    </fieldset>
+
+    <fieldset>
+      <legend>Plan to age</legend>
+      <div class="cpt-presets" role="group" aria-label="Planning age presets">
+        {HORIZON_PRESETS.map((h) => (
+          <label class="cpt-chip"><input type="radio" name="horizonPreset" value={h} checked={h === d.horizon} /> {h}</label>
+        ))}
+      </div>
+      <label>Or type a planning age ({HORIZON_MIN} to {HORIZON_MAX})
+        <input type="number" name="horizon" inputmode="numeric" min={HORIZON_MIN} max={HORIZON_MAX} step="1" value={d.horizon} />
+      </label>
+      <p class="cpt-error" data-error-for="horizon" hidden></p>
+      <p class="cpt-warning" data-warning-for="horizon" hidden></p>
+      <small>An illustrative planning horizon, not a prediction. The lifetime totals run to this age.</small>
+    </fieldset>
+
+    <fieldset>
+      <legend>Still working between 60 and {LATEST_AGE}?</legend>
+      <div class="cpt-seg">
+        <label class="cpt-radio"><input type="radio" name="stillWorking" value="yes" /> Yes</label>
+        <label class="cpt-radio"><input type="radio" name="stillWorking" value="no" /> No</label>
+        <label class="cpt-radio"><input type="radio" name="stillWorking" value="unsure" checked /> Not sure</label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Other things that matter</legend>
+      <label>Child-rearing years (low or no earnings while raising kids under 7)
+        <input type="number" name="childRearingYears" inputmode="numeric" min="0" max={CHILD_YEARS_MAX} step="1" value={d.childRearingYears} />
+      </label>
+      <p class="cpt-error" data-error-for="childRearingYears" hidden></p>
+      <label>Other expected retirement income, per year ($)
+        <input type="number" name="otherIncome" inputmode="numeric" min="0" step="1000" value={d.otherIncome} />
+      </label>
+      <p class="cpt-error" data-error-for="otherIncome" hidden></p>
+      <small>Pensions, RRIF withdrawals, work income. Used only to check the OAS recovery-tax threshold.</small>
+      <p class="cpt-help">Any of these apply? (optional)</p>
+      <label class="cpt-check"><input type="checkbox" name="quebec" /> Worked in Quebec (QPP)</label>
+      <label class="cpt-check"><input type="checkbox" name="survivor" /> A CPP survivor's pension is expected</label>
+      <label class="cpt-check"><input type="checkbox" name="separation" /> Separated or divorced</label>
+      <label class="cpt-check"><input type="checkbox" name="disability" /> Received CPP disability benefits</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Advanced: invest the difference</legend>
+      <label class="cpt-check"><input type="checkbox" name="invest" /> <span>What if <span data-plan>CPP</span> starts early and every cheque is invested?</span></label>
+      <label data-show="invest" hidden>Annual return (%)
+        <input type="number" name="investReturn" inputmode="decimal" min="0" max="10" step="0.5" value={(DEFAULT_RETURN * 100).toString()} />
+      </label>
+      <p class="cpt-error" data-error-for="investReturn" hidden></p>
+      <p class="cpt-warning" data-warning-for="investReturn" hidden></p>
+    </fieldset>
+    <noscript><p class="cpt-help">Turn on JavaScript to run your own numbers. The results show the defaults: a 58-year-old with an {$c(877)} estimate, planning to 90.</p></noscript>
+  </form>
+
+  <div class="cpt-results" id="cpt-results" aria-live="polite" set:html={initialHtml} />
+</div>
+
+<section class="cpt-assumptions" aria-labelledby="cpt-h-assumptions">
+  <h2 id="cpt-h-assumptions">Assumptions behind this comparison</h2>
+  <ul>
+    <li><strong>Your estimate at 65 is taken as entered <span class="cpt-flag">estimate</span>.</strong> The tool times a given estimate; it does not compute a benefit from your earnings history. That is the job of My Service Canada Account and the Canadian Retirement Income Calculator.</li>
+    <li><strong>Whole start years from 60 to {LATEST_AGE}.</strong> Each month before 65 takes 0.6% off (up to {pct(MAX_REDUCTION)} at 60) <Fragment set:html={src("cpp.early_reduction")} />; each month after adds 0.7% (up to {pct(MAX_BOOST)} at {LATEST_AGE}) <Fragment set:html={src("cpp.late_boost")} />. Waiting past {LATEST_AGE} adds nothing <Fragment set:html={src("cpp.timing.no_benefit_past_70")} />.</li>
+    <li><strong>Amounts are nominal and gross.</strong> In-pay indexation applies to every start age equally, so it is left out of the comparison. CPP is taxable; no tax is taken off here.</li>
+    <li><strong>The planning age is illustrative.</strong> No life-expectancy figures are used or implied.</li>
+    <li><strong>Invest the difference</strong> uses end-of-month deposits and an annual return compounded monthly (5% a year works out to about 0.407% a month). It ignores tax on the invested cheques.</li>
+    <li><strong>Quebec:</strong> the timing factors are the CPP-legislated ones. Retraite Qu&eacute;bec's current QPP factors have not been verified for this tool <span class="cpt-flag">needs re-verification</span>.</li>
+    <li><strong>Not computed here:</strong> post-retirement benefits, survivor pension dollars, OAS amounts and recovery tax, GIS and the Allowance, disability credits, credit splitting, and income tax.</li>
+  </ul>
+  <p class="page-meta">
+    This calculator is education, not advice. It compares start ages in both directions and does not tell you which one to pick.
+  </p>
+</section>
+
+<section class="cpt-sources" aria-labelledby="cpt-h-sources-list">
+  <h2 id="cpt-h-sources-list">Sources and dates</h2>
+  <p class="page-meta">Figures checked 2026-09-27 to 2026-09-30 against canada.ca and Service Canada; CPP figures are {FIGURE_YEAR}.</p>
+  <ul>
+    {sources.map((s) => (
+      <li>
+        {s.label}: <a href={s.source} rel="noopener">{new URL(s.source).hostname}</a>, verified {s.verified_date}
+        {s.expires && <> (refresh due {s.expires})</>}
+      </li>
+    ))}
+  </ul>
+</section>
+
+<aside class="cpt-banner cpt-banner-bottom" role="note" aria-label="Accuracy">
+  <p><strong>{ACCURACY_BANNER}</strong> <a href={MSCA_URL} rel="noopener">My Service Canada Account</a> · <a href={CRIC_URL} rel="noopener">Canadian Retirement Income Calculator</a></p>
+</aside>
+
+<script>
+  import {
+    ANALYTICS_CALC,
+    ASSUMPTION_FIELDS,
+    compute,
+    inputToken,
+    outcomeToken,
+    validate,
+    type CppInput,
+    type Field,
+    type StillWorking,
+  } from "../../lib/calculators/cpp-timing";
+  import { renderBlocked, renderResults, type RenderOptions } from "../../lib/calculators/cpp-timing-render";
+  import { track } from "../../lib/analytics";
+
+  const FIELDS: Field[] = ["currentAge", "est65", "horizon", "childRearingYears", "otherIncome", "investReturn"];
+  const TOGGLES = ["invest", "quebec", "survivor", "separation", "disability"] as const;
+
+  const root = document.getElementById("cpt");
+  const form = document.getElementById("cpt-form") as HTMLFormElement | null;
+  const out = document.getElementById("cpt-results");
+  const opts: RenderOptions = {
+    basicsHref: root?.dataset.basicsHref || null,
+    taxToolHref: root?.dataset.taxHref || null,
+  };
+
+  let started = false;
+  let resultViewed = false;
+  const firedOnce = new Set<string>();
+
+  function num(fd: FormData, name: string): number | null {
+    const raw = String(fd.get(name) ?? "").trim();
+    if (raw === "") return null;
+    const v = Number(raw);
+    return Number.isFinite(v) ? v : NaN;
+  }
+
+  function read(f: HTMLFormElement): CppInput {
+    const fd = new FormData(f);
+    const est = num(fd, "est65");
+    const other = num(fd, "otherIncome");
+    const ret = num(fd, "investReturn");
+    return {
+      currentAge: num(fd, "currentAge"),
+      est65: est !== null && Number.isFinite(est) ? Math.round(est * 100) / 100 : est,
+      horizon: num(fd, "horizon"),
+      stillWorking: (String(fd.get("stillWorking") ?? "unsure") as StillWorking),
+      childRearingYears: num(fd, "childRearingYears"),
+      otherIncome: other !== null && Number.isFinite(other) ? Math.round(other) : other,
+      invest: fd.get("invest") === "on",
+      investReturn: ret === null || !Number.isFinite(ret) ? ret : ret / 100,
+      quebec: fd.get("quebec") === "on",
+      survivor: fd.get("survivor") === "on",
+      separation: fd.get("separation") === "on",
+      disability: fd.get("disability") === "on",
+    };
+  }
+
+  function sync(f: HTMLFormElement, i: CppInput) {
+    f.querySelectorAll<HTMLElement>('[data-show="invest"]').forEach((el) => { el.hidden = !i.invest; });
+    document.querySelectorAll<HTMLElement>("[data-plan]").forEach((el) => { el.textContent = i.quebec ? "CPP/QPP" : "CPP"; });
+    f.querySelectorAll<HTMLInputElement>('input[name="horizonPreset"]').forEach((el) => { el.checked = Number(el.value) === i.horizon; });
+  }
+
+  function showMessages(f: HTMLFormElement, i: CppInput): string[] {
+    const v = validate(i);
+    const blocking: string[] = [];
+    for (const field of FIELDS) {
+      const err = f.querySelector<HTMLElement>(`[data-error-for="${field}"]`);
+      const warn = f.querySelector<HTMLElement>(`[data-warning-for="${field}"]`);
+      const e = v.errors[field];
+      const w = v.warnings[field];
+      if (err) { err.textContent = e ?? ""; err.hidden = !e; }
+      if (warn) { warn.textContent = w ?? ""; warn.hidden = !w; }
+      if (e) blocking.push(e);
+    }
+    return blocking;
+  }
+
+  /** Crosshair + tooltip on the cumulative chart (identity is never colour alone). */
+  function bindChart() {
+    const wrap = out?.querySelector<HTMLElement>(".cpt-chart-wrap");
+    const svg = wrap?.querySelector<SVGSVGElement>("svg");
+    const tip = wrap?.querySelector<HTMLElement>(".cpt-tip");
+    if (!wrap || !svg || !tip || !wrap.dataset.chart) return;
+    const data = JSON.parse(wrap.dataset.chart) as {
+      from: number; to: number;
+      series: { label: string; slot: number; totals: number[] }[];
+      box: { l: number; r: number; t: number; b: number; w: number; h: number };
+    };
+    const ns = "http://www.w3.org/2000/svg";
+    const hair = document.createElementNS(ns, "line");
+    hair.setAttribute("class", "cpt-crosshair");
+    hair.setAttribute("y1", String(data.box.t));
+    hair.setAttribute("y2", String(data.box.h - data.box.b));
+    hair.style.display = "none";
+    svg.appendChild(hair);
+    const money = new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD", maximumFractionDigits: 0 });
+    const plotW = data.box.w - data.box.l - data.box.r;
+
+    const move = (e: PointerEvent) => {
+      const rect = svg.getBoundingClientRect();
+      const vx = ((e.clientX - rect.left) / rect.width) * data.box.w;
+      const age = Math.round(data.from + ((vx - data.box.l) / plotW) * (data.to - data.from));
+      if (age < data.from || age > data.to) { leave(); return; }
+      const x = data.box.l + ((age - data.from) / (data.to - data.from)) * plotW;
+      hair.setAttribute("x1", String(x));
+      hair.setAttribute("x2", String(x));
+      hair.style.display = "";
+      const k = age - data.from;
+      tip.innerHTML = `<strong>Age ${age}</strong>` + data.series
+        .map((s) => `<span><i class="cpt-s${s.slot}" aria-hidden="true"></i>${s.label}: ${money.format(s.totals[k])}</span>`)
+        .join("");
+      tip.hidden = false;
+      const left = ((x / data.box.w) * rect.width);
+      tip.style.left = `${Math.min(Math.max(left, 90), rect.width - 90)}px`;
+    };
+    const leave = () => { hair.style.display = "none"; tip.hidden = true; };
+    svg.addEventListener("pointermove", move);
+    svg.addEventListener("pointerleave", leave);
+  }
+
+  function update() {
+    if (!form || !out) return;
+    const i = read(form);
+    sync(form, i);
+    const blocking = showMessages(form, i);
+    if (blocking.length) {
+      out.innerHTML = renderBlocked(blocking, opts);
+      return;
+    }
+    const r = compute(i);
+    out.innerHTML = renderResults(r, opts);
+    bindChart();
+    if (started && !resultViewed) {
+      resultViewed = true;
+      track("calc_result_viewed", { calculator: ANALYTICS_CALC, outcome: outcomeToken(r) });
+    }
+  }
+
+  function once(key: string, fn: () => void) {
+    if (firedOnce.has(key)) return;
+    firedOnce.add(key);
+    fn();
+  }
+
+  function onUserInput(e: Event) {
+    if (!started) {
+      started = true;
+      track("calc_started", { calculator: ANALYTICS_CALC });
+    }
+    const t = e.target;
+    if (!(t instanceof HTMLInputElement)) return;
+    if (t.name === "horizon" || t.name === "horizonPreset") {
+      once("horizon", () => track("calc_assumption_changed", { calculator: ANALYTICS_CALC, field: ASSUMPTION_FIELDS.horizon }));
+    } else if (t.name === "investReturn") {
+      once("investReturn", () => track("calc_assumption_changed", { calculator: ANALYTICS_CALC, field: ASSUMPTION_FIELDS.investReturn }));
+    } else if (t.name === "stillWorking") {
+      // field rolled into the value token: 2-prop budget per event.
+      once("stillWorking", () => track("calc_input_set", { calculator: ANALYTICS_CALC, value: inputToken.stillWorking(t.value as StillWorking) }));
+    } else if ((TOGGLES as readonly string[]).includes(t.name) && t.checked) {
+      once(t.name, () => track("calc_input_set", { calculator: ANALYTICS_CALC, value: inputToken.toggle(t.name as (typeof TOGGLES)[number], true) }));
+    }
+  }
+
+  if (form) {
+    form.addEventListener("submit", (e) => e.preventDefault());
+    form.addEventListener("change", (e) => {
+      const t = e.target;
+      if (t instanceof HTMLInputElement && t.name === "horizonPreset") {
+        const box = form.querySelector<HTMLInputElement>('input[name="horizon"]');
+        if (box) box.value = t.value;
+      }
+    });
+    form.addEventListener("input", (e) => { onUserInput(e); update(); });
+    form.addEventListener("change", (e) => { onUserInput(e); update(); });
+    update();
+  }
+</script>
+
+<style>
+  /* Same visual system as the TFSA checker and the First Home Savings
+     Planner: a control panel on the left, a results statement on the right.
+     Callout colours follow the callout design system: Verified Green for
+     worked-math results, Caution Amber for flags. */
+
+  .cpt, .cpt-banner, .cpt-assumptions {
+    --cpt-green: #1b7a43;
+    --cpt-amber: #b25e09;
+    /* Chart series: validated as a set (light surface, all pairs). */
+    --cpt-s1: #b8820f;
+    --cpt-s2: #2a78d6;
+    --cpt-s3: #0e8a5f;
+  }
+
+  .cpt-banner {
+    position: relative;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--pine-700);
+    border-radius: var(--radius);
+    padding: 0.9rem 1.25rem;
+    margin: 0 0 1.5rem;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    box-shadow: var(--shadow-sm);
+  }
+  .cpt-banner p { margin: 0; }
+  .cpt-banner strong { color: var(--lake-900); font-weight: 600; }
+  .cpt-banner-bottom { margin: 3rem 0 0; max-width: 52rem; }
+
+  .cpt { display: grid; gap: 1.5rem; }
+  @media (min-width: 60rem) {
+    .cpt { grid-template-columns: minmax(19rem, 25rem) 1fr; gap: 2rem; align-items: start; }
+    .cpt-form { position: sticky; top: calc(var(--header-h) + 1rem); max-height: calc(100vh - var(--header-h) - 2rem); overflow-y: auto; }
+  }
+
+  /* ---------- control panel ---------- */
+  .cpt-form {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg);
+    padding: 0.5rem 1.35rem 1rem;
+    counter-reset: step;
+    accent-color: var(--pine-700);
+  }
+  .cpt-form > fieldset {
+    counter-increment: step;
+    border: 0;
+    border-top: 1px solid var(--line);
+    padding: 1.25rem 0 0.5rem;
+    margin: 0;
+    min-width: 0;
+  }
+  .cpt-form > fieldset:first-of-type { border-top: 0; }
+  .cpt-form > fieldset > legend {
+    display: flex; align-items: center; gap: 0.6rem;
+    float: left; width: 100%;
+    font-family: var(--font-display); font-optical-sizing: auto;
+    font-weight: 600; font-size: 1.12rem; color: var(--lake-900);
+    padding: 0; margin: 0 0 0.35rem;
+  }
+  .cpt-form > fieldset > legend::before {
+    content: counter(step);
+    flex: none;
+    width: 1.6rem; height: 1.6rem; border-radius: 50%;
+    display: grid; place-items: center;
+    font-family: var(--font-body); font-size: 0.78rem; font-weight: 700;
+    background: var(--lake-900); color: var(--gold-bright);
+  }
+  .cpt-form > fieldset > legend + * { clear: both; }
+
+  .cpt-form label { display: block; font-size: 0.92rem; font-weight: 600; margin: 0.85rem 0; color: var(--ink); clear: both; }
+  .cpt-form [hidden] { display: none !important; }
+  .cpt-form input[type="number"] {
+    display: block; width: 100%; margin-top: 0.35rem; padding: 0.65rem 0.8rem;
+    font: inherit; font-weight: 500; font-size: 1rem; font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    border: 1px solid var(--line-strong); border-radius: 10px;
+    background: var(--paper);
+    min-height: 2.9rem;
+    transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+  }
+  .cpt-form input:hover { border-color: var(--pine-500); }
+  .cpt-form input[type="number"]:focus-visible {
+    outline: none;
+    background: var(--card);
+    border-color: var(--pine-700);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 55%, transparent);
+  }
+  .cpt-form small, .cpt-help { display: block; font-weight: 400; color: var(--ink-soft); font-size: 0.8rem; line-height: 1.45; margin: 0.35rem 0 0; }
+  .cpt-help { font-size: 0.86rem; margin: 1rem 0 0.25rem; font-weight: 600; color: var(--ink); }
+  .cpt-error, .cpt-warning { margin: 0.35rem 0; font-size: 0.86rem; font-weight: 600; }
+  .cpt-error { color: var(--danger); }
+  .cpt-warning { color: var(--gold-deep); }
+
+  .cpt-radio, .cpt-check { font-weight: 450 !important; display: flex !important; gap: 0.6rem; align-items: flex-start; line-height: 1.45; cursor: pointer; }
+  .cpt-radio input, .cpt-check input { margin: 0.12rem 0 0; width: 1.15rem; height: 1.15rem; flex: none; }
+  .cpt-form .cpt-check { margin: 0.5rem 0; }
+  .cpt-seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; margin: 0.5rem 0; }
+  .cpt-form .cpt-radio, .cpt-form .cpt-chip {
+    margin: 0;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--paper);
+    transition: border-color 0.15s, background-color 0.15s, box-shadow 0.15s;
+  }
+  .cpt-form .cpt-radio:hover, .cpt-form .cpt-chip:hover { border-color: var(--pine-500); }
+  .cpt-form .cpt-radio:has(input:checked), .cpt-form .cpt-chip:has(input:checked) {
+    border-color: var(--pine-700);
+    background: var(--moss-100);
+    box-shadow: inset 0 0 0 1px var(--pine-700);
+    font-weight: 600 !important;
+    color: var(--lake-900);
+  }
+  .cpt-presets { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; margin: 0.5rem 0 0; }
+  .cpt-form .cpt-chip {
+    display: flex; align-items: center; justify-content: center; gap: 0.35rem;
+    font-weight: 550; font-variant-numeric: tabular-nums; cursor: pointer; border-radius: 999px; padding: 0.45rem 0.5rem;
+  }
+  .cpt-chip input { width: 1rem; height: 1rem; margin: 0; }
+
+  /* ---------- results statement ---------- */
+  .cpt-results { counter-reset: panel; font-variant-numeric: tabular-nums; min-width: 0; }
+  .cpt-results :global(.cpt-headline) {
+    position: relative;
+    margin: 0 0 1.25rem;
+    padding: 1.5rem 1.75rem;
+    border-radius: 20px;
+    background: var(--grain), radial-gradient(130% 140% at 100% 0%, var(--pine-800), var(--lake-950) 70%);
+    color: var(--on-dark);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+  .cpt-results :global(.cpt-headline)::after {
+    content: ""; position: absolute; right: -5rem; top: -5rem; width: 14rem; height: 14rem; border-radius: 50%;
+    background: repeating-radial-gradient(circle, transparent 0 18px, rgba(228, 185, 78, 0.12) 18px 19px);
+    pointer-events: none;
+  }
+  .cpt-results :global(.cpt-kicker) { margin: 0 0 0.5rem; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold-bright); }
+  .cpt-results :global(.cpt-lead) {
+    margin: 0 0 1rem; font-family: var(--font-display); font-optical-sizing: auto;
+    font-size: clamp(1.2rem, 2.2vw, 1.5rem); line-height: 1.35; letter-spacing: -0.01em;
+  }
+  .cpt-results :global(.cpt-lead strong) { color: var(--gold-bright); font-weight: 650; white-space: nowrap; }
+  .cpt-results :global(.cpt-lead .cpt-src) { color: var(--on-dark-soft); border-color: rgba(255, 255, 255, 0.3); }
+  .cpt-results :global(.cpt-cols) { display: grid; gap: 0.75rem; margin: 0 0 0.9rem; position: relative; z-index: 1; }
+  @media (min-width: 36rem) {
+    .cpt-results :global(.cpt-cols-3) { grid-template-columns: repeat(3, 1fr); }
+    .cpt-results :global(.cpt-cols-2) { grid-template-columns: repeat(2, 1fr); }
+  }
+  .cpt-results :global(.cpt-col) { background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 14px; padding: 0.8rem 1rem; }
+  .cpt-results :global(.cpt-col.is-top) { border-color: var(--gold-bright); box-shadow: inset 0 0 0 1px var(--gold-bright); }
+  .cpt-results :global(.cpt-col-head) { margin: 0; font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem; }
+  .cpt-results :global(.cpt-swatch) { width: 0.75rem; height: 0.75rem; border-radius: 3px; background: currentColor; border: 1px solid rgba(255, 255, 255, 0.6); }
+  .cpt-results :global(.cpt-col.cpt-s1 .cpt-swatch) { background: var(--cpt-s1); }
+  .cpt-results :global(.cpt-col.cpt-s2 .cpt-swatch) { background: var(--cpt-s2); }
+  .cpt-results :global(.cpt-col.cpt-s3 .cpt-swatch) { background: var(--cpt-s3); }
+  .cpt-results :global(.cpt-top) {
+    font-size: 0.66rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    background: var(--gold-bright); color: var(--lake-950); border-radius: 999px; padding: 0.05rem 0.5rem;
+  }
+  .cpt-results :global(.cpt-col-factor) { margin: 0.15rem 0 0.5rem; font-size: 0.78rem; opacity: 0.8; }
+  .cpt-results :global(.cpt-col dl) { margin: 0; }
+  .cpt-results :global(.cpt-col dl div) { display: flex; justify-content: space-between; gap: 0.5rem; padding: 0.2rem 0; border-top: 1px solid rgba(255, 255, 255, 0.1); font-size: 0.86rem; }
+  .cpt-results :global(.cpt-col dt) { opacity: 0.85; }
+  .cpt-results :global(.cpt-col dd) { margin: 0; font-weight: 600; }
+  .cpt-results :global(.cpt-col .cpt-life dd) { font-family: var(--font-display); font-size: 1.25rem; color: var(--gold-bright); }
+  .cpt-results :global(.cpt-sub) { margin: 0; font-size: 0.85rem; opacity: 0.85; position: relative; z-index: 1; }
+  .cpt-results :global(.cpt-sub-note) { margin-top: 0.4rem; color: var(--gold-bright); opacity: 1; }
+  .cpt-results :global(.cpt-headline-blocked .cpt-lead) { margin-bottom: 0.4rem; }
+
+  .cpt-results :global(.cpt-card) {
+    counter-increment: panel;
+    border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 1.35rem 1.5rem 1.25rem; background: var(--card);
+    margin-bottom: 1rem; box-shadow: var(--shadow-sm);
+    min-width: 0;
+  }
+  .cpt-results :global(h3) {
+    display: flex; align-items: center; gap: 0.65rem;
+    margin: 0 0 0.6rem; font-size: 1.3rem;
+  }
+  .cpt-results :global(h3)::before {
+    content: counter(panel, upper-alpha);
+    flex: none; width: 1.9rem; height: 1.9rem; border-radius: 50%;
+    display: grid; place-items: center;
+    font-size: 0.95rem; font-style: italic; font-weight: 600;
+    background: var(--gold-btn); color: var(--ink);
+  }
+  .cpt-results :global(.cpt-asof) {
+    margin: 0 0 0.75rem; font-size: 0.72rem; font-weight: 650; letter-spacing: 0.04em; color: var(--ink-soft);
+  }
+  .cpt-results :global(.cpt-strip) { margin: 0; padding-left: 1.1rem; font-size: 1rem; line-height: 1.6; }
+  .cpt-results :global(.cpt-strip strong) { color: var(--lake-900); font-weight: 650; }
+  .cpt-results :global(.cpt-derive) { margin-top: 0.85rem; font-size: 0.9rem; }
+  .cpt-results :global(.cpt-derive summary), .cpt-results :global(.cpt-table-view summary) { cursor: pointer; font-weight: 600; color: var(--lake-900); }
+  .cpt-results :global(.cpt-derive ol) { margin: 0.6rem 0 0; padding-left: 1.2rem; line-height: 1.6; }
+  .cpt-results :global(.cpt-derive li) { margin-bottom: 0.3rem; }
+
+  .cpt-results :global(.cpt-table) { width: 100%; border-collapse: collapse; font-size: 0.93rem; }
+  .cpt-results :global(.cpt-table th), .cpt-results :global(.cpt-table td) {
+    padding: 0.55rem 0.4rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top;
+  }
+  .cpt-results :global(.cpt-table td) { text-align: right; white-space: nowrap; font-weight: 550; color: var(--ink); }
+  .cpt-results :global(.cpt-table th[scope="row"]) { font-weight: 400; color: var(--ink-soft); }
+  .cpt-results :global(.cpt-table-grid thead th) { font-size: 0.8rem; color: var(--ink-soft); text-align: right; }
+  .cpt-results :global(.cpt-table-grid thead th:first-child) { text-align: left; }
+  .cpt-results :global(.cpt-total th), .cpt-results :global(.cpt-total td) {
+    font-weight: 700 !important; color: var(--cpt-green) !important;
+    border-top: 2px solid var(--cpt-green); border-bottom: 0; padding-top: 0.75rem;
+  }
+  .cpt-results :global(.cpt-total td) {
+    font-family: var(--font-display); font-optical-sizing: auto; font-size: 1.3rem; letter-spacing: -0.01em;
+  }
+  .cpt-results :global(.cpt-scroll) { overflow-x: auto; }
+  .cpt-results :global(.cpt-table-view) { margin-top: 0.75rem; font-size: 0.9rem; }
+  .cpt-results :global(.cpt-note) { font-size: 0.86rem; line-height: 1.55; color: var(--ink-soft); margin: 0.75rem 0 0; }
+  .cpt-results :global(.cpt-warn-line) { font-size: 0.88rem; font-weight: 600; color: var(--cpt-amber); margin: 0.75rem 0 0; }
+  .cpt-results :global(.cpt-disclaimer) { font-size: 0.84rem; color: var(--ink-soft); margin: 0.5rem 0 0; font-style: italic; }
+  .cpt-results :global(.cpt-links) { margin: 0; padding-left: 1.1rem; font-size: 0.93rem; line-height: 1.6; }
+  .cpt-results :global(.cpt-links li) { margin-bottom: 0.45rem; }
+
+  /* chart */
+  .cpt-results :global(.cpt-legend) { list-style: none; display: flex; flex-wrap: wrap; gap: 0.35rem 1.1rem; margin: 0 0 0.5rem; padding: 0; font-size: 0.84rem; color: var(--ink); }
+  .cpt-results :global(.cpt-legend li) { display: flex; align-items: center; gap: 0.4rem; }
+  .cpt-results :global(.cpt-key) { width: 1.4rem; height: 0; border-top: 2px solid; }
+  .cpt-results :global(.cpt-legend .cpt-s1 .cpt-key) { border-color: var(--cpt-s1); }
+  .cpt-results :global(.cpt-legend .cpt-s2 .cpt-key) { border-color: var(--cpt-s2); border-top-style: dashed; }
+  .cpt-results :global(.cpt-legend .cpt-s3 .cpt-key) { border-color: var(--cpt-s3); border-top-style: dotted; border-top-width: 3px; }
+  .cpt-results :global(.cpt-key-dot) { width: 0.6rem; height: 0.6rem; border-radius: 50%; background: var(--card); border: 2px solid var(--lake-900); }
+  .cpt-results :global(.cpt-chart-wrap) { position: relative; }
+  .cpt-results :global(.cpt-chart) { display: block; width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
+  .cpt-results :global(.cpt-grid) { stroke: var(--line); stroke-width: 1; }
+  .cpt-results :global(.cpt-axis) { font-family: var(--font-body); font-size: 11px; fill: var(--ink-soft); }
+  .cpt-results :global(.cpt-horizon) { stroke: var(--ink-soft); stroke-width: 1; stroke-dasharray: 3 3; }
+  .cpt-results :global(.cpt-line) { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .cpt-results :global(.cpt-line.cpt-s1) { stroke: var(--cpt-s1); }
+  .cpt-results :global(.cpt-line.cpt-s2) { stroke: var(--cpt-s2); stroke-dasharray: 7 4; }
+  .cpt-results :global(.cpt-line.cpt-s3) { stroke: var(--cpt-s3); stroke-dasharray: 1.5 4; stroke-width: 2.6; }
+  .cpt-results :global(.cpt-cross circle) { fill: var(--card); stroke: var(--lake-900); stroke-width: 2; }
+  .cpt-results :global(.cpt-cross-label) { font-weight: 700; fill: var(--lake-900); paint-order: stroke; stroke: var(--card); stroke-width: 3px; }
+  .cpt-results :global(.cpt-end) { font-family: var(--font-body); font-size: 11.5px; font-weight: 600; fill: var(--ink); }
+  .cpt-results :global(.cpt-end-key.cpt-s1) { fill: var(--cpt-s1); }
+  .cpt-results :global(.cpt-end-key.cpt-s2) { fill: var(--cpt-s2); }
+  .cpt-results :global(.cpt-end-key.cpt-s3) { fill: var(--cpt-s3); }
+  .cpt-results :global(.cpt-crosshair) { stroke: var(--ink); stroke-width: 1; opacity: 0.4; pointer-events: none; }
+  .cpt-results :global(.cpt-tip) {
+    position: absolute; top: 0.25rem; transform: translateX(-50%); pointer-events: none;
+    background: var(--lake-950); color: var(--on-dark); border-radius: 10px; padding: 0.5rem 0.7rem;
+    font-size: 0.78rem; line-height: 1.45; box-shadow: var(--shadow-md); white-space: nowrap;
+    display: flex; flex-direction: column;
+  }
+  .cpt-results :global(.cpt-tip[hidden]) { display: none; }
+  .cpt-results :global(.cpt-tip i) { display: inline-block; width: 0.6rem; height: 0.6rem; border-radius: 2px; margin-right: 0.35rem; }
+  .cpt-results :global(.cpt-tip i.cpt-s1) { background: var(--cpt-s1); }
+  .cpt-results :global(.cpt-tip i.cpt-s2) { background: var(--cpt-s2); }
+  .cpt-results :global(.cpt-tip i.cpt-s3) { background: var(--cpt-s3); }
+  .cpt-results :global(.cpt-csv) { font-weight: 600; }
+
+  /* flippers panel */
+  .cpt-results :global(.cpt-flip-intro) { margin: 0 0 0.85rem; }
+  .cpt-results :global(.cpt-flip) { display: grid; gap: 1rem; }
+  @media (min-width: 44rem) { .cpt-results :global(.cpt-flip) { grid-template-columns: 1fr 1fr; } }
+  .cpt-results :global(.cpt-flip-side) { border: 1px solid var(--line); border-top: 3px solid var(--lake-900); border-radius: var(--radius-sm); padding: 0.9rem 1rem; background: var(--paper); }
+  .cpt-results :global(.cpt-flip-side h4) { margin: 0 0 0.5rem; font-size: 1.02rem; color: var(--lake-900); }
+  .cpt-results :global(.cpt-flip-side ul) { margin: 0; padding-left: 1.1rem; font-size: 0.92rem; line-height: 1.55; }
+  .cpt-results :global(.cpt-flip-side li) { margin-bottom: 0.4rem; }
+  .cpt-results :global(.cpt-flip-side li.is-match) { font-weight: 600; color: var(--lake-900); }
+  .cpt-results :global(.cpt-match) {
+    display: inline-block; font-size: 0.64rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--pine-700); border: 1px solid var(--pine-500); border-radius: 999px; padding: 0 0.45rem; margin-left: 0.25rem; white-space: nowrap;
+  }
+
+  /* edge-case cards (callout design system: compact, hairline, paper body) */
+  .cpt-results :global(.cpt-edges) { display: grid; gap: 0.6rem; }
+  .cpt-results :global(.cpt-edge) { border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--paper); }
+  .cpt-results :global(.cpt-edge.is-flagged) { border-left: 4px solid var(--cpt-amber); }
+  .cpt-results :global(.cpt-edge summary) {
+    cursor: pointer; padding: 0.6rem 0.9rem; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--pine-700);
+  }
+  .cpt-results :global(.cpt-edge.is-flagged summary) { color: var(--cpt-amber); }
+  .cpt-results :global(.cpt-edge-body) { padding: 0 0.9rem 0.75rem; font-size: 0.9rem; line-height: 1.55; }
+  .cpt-results :global(.cpt-edge-body p) { margin: 0 0 0.5rem; }
+  .cpt-results :global(.cpt-edge-body p:last-child) { margin: 0; }
+  .cpt-results :global(.cpt-edge-body strong) { color: var(--lake-900); }
+
+  /* worked examples (callout design system: green stamp in the header, dotted leaders) */
+  .cpt-results :global(.cpt-we) { border: 1px solid var(--line); border-left: 4px solid var(--cpt-green); border-radius: var(--radius-sm); padding: 0.9rem 1.1rem; margin-top: 0.85rem; background: var(--card); }
+  .cpt-results :global(.cpt-we-label) { margin: 0 0 0.35rem; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--cpt-green); }
+  .cpt-results :global(.cpt-we-persona) { margin: 0 0 0.5rem; font-size: 0.92rem; }
+  .cpt-results :global(.cpt-we-lines) { list-style: none; margin: 0; padding: 0; font-size: 0.88rem; }
+  .cpt-results :global(.cpt-we-lines li) { display: flex; align-items: baseline; gap: 0.4rem; padding: 0.12rem 0; }
+  .cpt-results :global(.cpt-dots) { flex: 1; border-bottom: 1px dotted var(--line-strong); min-width: 1rem; transform: translateY(-0.25em); }
+  .cpt-results :global(.cpt-we-lines li > span:last-child) { text-align: right; }
+  .cpt-results :global(.cpt-we-result) { font-weight: 700; color: var(--cpt-green); }
+  .cpt-results :global(.cpt-we-foot) { margin: 0.5rem 0 0; font-size: 0.8rem; color: var(--ink-soft); }
+  @media (max-width: 30rem) { .cpt-results :global(.cpt-we-lines li) { flex-wrap: wrap; } .cpt-results :global(.cpt-dots) { display: none; } .cpt-results :global(.cpt-we-lines li > span:last-child) { margin-left: auto; } }
+
+  .cpt :global(.cpt-src), .cpt-assumptions :global(.cpt-src) {
+    display: inline-block; vertical-align: 0.1em;
+    font-family: var(--font-body); font-size: 0.66rem; font-weight: 600; letter-spacing: 0.02em; line-height: 1.5;
+    color: var(--pine-700); text-decoration: none;
+    border: 1px solid var(--line-strong); border-radius: 999px; padding: 0 0.45rem; margin-left: 0.2rem; white-space: nowrap;
+  }
+  .cpt :global(.cpt-src:hover) { border-color: var(--pine-500); text-decoration: underline; }
+  .cpt :global(.cpt-flag), .cpt-assumptions .cpt-flag {
+    display: inline-block; vertical-align: 0.1em;
+    font-family: var(--font-body); font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; line-height: 1.5;
+    background: var(--gold-wash); color: var(--gold-deep);
+    border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+    border-radius: 999px; padding: 0 0.5rem; margin-left: 0.35rem; white-space: nowrap;
+  }
+
+  /* ---------- assumptions + sources ---------- */
+  .cpt-assumptions, .cpt-sources { max-width: 52rem; margin-top: 3.5rem; }
+  .cpt-assumptions h2, .cpt-sources h2 { position: relative; padding-top: 1.25rem; margin: 0 0 1rem; font-size: clamp(1.5rem, 3vw, 1.9rem); }
+  .cpt-assumptions h2::before, .cpt-sources h2::before {
+    content: ""; position: absolute; left: 0; top: 0; width: 2.5rem; height: 3px; border-radius: 3px; background: var(--gold);
+  }
+  .cpt-assumptions ul {
+    list-style: none; padding: 0; margin: 0 0 1rem;
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm);
+  }
+  .cpt-assumptions li {
+    position: relative; margin: 0; padding: 0.9rem 1.25rem 0.9rem 2.75rem;
+    font-size: 0.93rem; line-height: 1.6; border-top: 1px solid var(--line);
+  }
+  .cpt-assumptions li:first-child { border-top: 0; }
+  .cpt-assumptions li::before {
+    content: ""; position: absolute; left: 1.2rem; top: 1.45rem;
+    width: 0.5rem; height: 0.5rem; border-radius: 50%; border: 2px solid var(--gold);
+  }
+  .cpt-assumptions strong { color: var(--lake-900); }
+  .cpt-sources ul { list-style: none; padding: 0; margin: 0; }
+  .cpt-sources li {
+    margin: 0; padding: 0.65rem 0; border-top: 1px solid var(--line);
+    font-size: 0.9rem; color: var(--ink-soft); overflow-wrap: anywhere;
+  }
+  .cpt-sources li:last-child { border-bottom: 1px solid var(--line); }
+</style>
