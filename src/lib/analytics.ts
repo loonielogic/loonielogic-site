@@ -22,7 +22,7 @@
  */
 
 /** Umami Cloud website ID. Replace the placeholder with the real ID. */
-export const UMAMI_WEBSITE_ID = "REPLACE_WITH_UMAMI_WEBSITE_ID";
+export const UMAMI_WEBSITE_ID = "3bf89692-f9d7-42e0-908f-52e1f623c982";
 export const UMAMI_SCRIPT_SRC = "https://cloud.umami.is/script.js";
 
 /**
