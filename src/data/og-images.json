@@ -29,11 +29,23 @@
     "title": "Canadian Tax & Savings Calculators 2026",
     "line": "Canadian money calculators in progress: income tax, TFSA vs RRSP, room trackers, and home buying."
   },
+  "/calculators/cpp-timing": {
+    "image": "/og/calculators-cpp-timing.png",
+    "alt": "LoonieLogic tool: CPP Timing Calculator 2026: Start at 60, 65, or 70?",
+    "title": "CPP Timing Calculator 2026: Start at 60, 65, or 70?",
+    "line": "Compare starting CPP at 60, 65, or 70 on your own estimate: monthly and lifetime totals…"
+  },
   "/calculators/down-payment-planner": {
     "image": "/og/calculators-down-payment-planner.png",
     "alt": "LoonieLogic tool: Down Payment Planner Canada 2026: Timeline + FHSA/HBP Stack",
     "title": "Down Payment Planner Canada 2026: Timeline + FHSA/HBP Stack",
     "line": "Plan your down payment month by month: timeline or target-date mode, closing costs…"
+  },
+  "/calculators/tfsa-room-checker": {
+    "image": "/og/calculators-tfsa-room-checker.png",
+    "alt": "LoonieLogic tool: TFSA Over-Contribution Risk Checker: Find Your Safe Limit",
+    "title": "TFSA Over-Contribution Risk Checker: Find Your Safe Limit",
+    "line": "Can you still add to your TFSA this year without going over? Estimate your 2026 room…"
   },
   "/compare/": {
     "image": "/og/compare.png",
@@ -88,6 +100,12 @@
     "alt": "LoonieLogic explainer: TFSA Canada 2026: How It Works, Limits, and Rules",
     "title": "TFSA Canada 2026: How It Works, Limits, and Rules",
     "line": "The plain-English TFSA guide: 2026 limit $7,000, how contribution room works, withdrawals…"
+  },
+  "/learn/tfsa-overcontribution-fix": {
+    "image": "/og/learn-tfsa-overcontribution-fix.png",
+    "alt": "LoonieLogic explainer: TFSA Over-Contribution Canada: How to Fix It (2026)",
+    "title": "TFSA Over-Contribution Canada: How to Fix It (2026)",
+    "line": "Over-contributed to your TFSA? Here is exactly what to do: withdraw first, file RC243 by June 30…"
   },
   "/privacy": {
     "image": "/og/privacy.png",
