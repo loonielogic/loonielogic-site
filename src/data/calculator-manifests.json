@@ -713,6 +713,125 @@
       "status": "draft",
       "title": "Compound Growth Calculator Canada 2026: Retirement Saver",
       "wave": 3
+    },
+    {
+      "affiliate_disclosure": false,
+      "affiliate_links": [],
+      "calculator_spec": "hidden_files/cpp-timing-calculator-spec.md",
+      "cluster": "retirement",
+      "faq": [],
+      "faq_pages": [],
+      "figures": [
+        {
+          "expires": "2027-01-01",
+          "key": "cpp.early_reduction",
+          "source": "canada.ca: CPP early-start reduction (0.6%/mo, max 36%)",
+          "verified": "2026-09-27"
+        },
+        {
+          "expires": "2027-01-01",
+          "key": "cpp.late_boost",
+          "source": "canada.ca: CPP delay increase (0.7%/mo, max 42%)",
+          "verified": "2026-09-27"
+        },
+        {
+          "expires": "2027-01-01",
+          "key": "cpp.max_benefit_65",
+          "source": "ESDC: CPP maximum at 65 (Jan 2026 $1,507.65)",
+          "verified": "2026-09-27"
+        },
+        {
+          "expires": "2027-01-01",
+          "key": "cpp.average_new_benefit",
+          "source": "ESDC: CPP average new retirement pension (July 2026)",
+          "verified": "2026-09-27"
+        },
+        {
+          "expires": "2027-01-01",
+          "key": "cpp.post_retirement_max",
+          "source": "ESDC: CPP post-retirement benefit maximum ($54.69/mo)",
+          "verified": "2026-09-27"
+        },
+        {
+          "expires": "2027-01-01",
+          "key": "cpp.dropout.base_years",
+          "source": "canada.ca: CPP base drop-out (8 lowest years)",
+          "verified": "2026-09-30"
+        },
+        {
+          "expires": "2027-01-01",
+          "key": "cpp.dropout.enhanced_best_years",
+          "source": "canada.ca: CPP enhanced component (best 40 years)",
+          "verified": "2026-09-30"
+        },
+        {
+          "expires": "2027-01-01",
+          "key": "cpp.child_rearing_provision",
+          "source": "canada.ca: CPP child-rearing provision",
+          "verified": "2026-09-30"
+        },
+        {
+          "expires": "2027-01-01",
+          "key": "cpp.prb.stop_age",
+          "source": "canada.ca: CPP contributions while collecting stop at 70",
+          "verified": "2026-09-30"
+        },
+        {
+          "expires": "2027-01-01",
+          "key": "cpp.timing.no_benefit_past_70",
+          "source": "canada.ca: no CPP increase for starting after 70",
+          "verified": "2026-09-30"
+        },
+        {
+          "expires": "2027-01-01",
+          "key": "cpp.survivor.combined_cap_rule",
+          "source": "Service Canada: combined retirement + survivor cap",
+          "verified": "2026-09-30"
+        },
+        {
+          "expires": "2027-01-01",
+          "key": "cpp.survivor.max_65_plus",
+          "source": "ESDC: CPP survivor's pension maximum, 65+ (Jan 2026)",
+          "verified": "2026-09-30"
+        },
+        {
+          "expires": "2026-10-01",
+          "key": "oas.deferral.q3_2026",
+          "source": "canada.ca: OAS deferral increase (0.6%/mo, max 36%)",
+          "verified": "2026-09-27"
+        },
+        {
+          "expires": "2027-01-01",
+          "key": "oas.recovery_tax.threshold.2026",
+          "source": "canada.ca: OAS recovery tax threshold ($95,323)",
+          "verified": "2026-09-27"
+        },
+        {
+          "expires": "2027-01-01",
+          "key": "oas.recovery_tax.rate",
+          "source": "canada.ca: OAS recovery tax rate (15%)",
+          "verified": "2026-09-27"
+        }
+      ],
+      "hub": "/calculators/",
+      "last_reviewed": "2026-09-30",
+      "meta_description": "Compare starting CPP at 60, 65, or 70 on your own estimate: monthly and lifetime totals, the exact breakeven ages, and the factors that flip the answer.",
+      "newsletter_placement": "soft-link",
+      "next_review_due": "2026-12-01",
+      "page_type": "calculator",
+      "publish_date": null,
+      "quiz_spec": null,
+      "related": [
+        "/learn/cpp-oas",
+        "/calculators/compound-growth",
+        "/calculators/income-tax-calculator"
+      ],
+      "review_cadence": "annual",
+      "schema_primary": "WebApplication",
+      "slug": "/calculators/cpp-timing",
+      "status": "draft",
+      "title": "CPP Timing Calculator 2026: Start at 60, 65, or 70?",
+      "wave": 3
     }
   ]
 }

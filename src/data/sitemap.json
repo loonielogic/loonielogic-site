@@ -206,6 +206,22 @@
       "wave": 3
     },
     {
+      "cluster": "retirement",
+      "hub": "/calculators/",
+      "meta_description": "Compare starting CPP at 60, 65, or 70 on your own estimate: monthly and lifetime totals, the exact breakeven ages, and the factors that flip the answer.",
+      "page_type": "calculator",
+      "related": [
+        "/learn/cpp-oas",
+        "/calculators/compound-growth",
+        "/calculators/income-tax-calculator"
+      ],
+      "review_cadence": "annual",
+      "slug": "/calculators/cpp-timing",
+      "card_dek": "Compare starting CPP at 60, 65, or 70, with the exact breakeven ages.",
+      "title": "CPP Timing Calculator 2026: Start at 60, 65, or 70?",
+      "wave": 3
+    },
+    {
       "cluster": "utility",
       "hub": "/learn/",
       "meta_description": "Every Canadian money term, decoded: TFSA, RRSP, FHSA, marginal rates, CMHC, OAS clawback and 43 more. Plain English, verified 2026 figures.",
