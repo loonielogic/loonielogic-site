@@ -2,11 +2,19 @@
 /**
  * BaseLayout — shared chrome for every LoonieLogic page.
  * Zero client JS on content pages (Astro default). JSON-LD per page_type
- * per hidden_files/seo-technical-spec.md §1.
+ * per the SEO technical spec §1.
  */
 import "../styles/global.css";
 import { canonicalUrl, SITE_URL, DEFAULT_OG_IMAGE } from "../lib/site";
 import { loonMarkSvg, loonFaviconHref } from "../lib/loon-mark";
+import {
+  CF_BEACON_SCRIPT_SRC,
+  CF_BEACON_TOKEN,
+  UMAMI_SCRIPT_SRC,
+  UMAMI_WEBSITE_ID,
+  isCfBeaconEnabled,
+  isUmamiEnabled,
+} from "../lib/analytics";
 
 interface Crumb {
   name: string;
@@ -59,6 +67,10 @@ const canonical = canonicalUrl(slug);
 const ogType = ["explainer", "comparison"].includes(pageType) ? "article" : "website";
 const today = new Date().toISOString().slice(0, 10);
 const modified = dateModified ?? today;
+
+// Umami Cloud (cookieless analytics). Snippet renders only while the kill
+// switch is on; the website ID is the only per-environment value.
+const umamiOrigin = new URL(UMAMI_SCRIPT_SRC).origin;
 
 const baseNodes: Record<string, unknown>[] = [
   {
@@ -161,6 +173,24 @@ const graph = {
     />
     <link rel="icon" type="image/svg+xml" href={loonFaviconHref} />
     <meta name="theme-color" content="#0b1f1c" />
+    {isUmamiEnabled && (
+      <>
+        <link rel="preconnect" href={umamiOrigin} />
+        <script defer src={UMAMI_SCRIPT_SRC} data-website-id={UMAMI_WEBSITE_ID}></script>
+        <script>
+          import { bindClickTracking } from "../lib/analytics";
+          bindClickTracking();
+        </script>
+      </>
+    )}
+    {isCfBeaconEnabled && (
+      /* Cloudflare Web Analytics snippet, verbatim from the dashboard. */
+      <script
+        type="module"
+        src={CF_BEACON_SCRIPT_SRC}
+        data-cf-beacon={JSON.stringify({ token: CF_BEACON_TOKEN })}
+      ></script>
+    )}
     <script type="application/ld+json" set:html={JSON.stringify(graph)} />
   </head>
   <body>

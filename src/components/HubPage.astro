@@ -60,6 +60,12 @@ const grouped = groups
   : null;
 const sections = grouped ?? (live.length > 0 ? [{ label: null, cards: live }] : []);
 
+// Analytics tokens: hub from the page slug ("/learn/" -> "learn"), card from the
+// card slug ("/learn/tfsa" -> "learn_tfsa"). Hyphens become underscores so the
+// values pass the analytics class-token check (no raw text or numbers leave).
+const hubToken = slug.replace(/\//g, "") || "home";
+const cardToken = (s: string) => s.replace(/^\//, "").replace(/[^a-z0-9]+/g, "_");
+
 // The trailing arrow is drawn by the button itself.
 const ctaText = cta.label.replace(/\s*→\s*$/, "");
 ---
@@ -109,7 +115,14 @@ const ctaText = cta.label.replace(/\s*→\s*$/, "");
             const meta = cardMeta[p.slug] ?? {};
             return (
               <article class="card is-linked">
-                <h3><a href={p.slug}>{p.title}</a></h3>
+                <h3>
+                  <a
+                    href={p.slug}
+                    data-analytics-event="hub_card_clicked"
+                    data-analytics-hub={hubToken}
+                    data-analytics-card={cardToken(p.slug)}
+                  >{p.title}</a>
+                </h3>
                 <p class="dek">{p.card_dek ?? p.meta_description}</p>
                 {(meta.chips || meta.badge) && (
                   <div class="chips">
