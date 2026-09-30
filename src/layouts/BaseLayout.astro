@@ -99,7 +99,7 @@ const primaryType: Record<string, unknown> =
           inLanguage: "en-CA",
           dateModified: modified,
         }
-      : pageType === "glossary"
+      : pageType === "glossary" || pageType === "page"
         ? {
             "@type": "WebPage",
             name: title,

@@ -1,0 +1,189 @@
+---
+/**
+ * NewsletterCapture: the CASL express-consent signup form.
+ *
+ * Plain-HTML POST straight to the email provider, zero required JS, works
+ * with scripts off. Typing an address into this clearly labelled form and
+ * pressing Subscribe is the opt-in (no checkbox on the standard form); the
+ * provider then sends the double opt-in email. Native validation
+ * (type=email, required) blocks an invalid address before anything is sent.
+ *
+ * Until the provider URL is configured, the form renders in full but the
+ * submit button is disabled, there is no action URL, and an honest
+ * "opens at launch" line replaces any confirmation.
+ *
+ * Every string comes from NEWSLETTER_COPY. Elements marked data-nl-copy are
+ * checked against the registry by the post-build gate, which also requires
+ * the purpose line and the privacy-policy link inside every form.
+ */
+import {
+  COPY_VERSION,
+  ESP_FIELDS,
+  NEWSLETTER_COPY as C,
+  PRIVACY_HREF,
+  formState,
+  type NewsletterCopyKey,
+  type NewsletterPlacementToken,
+} from "../config/newsletter";
+
+interface Props {
+  variant: "inline" | "compact" | "landing";
+  /** Analytics placement token, e.g. "home_inline" or "learn_end". */
+  placement: NewsletterPlacementToken;
+  /** Optional line above the heading, e.g. the end-of-article context line. */
+  contextLine?: string;
+}
+
+const { variant, placement, contextLine } = Astro.props;
+const s = formState();
+const id = `nl-${placement}`;
+const contextKey = (Object.keys(C) as NewsletterCopyKey[]).find((k) => C[k] === contextLine);
+---
+
+<div class:list={["nl", `nl-${variant}`]}>
+  <form
+    class="nl-form"
+    method="post"
+    action={s.action}
+    aria-labelledby={`${id}-h`}
+    data-newsletter-form="capture"
+    data-state={s.configured ? "open" : "unconfigured"}
+    data-placement={s.configured ? placement : undefined}
+  >
+    {contextLine && <p class="nl-context" data-nl-copy={contextKey}>{contextLine}</p>}
+    <h2 class="nl-title" id={`${id}-h`} data-nl-copy="heading">{C.heading}</h2>
+    <p class="nl-purpose" id={`${id}-purpose`} data-nl-copy="purpose">{C.purpose}</p>
+
+    <div class="nl-fields">
+      <label class="nl-field" for={`${id}-email`}>
+        <span data-nl-copy="emailLabel">{C.emailLabel}</span>
+        <input
+          id={`${id}-email`}
+          type="email"
+          name={ESP_FIELDS.email}
+          required
+          autocomplete="email"
+          inputmode="email"
+          autocapitalize="off"
+          spellcheck="false"
+          placeholder={C.emailPlaceholder}
+          aria-describedby={`${id}-purpose`}
+        />
+      </label>
+      <label class="nl-field" for={`${id}-name`}>
+        <span data-nl-copy="firstNameLabel">{C.firstNameLabel}</span>
+        <input id={`${id}-name`} type="text" name={ESP_FIELDS.firstName} autocomplete="given-name" maxlength="60" />
+      </label>
+      {s.configured && ESP_FIELDS.source && <input type="hidden" name={ESP_FIELDS.source} value={placement} />}
+      {s.configured && ESP_FIELDS.consentVersion && (
+        <input type="hidden" name={ESP_FIELDS.consentVersion} value={COPY_VERSION} />
+      )}
+      <button
+        class="btn btn-gold nl-submit"
+        type="submit"
+        disabled={s.submitDisabled}
+        aria-describedby={s.statusLine ? `${id}-status` : undefined}
+        data-nl-copy="submit"
+      >{C.submit}</button>
+    </div>
+
+    {s.statusLine && <p class="nl-status" id={`${id}-status`} data-nl-copy="unconfigured">{s.statusLine}</p>}
+
+    <p class="nl-privacy">
+      <span data-nl-copy="privacyNotice">{C.privacyNotice}</span>{" "}
+      <a href={PRIVACY_HREF} data-nl-copy="privacyLinkLabel">{C.privacyLinkLabel}</a>.
+    </p>
+  </form>
+</div>
+
+{s.configured && (
+  <script>
+    import { track } from "../lib/analytics";
+
+    // Fires only after native validation passes (submit never fires on an
+    // invalid address). Sends the placement token only, never form values.
+    document.addEventListener("submit", (e) => {
+      const form = e.target;
+      if (!(form instanceof HTMLFormElement) || form.dataset.newsletterForm !== "capture") return;
+      const placement = form.dataset.placement;
+      if (placement) track("newsletter_signup_submitted", { placement });
+    });
+  </script>
+)}
+
+<style>
+  .nl {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--gold);
+    border-radius: var(--radius);
+    padding: clamp(1.5rem, 3.5vw, 2rem);
+    box-shadow: var(--shadow-sm);
+  }
+  .nl .nl-title {
+    margin: 0 0 0.5rem;
+    padding: 0;
+    font-size: clamp(1.45rem, 2.8vw, 1.85rem);
+  }
+  .nl .nl-title::before { display: none; }
+  .nl-context {
+    margin: 0 0 0.4rem;
+    font-size: 0.9rem;
+    font-weight: 650;
+    color: var(--pine-700);
+  }
+  .nl-purpose { color: var(--ink-soft); margin: 0 0 1.25rem; max-width: 40rem; }
+
+  .nl-fields { display: grid; gap: 0.85rem; align-items: end; }
+  @media (min-width: 42rem) {
+    .nl-fields { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) auto; }
+  }
+  .nl-field { display: block; margin: 0; }
+  .nl-field span {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-size: 0.86rem;
+    font-weight: 650;
+    color: var(--lake-900);
+  }
+  .nl input {
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.65rem 0.85rem;
+    font: inherit;
+    font-size: 1rem;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+  }
+  .nl input::placeholder { color: var(--ink-soft); opacity: 0.75; }
+  .nl input:focus-visible { outline: 3px solid var(--gold); outline-offset: 1px; border-color: var(--pine-500); }
+  .nl input:user-invalid { border-color: var(--red); background: var(--red-wash); }
+
+  .nl-submit[disabled] {
+    background: var(--paper-2);
+    color: var(--ink-soft);
+    border: 1.5px dashed var(--line-strong);
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+  .nl-status {
+    margin: 0.85rem 0 0;
+    font-size: 0.9rem;
+    font-weight: 650;
+    color: var(--gold-deep);
+  }
+  .nl-privacy { margin: 0.9rem 0 0; font-size: 0.84rem; color: var(--ink-soft); }
+  .nl-privacy a { color: var(--pine-700); }
+
+  /* compact: hub pages */
+  .nl-compact { padding: clamp(1.25rem, 3vw, 1.6rem); }
+  .nl-compact .nl-title { font-size: 1.35rem; }
+  .nl-compact .nl-purpose { font-size: 0.95rem; margin-bottom: 1rem; }
+
+  /* landing: the /newsletter page, fields stacked */
+  .nl-landing { padding: clamp(1.75rem, 4vw, 2.5rem); box-shadow: var(--shadow-md); }
+  .nl-landing .nl-fields { grid-template-columns: 1fr; max-width: 30rem; }
+  .nl-landing .nl-submit { justify-self: start; }
+</style>

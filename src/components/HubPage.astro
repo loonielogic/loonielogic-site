@@ -9,7 +9,9 @@
  */
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Breadcrumbs from "./Breadcrumbs.astro";
+import NewsletterCapture from "./NewsletterCapture.astro";
 import type { SitemapPage } from "../lib/site";
+import type { NewsletterPlacementToken } from "../config/newsletter";
 
 interface CardMeta {
   chips?: string[];
@@ -34,12 +36,14 @@ interface Props {
   eyebrow?: string;
   /** One line of copy beside the closing CTA button. */
   ctaLead?: string;
+  /** Footer-adjacent compact newsletter form, e.g. "learn_hub". */
+  newsletterPlacement?: NewsletterPlacementToken;
 }
 
 const {
   slug, title, metaDescription, h1, intro, breadcrumb, cards, builtSlugs,
   cardMeta = {}, groups, cta, disclosureBlock = false, eyebrow = breadcrumb,
-  ctaLead = "Ready for the next step?",
+  ctaLead = "Ready for the next step?", newsletterPlacement,
 } = Astro.props;
 
 const bySlug = new Map(cards.map((c) => [c.slug, c]));
@@ -153,6 +157,12 @@ const ctaText = cta.label.replace(/\s*→\s*$/, "");
       <p>{ctaLead}</p>
       <a class="btn btn-gold" href={cta.href}>{ctaText} <span class="arrow" aria-hidden="true">→</span></a>
     </div>
+
+    {newsletterPlacement && (
+      <div class="hub-newsletter">
+        <NewsletterCapture variant="compact" placement={newsletterPlacement} />
+      </div>
+    )}
   </div>
 </BaseLayout>
 
@@ -167,4 +177,5 @@ const ctaText = cta.label.replace(/\s*→\s*$/, "");
     font-size: 1.5rem; margin: 0 0 0.25rem;
   }
   .hub-label::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .hub-newsletter { margin: 2.5rem 0 clamp(3rem, 7vw, 4.5rem); }
 </style>

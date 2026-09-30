@@ -1,0 +1,141 @@
+---
+/**
+ * /newsletter: the newsletter landing page and the target of every soft link.
+ * Carries the full consent wording (landing-variant form), the cadence
+ * promise, and the privacy notice.
+ *
+ * Draft until the signup provider is configured: noindex, draft chip, and
+ * not listed in sitemap.xml (it is not on the canonical sitemap).
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import NewsletterCapture from "../components/NewsletterCapture.astro";
+import { DOUBLE_OPT_IN, PRIVACY_HREF, isNewsletterConfigured } from "../config/newsletter";
+
+const SLUG = "/newsletter";
+const draft = !isNewsletterConfigured();
+
+const title = "The LoonieLogic Newsletter: Canadian Money, Twice a Month";
+const metaDescription =
+  "New plain-English guides, calculator updates, and Canadian money deadlines, about twice a month. Double opt-in, never sold or shared, unsubscribe anytime.";
+
+const gets = [
+  { h: "New guides as they publish", p: "Explainers and comparisons with the current year's numbers, checked against official sources." },
+  { h: "Tool updates", p: "When a calculator launches, or when the figures behind one change." },
+  { h: "Deadlines before they arrive", p: "The RRSP contribution deadline, tax filing season, and the January TFSA room reset, with time to act." },
+  { h: "Promo changes on our comparisons", p: "When a rate or offer on a comparison page ends or changes, with a link to the updated page." },
+];
+
+const magnets = [
+  { h: "TFSA room worksheet", p: "A one-page ledger for your contribution room: eligibility years, contributions, withdrawals, and the over-contribution check." },
+  { h: "First-time tax-filing checklist", p: "Setting up CRA My Account, the slips to gather, and the credits first-time filers most often miss." },
+  { h: "FHSA vs Home Buyers' Plan flowchart", p: "One page from your situation to which account to use first, linked to the full comparison." },
+  { h: "RRSP deadline and promo calendar", p: "The year's key money dates on one page: the RRSP deadline, tax filing, and when bank promos end." },
+];
+---
+
+<BaseLayout
+  title={title}
+  metaDescription={metaDescription}
+  slug={SLUG}
+  pageType="page"
+  noindex={draft}
+  breadcrumbs={[{ name: "Newsletter", slug: SLUG }]}
+>
+  <section class="page-hero page-hero-light nl-hero">
+    <div class="wrap">
+      <Breadcrumbs trail={[{ name: "Newsletter", slug: SLUG }]} />
+      <div class="nl-tags">
+        <p class="eyebrow">Newsletter</p>
+        {draft && <span class="chip chip-draft">Draft</span>}
+      </div>
+      <h1>Canadian money news, about twice a month</h1>
+      <p class="lede">
+        New guides, tool updates, and the Canadian money deadlines worth knowing,
+        in plain English with the numbers sourced. About twice a month, and we
+        keep to that.
+      </p>
+    </div>
+  </section>
+
+  <div class="wrap nl-body">
+    <div class="nl-grid">
+      <section aria-labelledby="gets-h">
+        <h2 id="gets-h">What you get</h2>
+        <ul class="gets">
+          {gets.map((g) => <li><strong>{g.h}.</strong> {g.p}</li>)}
+        </ul>
+        <h2 id="not-h">What you won't get</h2>
+        <ul class="gets gets-not">
+          <li>No ads for products inside the emails, and no direct links to providers.</li>
+          <li>No selling, renting, or sharing your address. Ever.</li>
+          <li>No daily emails, and no hoops to leave: one click unsubscribes you, processed same-day.</li>
+        </ul>
+      </section>
+
+      <div class="nl-form-col">
+        <NewsletterCapture variant="landing" placement="newsletter_landing" />
+      </div>
+    </div>
+
+    <section class="nl-section" aria-labelledby="how-h">
+      <h2 id="how-h">How your email is handled</h2>
+      <ul class="gets">
+        <li><strong>Double opt-in.</strong> After you subscribe, we send one email with a confirm link. Nothing else is sent until you click it, and the link expires in {DOUBLE_OPT_IN.confirmWindowHours} hours.</li>
+        <li><strong>Sent by our email provider.</strong> The form goes straight to the service that sends the newsletter. This website never sees or stores your address.</li>
+        <li><strong>Proof of consent.</strong> The provider records when and where you subscribed and the wording you saw, as Canada's anti-spam law requires.</li>
+        <li><strong>Leaving is easy.</strong> Every email identifies LoonieLogic and has an unsubscribe link.</li>
+      </ul>
+      <p class="page-meta">Full details are in our <a href={PRIVACY_HREF}>privacy policy</a>.</p>
+    </section>
+
+    <section class="nl-section" aria-labelledby="magnets-h">
+      <h2 id="magnets-h">Free worksheets, coming at launch</h2>
+      <p class="nl-note">
+        Each one arrives by email when you ask for it. Getting a worksheet never
+        signs you up for the newsletter: that is a separate box, and it starts unticked.
+      </p>
+      <div class="card-grid">
+        {magnets.map((m) => (
+          <article class="card">
+            <div class="chips"><span class="chip chip-draft">Coming at launch</span></div>
+            <h3>{m.h}</h3>
+            <p class="dek">{m.p}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="nl-section" aria-labelledby="sample-h">
+      <h2 id="sample-h">Sample issue</h2>
+      <p class="nl-note">
+        The first issue will be posted on this page before it is sent, so you
+        can see exactly what arrives before you sign up.
+      </p>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .nl-hero { padding-bottom: clamp(2.5rem, 6vw, 3.75rem); }
+  .nl-hero h1 { max-width: 20ch; }
+  .nl-tags { display: flex; align-items: center; gap: 0.9rem; margin-bottom: 1rem; }
+  .nl-tags .eyebrow { margin: 0; }
+  .nl-body { padding-bottom: clamp(3rem, 7vw, 5rem); }
+  .nl-grid { display: grid; gap: 2.5rem; margin-top: 2.5rem; align-items: start; }
+  @media (min-width: 60rem) { .nl-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 3.5rem; } }
+  .nl-grid h2 { margin-top: 0; }
+  .nl-grid h2 + ul + h2, .gets + h2 { margin-top: 2.25rem; }
+  .gets { list-style: none; padding: 0; margin: 0; }
+  .gets li { position: relative; padding: 0.6rem 0 0.6rem 1.75rem; border-top: 1px solid var(--line); }
+  .gets li::before {
+    content: "✓"; position: absolute; left: 0; top: 0.6rem;
+    color: var(--pine-700); font-weight: 700;
+  }
+  .gets-not li::before { content: "×"; color: var(--red); }
+  .gets strong { color: var(--lake-900); }
+  .nl-section { margin-top: clamp(3rem, 6vw, 4rem); max-width: 60rem; }
+  .nl-section > h2 { margin-top: 0; }
+  .nl-note { color: var(--ink-soft); max-width: 42rem; }
+  .nl-section .card h3 { margin-top: 0.5rem; }
+</style>

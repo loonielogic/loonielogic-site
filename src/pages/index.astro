@@ -10,6 +10,7 @@
  * shown always match what the planner itself shows on first load.
  */
 import BaseLayout from "../layouts/BaseLayout.astro";
+import NewsletterCapture from "../components/NewsletterCapture.astro";
 import { getCollection } from "astro:content";
 import { pageBySlug } from "../lib/site";
 import { plan, defaultInput } from "../lib/calculators/down-payment-planner";
@@ -172,6 +173,13 @@ builtSlugs.add(PLANNER);
         <li><strong>Dated</strong> with the day every figure was checked</li>
         <li><strong>Honest:</strong> education, never personal advice</li>
       </ul>
+    </div>
+  </section>
+
+  <!-- ======================= NEWSLETTER (post-hero) ==================== -->
+  <section class="home-newsletter home-newsletter-top" aria-label="Newsletter">
+    <div class="wrap">
+      <NewsletterCapture variant="inline" placement="home_inline" />
     </div>
   </section>
 
@@ -420,6 +428,13 @@ builtSlugs.add(PLANNER);
       </div>
     </div>
   </section>
+
+  <!-- ===================== NEWSLETTER (above footer) =================== -->
+  <section class="home-newsletter section-tint" aria-label="Newsletter signup">
+    <div class="wrap">
+      <NewsletterCapture variant="inline" placement="home_footer" />
+    </div>
+  </section>
 </BaseLayout>
 
 <style>
@@ -529,6 +544,10 @@ builtSlugs.add(PLANNER);
   .trust-strip li { display: flex; gap: 0.6rem; align-items: baseline; }
   .trust-strip li::before { content: "✓"; color: var(--gold-bright); font-weight: 700; }
   .trust-strip strong { color: var(--on-dark); font-weight: 650; }
+
+  /* ---------- newsletter ---------- */
+  .home-newsletter { padding: clamp(2.5rem, 6vw, 4rem) 0; }
+  .home-newsletter-top { padding-bottom: 0; }
 
   /* ---------- steps ---------- */
   .steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 1.25rem; counter-reset: none; }

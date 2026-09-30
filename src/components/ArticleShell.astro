@@ -8,8 +8,15 @@
  *
  * Slots: `lead` renders above the body (disclosures, CTAs); default is the
  * article body; `after` renders below the body inside the reading column.
+ *
+ * Newsletter: end-of-article only, after the `after` slot, driven by the
+ * page's `newsletter_placement`. Legal pages never get one, whatever the
+ * prop says.
  */
 import Breadcrumbs from "./Breadcrumbs.astro";
+import NewsletterCapture from "./NewsletterCapture.astro";
+import NewsletterSoftLink from "./NewsletterSoftLink.astro";
+import { NEWSLETTER_COPY } from "../config/newsletter";
 
 interface Props {
   eyebrow: string;
@@ -22,12 +29,17 @@ interface Props {
   honestyFoot?: boolean;
   /** "compare" turns on the head-to-head table treatment. */
   variant?: "explainer" | "compare" | "legal";
+  /** The page's newsletter_placement front matter. */
+  newsletter?: "inline" | "soft-link" | "none";
 }
 
 const {
   eyebrow, title, lastReviewed, reviewCadence, trail,
   headings = [], body = "", honestyFoot = true, variant = "explainer",
+  newsletter = "none",
 } = Astro.props;
+
+const newsletterMode = variant === "legal" ? "none" : newsletter;
 
 const toc = headings.filter((h) => h.depth === 2);
 const words = body.split(/\s+/).filter(Boolean).length;
@@ -60,6 +72,14 @@ const hasSources = toc.some((h) => h.slug === "sources");
       <slot name="lead" />
       <slot />
       <slot name="after" />
+      {newsletterMode === "inline" && (
+        <div class="article-newsletter">
+          {variant === "compare"
+            ? <NewsletterCapture variant="inline" placement="compare_end" contextLine={NEWSLETTER_COPY.contextCompare} />
+            : <NewsletterCapture variant="inline" placement="learn_end" contextLine={NEWSLETTER_COPY.contextExplainer} />}
+        </div>
+      )}
+      {newsletterMode === "soft-link" && <NewsletterSoftLink />}
       {honestyFoot && (
         <aside class="article-foot" aria-label="How this page is made">
           <p>
@@ -92,3 +112,7 @@ const hasSources = toc.some((h) => h.slug === "sources");
 
   <slot name="below" />
 </div>
+
+<style>
+  .article-newsletter { margin: 3rem 0 0; }
+</style>

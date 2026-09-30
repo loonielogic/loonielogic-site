@@ -1,0 +1,96 @@
+---
+/**
+ * /newsletter/confirmed: where the double opt-in link lands (the provider's
+ * return URL). Fires newsletter_confirmed with the email_return placement
+ * token only, and only once the provider is configured, so pre-launch
+ * visits are not counted as confirmations.
+ *
+ * Always noindex (a return page, not a search landing), never in
+ * sitemap.xml. Draft chip until the provider is configured.
+ */
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { PRIVACY_HREF, isNewsletterConfigured } from "../../config/newsletter";
+
+const SLUG = "/newsletter/confirmed";
+const configured = isNewsletterConfigured();
+
+const title = "Subscription Confirmed: Welcome to the LoonieLogic Newsletter";
+const metaDescription =
+  "Your LoonieLogic newsletter subscription is confirmed. Here is what arrives next, how often, and how to leave anytime with one click, processed same-day.";
+
+const startHere = [
+  { label: "TFSA basics and the 2026 limit", href: "/learn/tfsa" },
+  { label: "TFSA vs RRSP: which account wins for you", href: "/compare/tfsa-vs-rrsp" },
+  { label: "All explainers", href: "/learn/" },
+];
+---
+
+<BaseLayout
+  title={title}
+  metaDescription={metaDescription}
+  slug={SLUG}
+  pageType="page"
+  noindex
+  breadcrumbs={[{ name: "Newsletter", slug: "/newsletter" }, { name: "Confirmed", slug: SLUG }]}
+>
+  <section class="page-hero page-hero-light ok-hero">
+    <div class="wrap">
+      <div class="ok-tags">
+        <p class="eyebrow">Newsletter</p>
+        {!configured && <span class="chip chip-draft">Draft</span>}
+      </div>
+      <h1>You're subscribed. Thanks for confirming.</h1>
+      <p class="lede">
+        Your confirm click is recorded, so the newsletter can now reach you.
+      </p>
+    </div>
+  </section>
+
+  <div class="wrap ok-body">
+    <section aria-labelledby="next-h">
+      <h2 id="next-h">What happens next</h2>
+      <ol class="ok-steps">
+        <li><strong>A short welcome email</strong> arrives first, with what to expect and the best pages to start with.</li>
+        <li><strong>Then about twice a month:</strong> new guides, tool updates, and Canadian money deadlines.</li>
+        <li><strong>Leave anytime.</strong> Every email has an unsubscribe link, processed same-day. See the <a href={PRIVACY_HREF}>privacy policy</a> for how your address is handled.</li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="magnet-h">
+      <h2 id="magnet-h">Asked for a worksheet?</h2>
+      <p>
+        It is sent to the same address as a separate email. If it is not in
+        your inbox within a few minutes, check your spam or promotions folder.
+      </p>
+    </section>
+
+    <section aria-labelledby="start-h">
+      <h2 id="start-h">While you wait</h2>
+      <ul class="ok-links">
+        {startHere.map((l) => (
+          <li><a class="link-arrow" href={l.href}>{l.label} <span class="arrow" aria-hidden="true">→</span></a></li>
+        ))}
+      </ul>
+    </section>
+  </div>
+</BaseLayout>
+
+{configured && (
+  <script>
+    import { track } from "../../lib/analytics";
+    track("newsletter_confirmed", { placement: "email_return" });
+  </script>
+)}
+
+<style>
+  .ok-hero { padding-bottom: clamp(2.5rem, 6vw, 3.5rem); }
+  .ok-hero h1 { max-width: 20ch; }
+  .ok-tags { display: flex; align-items: center; gap: 0.9rem; margin-bottom: 1rem; }
+  .ok-tags .eyebrow { margin: 0; }
+  .ok-body { max-width: 46rem; padding-bottom: clamp(3rem, 7vw, 5rem); }
+  .ok-steps { padding-left: 1.3rem; }
+  .ok-steps li { margin-bottom: 0.6rem; }
+  .ok-steps li::marker { color: var(--gold-deep); font-weight: 700; }
+  .ok-steps strong { color: var(--lake-900); }
+  .ok-links { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.6rem; }
+</style>

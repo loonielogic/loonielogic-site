@@ -1,0 +1,22 @@
+---
+/**
+ * NewsletterSoftLink: the one-line pointer to /newsletter for calculator
+ * result screens and quiz outcomes. No form here on purpose: an email field
+ * next to someone's financial inputs reads as extractive. The landing page
+ * carries the full consent wording.
+ */
+import { NEWSLETTER_COPY as C, NEWSLETTER_HREF } from "../config/newsletter";
+---
+
+<p class="nl-soft">
+  <a class="link-arrow" href={NEWSLETTER_HREF}><span data-nl-copy="softLink">{C.softLink}</span> <span class="arrow" aria-hidden="true">→</span></a>
+</p>
+
+<style>
+  .nl-soft {
+    margin: 2rem 0 0;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--line);
+    font-size: 0.95rem;
+  }
+</style>
