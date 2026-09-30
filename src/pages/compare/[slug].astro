@@ -46,6 +46,7 @@ const srcSlug = d.slug.replace(/^\//, "");
   slug={d.slug}
   pageType={d.page_type}
   dateModified={d.last_reviewed}
+  noindex={d.status !== "live"}
   breadcrumbs={[{ name: "Compare", slug: "/compare/" }, { name: d.title, slug: d.slug }]}
   readingProgress
 >
