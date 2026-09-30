@@ -1,0 +1,172 @@
+---
+/**
+ * BaseLayout — shared chrome for every LoonieLogic page.
+ * Zero client JS on content pages (Astro default). JSON-LD per page_type
+ * per hidden_files/seo-technical-spec.md §1.
+ */
+import "../styles/global.css";
+import { canonicalUrl, SITE_URL } from "../lib/site";
+
+interface Props {
+  title: string;
+  metaDescription: string;
+  slug: string;
+  pageType: string;
+  dateModified?: string;
+  jsonLdExtra?: Record<string, unknown>;
+  noindex?: boolean;
+}
+
+const {
+  title,
+  metaDescription,
+  slug,
+  pageType,
+  dateModified,
+  jsonLdExtra,
+  noindex = false,
+} = Astro.props;
+
+const canonical = canonicalUrl(slug);
+const today = new Date().toISOString().slice(0, 10);
+const modified = dateModified ?? today;
+
+const baseNodes: Record<string, unknown>[] = [
+  {
+    "@type": "WebSite",
+    "@id": `${SITE_URL}/#website`,
+    name: "LoonieLogic",
+    url: `${SITE_URL}/`,
+    inLanguage: "en-CA",
+  },
+  {
+    "@type": "Organization",
+    "@id": `${SITE_URL}/#organization`,
+    name: "LoonieLogic",
+    url: `${SITE_URL}/`,
+  },
+];
+
+const primaryType: Record<string, unknown> =
+  pageType === "home"
+    ? { "@type": "WebPage", name: title, url: canonical }
+    : pageType === "hub"
+      ? {
+          "@type": "CollectionPage",
+          name: title,
+          url: canonical,
+          inLanguage: "en-CA",
+          dateModified: modified,
+        }
+      : pageType === "glossary"
+        ? {
+            "@type": "WebPage",
+            name: title,
+            url: canonical,
+            inLanguage: "en-CA",
+            dateModified: modified,
+          }
+        : {
+            "@type": "Article",
+            headline: title,
+            url: canonical,
+            inLanguage: "en-CA",
+            author: { "@type": "Organization", name: "LoonieLogic" },
+            dateModified: modified,
+            articleSection: pageType === "comparison" ? "Compare" : "Learn",
+          };
+
+const graph = {
+  "@context": "https://schema.org",
+  "@graph": [...baseNodes, primaryType, ...(jsonLdExtra ? [jsonLdExtra] : [])],
+};
+---
+
+<!doctype html>
+<html lang="en-CA">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={metaDescription} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Inter+Tight:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%230B4F4A'/%3E%3Ccircle cx='32' cy='32' r='16' fill='%23C9971F'/%3E%3C/svg%3E"
+    />
+    <script type="application/ld+json" set:html={JSON.stringify(graph)} />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="LoonieLogic home">
+          <span class="loonie">Loonie</span>Logic
+        </a>
+        <nav class="main-nav" aria-label="Primary">
+          <a href="/learn/">Learn</a>
+          <a href="/calculators/">Tools</a>
+          <a href="/compare/">Compare</a>
+          <a href="/about">About</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <div class="footer-grid">
+          <div>
+            <h4>Learn</h4>
+            <ul>
+              <li><a href="/learn/tfsa">TFSA basics</a></li>
+              <li><a href="/learn/">All explainers</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Tools</h4>
+            <ul>
+              <li><a href="/calculators/">All tools</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Compare</h4>
+            <ul>
+              <li><a href="/compare/tfsa-vs-rrsp">TFSA vs RRSP</a></li>
+              <li><a href="/compare/">All comparisons</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Company</h4>
+            <ul>
+              <li><a href="/about">About</a></li>
+              <li><a href="/privacy">Privacy</a></li>
+              <li><a href="/affiliate-disclosure">Affiliate disclosure</a></li>
+              <li><a href="/terms">Terms of use</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-disclaimers">
+          <p>
+            <strong>Educational only.</strong> LoonieLogic is general financial education,
+            not financial advice and not a substitute for a licensed professional.
+            <strong>Affiliate disclosure:</strong> we may earn a commission from some
+            links on this site, disclosed before the first affiliate link on any page.
+            <strong>Numbers change:</strong> tax rules, limits, and promos are verified
+            against official sources on the dates shown — check the linked official
+            pages before acting.
+          </p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

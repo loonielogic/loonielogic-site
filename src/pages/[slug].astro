@@ -1,0 +1,42 @@
+---
+/**
+ * Root legal renderer — /about, /privacy, /affiliate-disclosure, /terms.
+ * Legal slugs are root-level per the canonical sitemap. Static files always
+ * win over this dynamic route, so future hand-built root pages take priority.
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getCollection, render } from "astro:content";
+
+export async function getStaticPaths() {
+  const legal = await getCollection("legal");
+  return legal.map((e) => ({
+    params: { slug: e.data.slug.replace(/^\//, "") },
+    props: { entry: e },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+---
+
+<BaseLayout
+  title={d.title}
+  metaDescription={d.meta_description}
+  slug={d.slug}
+  pageType={d.page_type}
+  dateModified={d.last_reviewed}
+>
+  <div class="wrap">
+    <nav aria-label="Breadcrumb" class="page-meta" style="margin-top:1.5rem">
+      <a href="/">Home</a> › {d.title}
+    </nav>
+    <article class="prose">
+      <h1>{d.title}</h1>
+      <p class="page-meta">
+        Last reviewed: {d.last_reviewed} · {d.review_cadence} review
+      </p>
+      <Content />
+    </article>
+  </div>
+</BaseLayout>

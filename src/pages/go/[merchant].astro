@@ -1,0 +1,38 @@
+---
+/**
+ * /go/<merchant>/ placeholder — per the affiliate-link spec §2, a non-live
+ * merchant's /go/ path must NOT redirect anywhere. This noindex placeholder
+ * says plainly the redirect isn't active yet. When a record flips to `live`,
+ * the _redirects table (affiliate-redirects integration) takes over and this
+ * page stops being served for that merchant.
+ */
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import affiliateIndex from "../../data/affiliates-index.json";
+
+export function getStaticPaths() {
+  return Object.keys(affiliateIndex).map((merchant) => ({
+    params: { merchant },
+    props: { merchant },
+  }));
+}
+
+const { merchant } = Astro.props;
+const record = (affiliateIndex as Record<string, { display_name: string; status: string }>)[merchant];
+---
+
+<BaseLayout
+  title={`Redirect not active — ${record.display_name} | LoonieLogic`}
+  metaDescription="This affiliate redirect is not active yet."
+  slug={`/go/${merchant}/`}
+  pageType="hub"
+  noindex={true}
+>
+  <div class="wrap prose" style="margin-top:3rem">
+    <h1>Not active yet</h1>
+    <p>
+      The {record.display_name} redirect isn't live — our affiliate application
+      hasn't been approved. Nothing was tracked and you weren't sent anywhere.
+    </p>
+    <p><a href="/compare/">Back to our comparisons →</a></p>
+  </div>
+</BaseLayout>

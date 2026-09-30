@@ -1,0 +1,77 @@
+---
+/**
+ * Comparison renderer — /compare/*. Above-the-fold disclosure bar per the
+ * affiliate-link spec §4: the short commission disclosure when the page
+ * carries live affiliate links, the explicit non-affiliate line otherwise
+ * (a page that discloses commissions it cannot earn misleads in reverse).
+ */
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import RelatedCards from "../../components/RelatedCards.astro";
+import ComparisonDisclosure from "../../components/ComparisonDisclosure.astro";
+import AffiliateCTA from "../../components/AffiliateCTA.astro";
+import { getCollection, render } from "astro:content";
+import affiliateIndex from "../../data/affiliates-index.json";
+
+export async function getStaticPaths() {
+  const comparisons = await getCollection("comparisons");
+  return comparisons.map((e) => ({
+    params: { slug: e.data.slug.replace("/compare/", "") },
+    props: { entry: e },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+
+// Pages that actually exist in this build — related cards link only to
+// these; everything else renders "Coming soon" (no dead links).
+const builtSlugs = new Set<string>(["/", "/learn/", "/calculators/", "/compare/"]);
+for (const coll of ["explainers", "comparisons", "legal"] as const) {
+  for (const e of await getCollection(coll)) builtSlugs.add(e.data.slug);
+}
+
+const liveMerchants = d.affiliate_links.filter(
+  (l) => (affiliateIndex as Record<string, { status: string }>)[l.merchant]?.status === "live",
+);
+const hasLiveLinks = liveMerchants.length > 0;
+const srcSlug = d.slug.replace(/^\//, "");
+---
+
+<BaseLayout
+  title={d.title}
+  metaDescription={d.meta_description}
+  slug={d.slug}
+  pageType={d.page_type}
+  dateModified={d.last_reviewed}
+>
+  <div class="wrap">
+    <nav aria-label="Breadcrumb" class="page-meta" style="margin-top:1.5rem">
+      <a href="/">Home</a> › <a href="/compare/">Compare</a> › {d.title}
+    </nav>
+    <article class="prose">
+      <h1>{d.title}</h1>
+      <p class="page-meta">
+        Last reviewed: {d.last_reviewed} · {d.review_cadence} review
+      </p>
+      <ComparisonDisclosure hasLiveLinks={hasLiveLinks} />
+      {liveMerchants.map((l) => (
+        <AffiliateCTA merchant={l.merchant} position={l.position} label={l.label} src={srcSlug} />
+      ))}
+      <Content />
+      {hasLiveLinks && (
+        <div class="disclosure-bar" role="note">
+          <p>
+            <em>
+              Heads up: some links on this page are affiliate links — if you
+              sign up through them, we may earn a commission at no extra cost
+              to you. Full details on our{" "}
+              <a href="/affiliate-disclosure">affiliate disclosure page</a>.
+            </em>
+          </p>
+        </div>
+      )}
+    </article>
+    <RelatedCards slugs={d.related} builtSlugs={builtSlugs} />
+  </div>
+</BaseLayout>

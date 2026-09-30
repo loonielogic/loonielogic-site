@@ -1,0 +1,32 @@
+---
+import HubPage from "../../components/HubPage.astro";
+import { sectionPages } from "../../lib/site";
+
+// No calculator .astro shells exist yet in this build — all eight cards
+// render "Coming soon" until the calculator architecture spec ships them.
+const cards = sectionPages("/calculators/");
+
+const cardMeta = {
+  "/calculators/income-tax-calculator": { badge: "Flagship — start here", chips: ["13 provinces", "paycheque mode"] },
+  "/calculators/tfsa-vs-rrsp": { chips: ["6 questions", "verdict"] },
+  "/calculators/house-affordability": { chips: ["GDS 39%", "TDS 44%"] },
+  "/calculators/down-payment-planner": { chips: ["FHSA + HBP stack"] },
+  "/calculators/rent-vs-buy": { chips: ["breakeven year", "net wealth"] },
+  "/calculators/compound-growth": { chips: ["CPP + OAS", "income gap"] },
+  "/calculators/tfsa-room": { chips: ["$109,000 max lookup"] },
+  "/calculators/rrsp-room": { chips: ["dual mode", "$2,000 buffer"] },
+};
+---
+
+<HubPage
+  slug="/calculators/"
+  title="Canadian Tax & Savings Calculators 2026 | LoonieLogic"
+  metaDescription="Eight calculators with real Canadian math: income tax (federal + provinces), TFSA vs RRSP, room trackers, affordability, rent vs buy, and compound growth."
+  h1="Calculators that do real Canadian math"
+  intro="Eight interactive tools with sane Canadian defaults pre-filled. Every result comes with a plain-language explanation of why — these are estimates, not advice, and the assumptions are shown."
+  breadcrumb="Tools"
+  cards={cards}
+  builtSlugs={new Set()}
+  cardMeta={cardMeta}
+  cta={{ label: "Decided which account to open? See the verdicts →", href: "/compare/tfsa-vs-rrsp" }}
+/>

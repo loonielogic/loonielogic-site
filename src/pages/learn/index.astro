@@ -1,0 +1,48 @@
+---
+import HubPage from "../../components/HubPage.astro";
+import { sectionPages } from "../../lib/site";
+import { getCollection } from "astro:content";
+
+const cards = sectionPages("/learn/");
+// Glossary pins to the end (utility page, not part of the funnel journey).
+const ordered = [...cards.filter((c) => c.slug !== "/learn/glossary"), ...cards.filter((c) => c.slug === "/learn/glossary")];
+
+const explainers = await getCollection("explainers");
+const builtSlugs = new Set(explainers.map((e) => e.data.slug));
+
+const groups = [
+  { label: "Accounts", slugs: ["/learn/tfsa", "/learn/rrsp", "/learn/fhsa", "/learn/home-buyers-plan", "/learn/tfsa-overcontribution-fix", "/learn/resp"] },
+  { label: "Taxes", slugs: ["/learn/federal-tax-brackets-2026", "/learn/first-time-tax-filing"] },
+  { label: "Retirement", slugs: ["/learn/cpp-oas"] },
+  { label: "Borrowing basics", slugs: ["/learn/credit-score"] },
+  { label: "Reference", slugs: ["/learn/glossary"] },
+];
+
+const cardMeta = {
+  "/learn/tfsa": { badge: "Start here", chips: ["$7,000 limit", "$109,000 max"] },
+  "/learn/rrsp": { badge: "Start here", chips: ["$33,810 max", "Mar 1, 2027"] },
+  "/learn/fhsa": { chips: ["$8,000/yr", "$40,000 lifetime"] },
+  "/learn/home-buyers-plan": { chips: ["$60,000", "15-yr repay"] },
+  "/learn/tfsa-overcontribution-fix": { chips: ["1%/mo", "RC243"] },
+  "/learn/resp": { chips: ["$9,200 grants", "$209/mo"] },
+  "/learn/federal-tax-brackets-2026": { chips: ["14%–33%", "$16,452 BPA"] },
+  "/learn/first-time-tax-filing": { chips: ["Apr 30, 2027", "free filing"] },
+  "/learn/cpp-oas": { chips: ["$1,507.65 CPP", "$95,323 clawback"] },
+  "/learn/credit-score": { chips: ["300–900 scale"] },
+  "/learn/glossary": { chips: ["49 terms", "A-Z", "2026-verified"] },
+};
+---
+
+<HubPage
+  slug="/learn/"
+  title="Learn Canadian Money: Explainers 2026 | LoonieLogic"
+  metaDescription="Plain-English explainers on TFSA, RRSP, FHSA, taxes, CPP and more — real 2026 Canadian numbers, the expensive mistakes, and what to do next."
+  h1="Learn Canadian money, in plain English"
+  intro="Eleven explainers on the accounts, taxes, and rules that shape your money in Canada. Every one opens with a 30-second version, shows real 2026 numbers in tables, and names the expensive mistakes. No jargon, no filler."
+  breadcrumb="Learn"
+  cards={ordered}
+  builtSlugs={builtSlugs}
+  cardMeta={cardMeta}
+  groups={groups}
+  cta={{ label: "Know the rules? Run your numbers — try the calculators →", href: "/calculators/" }}
+/>

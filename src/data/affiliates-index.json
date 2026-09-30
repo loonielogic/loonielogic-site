@@ -1,0 +1,27 @@
+{
+  "fintel-connect": {
+    "display_name": "Fintel Connect (network)",
+    "homepage": null,
+    "status": "pending"
+  },
+  "maxbounty": {
+    "display_name": "MaxBounty (network)",
+    "homepage": null,
+    "status": "pending"
+  },
+  "questrade": {
+    "display_name": "Questrade",
+    "homepage": null,
+    "status": "pending"
+  },
+  "turbotax": {
+    "display_name": "TurboTax Canada (Intuit)",
+    "homepage": null,
+    "status": "pending"
+  },
+  "wealthsimple": {
+    "display_name": "Wealthsimple",
+    "homepage": null,
+    "status": "pending"
+  }
+}

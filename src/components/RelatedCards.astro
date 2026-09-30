@@ -1,0 +1,45 @@
+---
+/**
+ * Related-cards block, generated from the front-matter `related` array.
+ * Only pages that exist in this build get links — everything else renders
+ * as a "Coming soon" card (same pattern as the hub pages).
+ */
+import { pageBySlug } from "../lib/site";
+
+interface Props {
+  slugs: string[];
+  heading?: string;
+  builtSlugs: Set<string>;
+}
+
+const { slugs, heading = "Keep reading", builtSlugs } = Astro.props;
+const cards = slugs
+  .map((s) => pageBySlug.get(s))
+  .filter((p): p is NonNullable<typeof p> => Boolean(p));
+---
+
+{
+  cards.length > 0 && (
+    <section class="related-cards" aria-label={heading}>
+      <h2>{heading}</h2>
+      <div class="card-grid">
+        {cards.map((p) => {
+          const built = builtSlugs.has(p.slug);
+          return (
+            <article class="card">
+              <h3>
+                {built ? <a href={p.slug}>{p.title}</a> : <span>{p.title}</span>}
+              </h3>
+              <p class="dek">{p.meta_description}</p>
+              {!built && (
+                <div class="chips">
+                  <span class="chip">Coming soon</span>
+                </div>
+              )}
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  )
+}

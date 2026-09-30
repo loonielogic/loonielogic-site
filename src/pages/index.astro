@@ -1,0 +1,184 @@
+---
+/**
+ * Homepage — adapted from files/loonielogic-homepage-draft-v1.md.
+ * Guided-path items link only to pages that exist in this build; everything
+ * else shows as "soon" until its page ships (no dead links in previews).
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+const title = "LoonieLogic: Learn Money, Try the Tools, Do It Right — Canadian Finance";
+const metaDescription =
+  "LoonieLogic is Canadian money made simple: plain-English explainers, interactive calculators, and honest comparisons of brokerages, banks, and accounts.";
+
+// Pages that actually exist in this build — guided-path items link only to
+// these; everything else renders as "soon" (no dead links in previews).
+const builtSlugs = new Set<string>(["/", "/learn/", "/calculators/", "/compare/"]);
+for (const coll of ["explainers", "comparisons", "legal"] as const) {
+  for (const e of await getCollection(coll)) builtSlugs.add(e.data.slug);
+}
+
+function link(slug: string) {
+  return builtSlugs.has(slug);
+}
+
+const paths: { heading: string; items: { label: string; slug: string }[] }[] = [
+  {
+    heading: "I'm new to all of this",
+    items: [
+      { label: "Filing taxes for the first time in Canada", slug: "/learn/first-time-tax-filing" },
+      { label: "Credit score basics", slug: "/learn/credit-score" },
+      { label: "Best bank accounts for beginners", slug: "/compare/best-bank-accounts-beginners" },
+    ],
+  },
+  {
+    heading: "I want to save or invest",
+    items: [
+      { label: "TFSA basics + 2026 limit", slug: "/learn/tfsa" },
+      { label: "TFSA vs RRSP: the only comparison that recommends", slug: "/compare/tfsa-vs-rrsp" },
+      { label: "TFSA room tracker", slug: "/calculators/tfsa-room" },
+    ],
+  },
+  {
+    heading: "I want to buy a home",
+    items: [
+      { label: "FHSA vs Home Buyers' Plan", slug: "/compare/fhsa-vs-home-buyers-plan" },
+      { label: "How much house can I afford", slug: "/calculators/house-affordability" },
+      { label: "Down payment planner", slug: "/calculators/down-payment-planner" },
+      { label: "Should you even buy yet? Run the rent-vs-buy math", slug: "/calculators/rent-vs-buy" },
+    ],
+  },
+];
+---
+
+<BaseLayout title={title} metaDescription={metaDescription} slug="/" pageType="home">
+  <section class="hero">
+    <div class="wrap">
+      <h1>Canadian money, decoded.</h1>
+      <p class="lede">
+        Not American money translated. Not bank marketing. Just plain-English
+        explainers, calculators that actually do the math, and comparisons that
+        tell you which one to pick — with the receipts.
+      </p>
+      <div class="btn-row">
+        <a class="btn btn-gold" href="/calculators/">Start with the tools →</a>
+        <a class="btn btn-outline" href="/learn/">Browse the explainers →</a>
+      </div>
+      <p class="trust">
+        <em>
+          Educational content only, not financial advice. We may earn a
+          commission from some links — always disclosed before you click.
+        </em>
+      </p>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="card-grid">
+      <article class="card">
+        <h3><a href="/learn/">Learn</a></h3>
+        <p class="dek">
+          Plain-English explainers on the accounts and rules every Canadian
+          18–40 actually needs: TFSA, RRSP, FHSA, the Home Buyers' Plan, tax
+          brackets, first-time filing, fixing TFSA over-contributions, CPP +
+          OAS, RESPs, and credit scores.
+        </p>
+        <p><a href="/learn/">Read the explainers →</a></p>
+      </article>
+      <article class="card">
+        <h3><a href="/calculators/">Try</a></h3>
+        <p class="dek">
+          Eight calculators that do real Canadian math: an income tax estimator
+          (federal + all provinces), a TFSA vs RRSP decision tool, TFSA and
+          RRSP room trackers, a house affordability calculator, a down payment
+          planner, a rent-vs-buy tool, and a compound-growth retirement saver.
+        </p>
+        <p><a href="/calculators/">Try the tools →</a></p>
+      </article>
+      <article class="card">
+        <h3><a href="/compare/">Do</a></h3>
+        <p class="dek">
+          Four comparisons where we actually recommend: TFSA vs RRSP,
+          Wealthsimple vs Questrade, FHSA vs Home Buyers' Plan, and the best
+          bank accounts for beginners. Verdict first, math second, edge cases
+          third.
+        </p>
+        <p><a href="/compare/">See the comparisons →</a></p>
+      </article>
+    </div>
+  </section>
+
+  <section class="wrap prose">
+    <h2>What makes this site different</h2>
+    <p>
+      Most Canadian finance sites describe your options and leave you to guess.
+      We don't. <strong>We're the site that says which one to pick and why, with
+      the math shown.</strong>
+    </p>
+    <ol>
+      <li>
+        <strong>Verdicts, not vibes.</strong> Every comparison ends with a
+        recommendation for specific situations. If a topic genuinely has no
+        winner, we say exactly when each side wins.
+      </li>
+      <li>
+        <strong>Sourced numbers.</strong> Every factual claim about limits,
+        dates, tax rules, and payouts is verified against official pages (CRA,
+        canada.ca, provincial sources) and stamped with a verification date.
+        Anything we can't verify is flagged, not buried.
+      </li>
+      <li>
+        <strong>Canadian in the bones.</strong> Every dollar is CAD. Every rule
+        is CRA, BoC, or OSFI. The provinces are in the math, not a footnote.
+      </li>
+    </ol>
+  </section>
+
+  <section class="wrap">
+    <h2>Start here</h2>
+    <div class="card-grid">
+      {paths.map((group) => (
+        <article class="card">
+          <h3>“{group.heading}”</h3>
+          <ol>
+            {group.items.map((item) =>
+              link(item.slug) ? (
+                <li><a href={item.slug}>{item.label}</a></li>
+              ) : (
+                <li>{item.label} <span class="chip">soon</span></li>
+              ),
+            )}
+          </ol>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap prose">
+    <h2>How this site makes money</h2>
+    <p>
+      Running LoonieLogic costs money, and honest revenue keeps it free. Some
+      links — mostly on the comparison pages — are affiliate links: if you open
+      an account through one, the provider may pay us a commission at no extra
+      cost to you.
+    </p>
+    <p>What that does NOT change:</p>
+    <ul>
+      <li>
+        Our recommendations come from the math, not from which provider pays.
+      </li>
+      <li>
+        We never recommend a specific investment product ("buy this ETF") —
+        rules and tools, not picks.
+      </li>
+      <li>
+        We never publish an unverified rate or promo end date — it's flagged or
+        left out.
+      </li>
+    </ul>
+    <p>
+      Full wording and our editorial policy live on the <a href="/about">About
+      page</a> and the <a href="/affiliate-disclosure">affiliate disclosure page</a>.
+    </p>
+  </section>
+</BaseLayout>

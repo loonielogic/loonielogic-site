@@ -1,0 +1,556 @@
+{
+  "_note": "Per-tool manifests for the 8 calculators. Validated by src/scripts/validate-content.ts against calculatorManifestSchema (page-manifest.ts). The .astro shells in src/pages/calculators/ read these via getEntry \u2014 the island components consume the shared library from calculator-architecture-spec.md. Figure keys must exist in src/data/figures/*.json with status != rejected.",
+  "generated": "2026-09-29",
+  "manifests": [
+    {
+      "affiliate_disclosure": false,
+      "affiliate_links": [],
+      "calculator_spec": "hidden_files/income-tax-estimator-calculator-spec.md",
+      "cluster": "tax",
+      "faq": [
+        {
+          "a": "Your marginal rate is the tax on your next dollar earned; your average (effective) rate is total tax divided by total income. If you earn $100,000 in Ontario and your marginal rate is 43.41%, a $1,000 raise costs you $434 in tax \u2014 but your average rate on the full $100,000 is much lower. The tool shows both on every result screen.",
+          "q": "What is the difference between marginal and average tax rates?"
+        }
+      ],
+      "faq_pages": [],
+      "figures": [
+        {
+          "expires": null,
+          "key": "federal.brackets.2026",
+          "source": "canada.ca \u2014 federal tax brackets 2026",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "federal.bpa.2026.max",
+          "source": "canada.ca \u2014 basic personal amount 2026",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "provincial.brackets.2026",
+          "source": "KPMG combined top marginal rates, June 30 2026",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "qc.federal_abatement",
+          "source": "canada.ca \u2014 Quebec abatement",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "on.surtax.2026",
+          "source": "Ontario Ministry of Finance",
+          "verified": "2026-09-27"
+        },
+        {
+          "expires": null,
+          "key": "cpp.ympe.2026",
+          "source": "canada.ca \u2014 CPP contribution limits",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "cpp.employee_rate.2026",
+          "source": "canada.ca \u2014 CPP contribution rates",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "ei.mie.2026",
+          "source": "canada.ca \u2014 EI premium rates and maximums",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "ei.employee_rate.2026",
+          "source": "canada.ca \u2014 EI premium rates and maximums",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "qpp.mpe.2026",
+          "source": "Retraite Qu\u00e9bec \u2014 QPP 2026",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "capital_gains.inclusion_rate.2026",
+          "source": "canada.ca \u2014 capital gains inclusion rate (50%, increase cancelled Mar 21 2025)",
+          "verified": "2026-09-28"
+        }
+      ],
+      "hub": "/calculators/",
+      "last_reviewed": "2026-09-28",
+      "meta_description": "Estimate your 2026 Canadian income tax in seconds: federal + provincial, CPP/EI premiums, paycheque mode, and marginal vs average rates explained.",
+      "newsletter_placement": "soft-link",
+      "next_review_due": "2026-12-01",
+      "page_type": "calculator",
+      "publish_date": null,
+      "quiz_spec": null,
+      "related": [
+        "/learn/federal-tax-brackets-2026",
+        "/calculators/tfsa-vs-rrsp",
+        "/calculators/compound-growth"
+      ],
+      "review_cadence": "annual",
+      "schema_primary": "WebApplication",
+      "slug": "/calculators/income-tax-calculator",
+      "status": "draft",
+      "title": "Canadian Income Tax Calculator 2026: Federal + All Provinces",
+      "wave": 1
+    },
+    {
+      "affiliate_disclosure": false,
+      "affiliate_links": [],
+      "calculator_spec": "hidden_files/tfsa-vs-rrsp-calculator-spec.md",
+      "cluster": "retirement",
+      "faq": [],
+      "faq_pages": [],
+      "figures": [
+        {
+          "expires": null,
+          "key": "tfsa.annual_limit.2026",
+          "source": "canada.ca \u2014 TFSA contribution limit",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "tfsa.cumulative_max.2026",
+          "source": "canada.ca \u2014 TFSA cumulative room",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "rrsp.cap.2026",
+          "source": "canada.ca \u2014 RRSP deduction limit",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "rrsp.rate",
+          "source": "canada.ca \u2014 RRSP contribution rate (18% of earned income)",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "federal.brackets.2026",
+          "source": "canada.ca \u2014 federal tax brackets 2026",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "oas.recovery_tax.threshold.2026",
+          "source": "canada.ca \u2014 OAS recovery tax threshold",
+          "verified": "2026-09-28"
+        }
+      ],
+      "hub": "/calculators/",
+      "last_reviewed": "2026-09-28",
+      "meta_description": "Answer 6 questions and get a clear verdict: TFSA or RRSP for your income, now and in retirement. Built on real 2026 marginal-rate math, not generic advice.",
+      "newsletter_placement": "soft-link",
+      "next_review_due": "2026-12-01",
+      "page_type": "calculator",
+      "publish_date": null,
+      "quiz_spec": "hidden_files/tfsa-vs-rrsp-quiz-spec.md",
+      "related": [
+        "/compare/tfsa-vs-rrsp",
+        "/calculators/tfsa-room",
+        "/calculators/rrsp-room"
+      ],
+      "review_cadence": "annual",
+      "schema_primary": "WebApplication",
+      "slug": "/calculators/tfsa-vs-rrsp",
+      "status": "draft",
+      "title": "TFSA vs RRSP Calculator 2026: Which Is Better for You?",
+      "wave": 1
+    },
+    {
+      "affiliate_disclosure": false,
+      "affiliate_links": [],
+      "calculator_spec": "hidden_files/tfsa-room-tracker-calculator-spec.md",
+      "cluster": "retirement",
+      "faq": [],
+      "faq_pages": [],
+      "figures": [
+        {
+          "expires": null,
+          "key": "tfsa.annual_limit.2026",
+          "source": "canada.ca \u2014 TFSA contribution limit",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "tfsa.bands.history",
+          "source": "canada.ca \u2014 TFSA annual limit history",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "tfsa.cumulative_max.2026",
+          "source": "canada.ca \u2014 TFSA cumulative room",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "tfsa.excess_tax",
+          "source": "canada.ca \u2014 RC243 over-contribution tax",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "tfsa.withdrawal_restore",
+          "source": "canada.ca \u2014 TFSA withdrawal room restore",
+          "verified": "2026-09-28"
+        }
+      ],
+      "hub": "/calculators/",
+      "last_reviewed": "2026-09-28",
+      "meta_description": "Enter your birth year, residency, and contributions to find your exact 2026 TFSA room. Handles withdrawals, over-contribution warnings, and the age-18 rule.",
+      "newsletter_placement": "soft-link",
+      "next_review_due": "2026-12-01",
+      "page_type": "calculator",
+      "publish_date": null,
+      "quiz_spec": null,
+      "related": [
+        "/learn/tfsa",
+        "/learn/tfsa-overcontribution-fix",
+        "/calculators/compound-growth"
+      ],
+      "review_cadence": "annual",
+      "schema_primary": "WebApplication",
+      "slug": "/calculators/tfsa-room",
+      "status": "draft",
+      "title": "TFSA Contribution Room Tracker 2026: Find Your Limit",
+      "wave": 2
+    },
+    {
+      "affiliate_disclosure": false,
+      "affiliate_links": [],
+      "calculator_spec": "hidden_files/rrsp-room-tracker-calculator-spec.md",
+      "cluster": "retirement",
+      "faq": [],
+      "faq_pages": [],
+      "figures": [
+        {
+          "expires": null,
+          "key": "rrsp.cap.2026",
+          "source": "canada.ca \u2014 RRSP deduction limit",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "rrsp.rate",
+          "source": "canada.ca \u2014 RRSP contribution rate",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "rrsp.excess_buffer",
+          "source": "canada.ca \u2014 RRSP $2,000 lifetime over-contribution buffer",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "rrsp.deadline.2026",
+          "source": "canada.ca \u2014 RRSP deadline March 1, 2027",
+          "verified": "2026-09-28"
+        }
+      ],
+      "hub": "/calculators/",
+      "last_reviewed": "2026-09-28",
+      "meta_description": "Rebuild your RRSP room from scratch or forward-track from your NOA. Dual-mode calculator with 11 edge cases, including the $2,000 buffer and 90-day rule.",
+      "newsletter_placement": "soft-link",
+      "next_review_due": "2026-12-01",
+      "page_type": "calculator",
+      "publish_date": null,
+      "quiz_spec": null,
+      "related": [
+        "/learn/rrsp",
+        "/compare/tfsa-vs-rrsp",
+        "/calculators/compound-growth"
+      ],
+      "review_cadence": "annual",
+      "schema_primary": "WebApplication",
+      "slug": "/calculators/rrsp-room",
+      "status": "draft",
+      "title": "RRSP Contribution Room Calculator Canada 2026: Rebuild Yours",
+      "wave": 2
+    },
+    {
+      "affiliate_disclosure": false,
+      "affiliate_links": [],
+      "calculator_spec": "hidden_files/house-affordability-calculator-spec.md",
+      "cluster": "housing",
+      "faq": [],
+      "faq_pages": [],
+      "figures": [
+        {
+          "expires": null,
+          "key": "housing.gds",
+          "source": "OSFI B-20 \u2014 GDS 39% qualifying",
+          "verified": "2026-09-27"
+        },
+        {
+          "expires": null,
+          "key": "housing.tds",
+          "source": "OSFI B-20 \u2014 TDS 44% qualifying",
+          "verified": "2026-09-27"
+        },
+        {
+          "expires": null,
+          "key": "osfi.mqr.2026",
+          "source": "OSFI \u2014 minimum qualifying rate (contract+2% or 5.25%)",
+          "verified": "2026-09-27"
+        },
+        {
+          "expires": null,
+          "key": "down_payment.tiers.2026",
+          "source": "canada.ca \u2014 minimum down payment tiers",
+          "verified": "2026-09-27"
+        },
+        {
+          "expires": null,
+          "key": "cmhc.premiums.2026",
+          "source": "CMHC \u2014 mortgage insurance premium tiers",
+          "verified": "2026-09-27"
+        },
+        {
+          "expires": null,
+          "key": "amortization.rules.2026",
+          "source": "canada.ca \u2014 30-year amortization rules (Dec 2024 reforms)",
+          "verified": "2026-09-27"
+        }
+      ],
+      "hub": "/calculators/",
+      "last_reviewed": "2026-09-28",
+      "meta_description": "Three-limit affordability calculator: GDS 39%, TDS 44%, and down payment rules, with the stress test and 2026 insured-mortgage limits built in.",
+      "newsletter_placement": "soft-link",
+      "next_review_due": "2026-12-01",
+      "page_type": "calculator",
+      "publish_date": null,
+      "quiz_spec": null,
+      "related": [
+        "/calculators/down-payment-planner",
+        "/calculators/rent-vs-buy"
+      ],
+      "review_cadence": "annual",
+      "schema_primary": "WebApplication",
+      "slug": "/calculators/house-affordability",
+      "status": "draft",
+      "title": "How Much House Can I Afford in Canada? 2026 Calculator",
+      "wave": 3
+    },
+    {
+      "affiliate_disclosure": false,
+      "affiliate_links": [],
+      "calculator_spec": "hidden_files/down-payment-planner-calculator-spec.md",
+      "cluster": "housing",
+      "faq": [],
+      "faq_pages": [],
+      "figures": [
+        {
+          "expires": null,
+          "key": "down_payment.tiers.2026",
+          "source": "canada.ca \u2014 minimum down payment tiers",
+          "verified": "2026-09-27"
+        },
+        {
+          "expires": null,
+          "key": "closing_costs.range",
+          "source": "Ontario Ministry of Finance + lender guidance (1.5-4%)",
+          "verified": "2026-09-27"
+        },
+        {
+          "expires": null,
+          "key": "fhsa.annual_limit",
+          "source": "canada.ca \u2014 FHSA annual limit $8,000",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "fhsa.lifetime_limit",
+          "source": "canada.ca \u2014 FHSA lifetime limit $40,000",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "hbp.limit.2026",
+          "source": "canada.ca \u2014 HBP withdrawal limit $60,000",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "on.ltt.2026",
+          "source": "Ontario Ministry of Finance \u2014 land transfer tax tiers",
+          "verified": "2026-09-27"
+        }
+      ],
+      "hub": "/calculators/",
+      "last_reviewed": "2026-09-28",
+      "meta_description": "Plan your down payment month by month: timeline or target-date mode, closing costs, FHSA and Home Buyers' Plan sequencing, and the 20%-down tradeoff.",
+      "newsletter_placement": "soft-link",
+      "next_review_due": "2026-12-01",
+      "page_type": "calculator",
+      "publish_date": null,
+      "quiz_spec": null,
+      "related": [
+        "/learn/fhsa",
+        "/learn/home-buyers-plan",
+        "/compare/fhsa-vs-home-buyers-plan"
+      ],
+      "review_cadence": "annual",
+      "schema_primary": "WebApplication",
+      "slug": "/calculators/down-payment-planner",
+      "status": "draft",
+      "title": "Down Payment Planner Canada 2026: Timeline + FHSA/HBP Stack",
+      "wave": 3
+    },
+    {
+      "affiliate_disclosure": false,
+      "affiliate_links": [],
+      "calculator_spec": "hidden_files/rent-vs-buy-calculator-spec.md",
+      "cluster": "housing",
+      "faq": [],
+      "faq_pages": [],
+      "figures": [
+        {
+          "expires": null,
+          "key": "rent.on_guideline.2026",
+          "source": "Ontario \u2014 rent increase guideline 2026",
+          "verified": "2026-09-27"
+        },
+        {
+          "expires": null,
+          "key": "property_tax.toronto.2026",
+          "source": "City of Toronto \u2014 2026 residential rate",
+          "verified": "2026-09-27"
+        },
+        {
+          "expires": null,
+          "key": "osfi.mqr.2026",
+          "source": "OSFI \u2014 minimum qualifying rate",
+          "verified": "2026-09-27"
+        },
+        {
+          "expires": null,
+          "key": "closing_costs.range",
+          "source": "Ontario Ministry of Finance + lender guidance (1.5-4%)",
+          "verified": "2026-09-27"
+        },
+        {
+          "expires": null,
+          "key": "mortgage.compounding_rule",
+          "source": "Interest Act s.6 \u2014 Canadian semi-annual compounding",
+          "verified": "2026-09-28"
+        }
+      ],
+      "hub": "/calculators/",
+      "last_reviewed": "2026-09-28",
+      "meta_description": "Rent or buy in Canada? Compare net wealth over any timeframe with real mortgage math, closing costs, rent inflation \u2014 and get the breakeven year.",
+      "newsletter_placement": "soft-link",
+      "next_review_due": "2026-12-01",
+      "page_type": "calculator",
+      "publish_date": null,
+      "quiz_spec": null,
+      "related": [
+        "/calculators/house-affordability",
+        "/calculators/compound-growth"
+      ],
+      "review_cadence": "annual",
+      "schema_primary": "WebApplication",
+      "slug": "/calculators/rent-vs-buy",
+      "status": "draft",
+      "title": "Rent vs Buy Calculator Canada 2026: Who Wins the Money Race?",
+      "wave": 3
+    },
+    {
+      "affiliate_disclosure": false,
+      "affiliate_links": [],
+      "calculator_spec": "hidden_files/compound-growth-retirement-saver-calculator-spec.md",
+      "cluster": "retirement",
+      "faq": [
+        {
+          "a": "Not the maximum \u2014 the average is what most people actually get, which keeps the projection honest. The tool lets you override it with your own Service Canada estimate if you have one.",
+          "q": "Why does the tool default to the average CPP benefit instead of the maximum?"
+        },
+        {
+          "a": "The fee-drag card shows the same monthly contribution growing at 0.2% vs 2% fees over 30 years. A 2% fee can eat roughly a third of your final balance \u2014 that is why low-cost index funds matter more than picking winners.",
+          "q": "How much do investment fees really cost over 30 years?"
+        },
+        {
+          "a": "Today's dollars divide the nominal projection by expected inflation, so $500,000 in 30 years shows as what it buys at today's prices. It stops big future numbers from misleading you.",
+          "q": "What does 'in today's dollars' mean on the projection?"
+        }
+      ],
+      "faq_pages": [
+        "FAQPage"
+      ],
+      "figures": [
+        {
+          "expires": "2026-10-01",
+          "key": "cpp.max_benefit_65",
+          "source": "ESDC \u2014 CPP maximum at 65 (Q3 2026 quarterly report)",
+          "verified": "2026-09-27"
+        },
+        {
+          "expires": "2026-10-01",
+          "key": "cpp.average_new_benefit",
+          "source": "ESDC \u2014 CPP average new benefit (Q3 2026 quarterly report)",
+          "verified": "2026-09-27"
+        },
+        {
+          "expires": "2026-10-01",
+          "key": "oas.amount_65_74.q3_2026",
+          "source": "canada.ca \u2014 OAS amounts Q3 2026",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "oas.recovery_tax.threshold.2026",
+          "source": "canada.ca \u2014 OAS recovery tax threshold",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "capital_gains.inclusion_rate.2026",
+          "source": "canada.ca \u2014 capital gains inclusion rate",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "tfsa.annual_limit.2026",
+          "source": "canada.ca \u2014 TFSA contribution limit",
+          "verified": "2026-09-28"
+        },
+        {
+          "expires": null,
+          "key": "rrsp.cap.2026",
+          "source": "canada.ca \u2014 RRSP deduction limit",
+          "verified": "2026-09-28"
+        }
+      ],
+      "hub": "/calculators/",
+      "last_reviewed": "2026-09-28",
+      "meta_description": "See what your savings become by retirement: project compound growth in today's dollars, add your CPP and OAS, and find the income gap \u2014 plus what closes it.",
+      "newsletter_placement": "soft-link",
+      "next_review_due": "2026-12-01",
+      "page_type": "calculator",
+      "publish_date": null,
+      "quiz_spec": null,
+      "related": [
+        "/learn/cpp-oas",
+        "/compare/tfsa-vs-rrsp",
+        "/calculators/tfsa-room"
+      ],
+      "review_cadence": "annual",
+      "schema_primary": "WebApplication",
+      "slug": "/calculators/compound-growth",
+      "status": "draft",
+      "title": "Compound Growth Calculator Canada 2026: Retirement Saver",
+      "wave": 3
+    }
+  ]
+}

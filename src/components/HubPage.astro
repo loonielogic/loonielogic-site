@@ -1,0 +1,126 @@
+---
+/**
+ * HubPage — generated hub template (hub-page-templates-spec.md).
+ * Card data comes from src/data/sitemap.json; `builtSlugs` marks which pages
+ * actually exist in this build — everything else renders "Coming soon"
+ * (hub renders only published cards per spec §7).
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import type { SitemapPage } from "../lib/site";
+
+interface CardMeta {
+  chips?: string[];
+  badge?: string;
+  verdict?: string;
+}
+
+interface Props {
+  slug: string;
+  title: string;
+  metaDescription: string;
+  h1: string;
+  intro: string;
+  breadcrumb: string;
+  cards: SitemapPage[];
+  builtSlugs: Set<string>;
+  cardMeta?: Record<string, CardMeta>;
+  groups?: { label: string; slugs: string[] }[];
+  cta: { label: string; href: string };
+  disclosureBlock?: boolean;
+}
+
+const {
+  slug, title, metaDescription, h1, intro, breadcrumb, cards, builtSlugs,
+  cardMeta = {}, groups, cta, disclosureBlock = false,
+} = Astro.props;
+
+const bySlug = new Map(cards.map((c) => [c.slug, c]));
+
+const grouped = groups
+  ? groups
+      .map((g) => ({ ...g, cards: g.slugs.map((s) => bySlug.get(s)).filter((c): c is SitemapPage => Boolean(c)) }))
+      .filter((g) => g.cards.length > 0)
+  : null;
+---
+
+<BaseLayout title={title} metaDescription={metaDescription} slug={slug} pageType="hub">
+  <div class="wrap">
+    <nav aria-label="Breadcrumb" class="page-meta" style="margin-top:1.5rem">
+      <a href="/">Home</a> › {breadcrumb}
+    </nav>
+    <h1>{h1}</h1>
+    <p class="lede" style="max-width:44rem;color:var(--ink-soft)">{intro}</p>
+
+    {disclosureBlock && (
+      <div class="disclosure-bar" role="note">
+        <p>
+          <em>
+            We may earn a commission when you sign up for products through
+            links on this page, at no extra cost to you. We disclose this on
+            every comparison page too.{" "}
+            <a href="/affiliate-disclosure">Read our affiliate disclosure</a>.
+          </em>
+        </p>
+      </div>
+    )}
+
+    {grouped ? (
+      grouped.map((g) => (
+        <section aria-label={g.label} style="margin-top:2.5rem">
+          <h2>{g.label}</h2>
+          <div class="card-grid">
+            {g.cards.map((p) => {
+              const built = builtSlugs.has(p.slug);
+              const meta = cardMeta[p.slug] ?? {};
+              return (
+                <article class="card">
+                  <h3>
+                    {built ? <a href={p.slug}>{p.title}</a> : <span>{p.title}</span>}
+                  </h3>
+                  <p class="dek">{p.meta_description}</p>
+                  {(meta.chips || meta.badge || !built) && (
+                    <div class="chips">
+                      {meta.badge && <span class="chip">{meta.badge}</span>}
+                      {!built && <span class="chip">Coming soon</span>}
+                      {(meta.chips ?? []).map((c) => <span class="chip">{c}</span>)}
+                    </div>
+                  )}
+                  {meta.verdict && <p class="meta"><strong>Verdict:</strong> {meta.verdict}</p>}
+                  {built && <p class="meta"><a href={p.slug}>Read →</a></p>}
+                </article>
+              );
+            })}
+          </div>
+        </section>
+      ))
+    ) : (
+      <div class="card-grid" style="margin-top:2rem">
+        {cards.map((p) => {
+          const built = builtSlugs.has(p.slug);
+          const meta = cardMeta[p.slug] ?? {};
+          return (
+            <article class="card">
+              <h3>
+                {built ? <a href={p.slug}>{p.title}</a> : <span>{p.title}</span>}
+              </h3>
+              <p class="dek">{p.meta_description}</p>
+              {(meta.chips || meta.badge || !built) && (
+                <div class="chips">
+                  {meta.badge && <span class="chip">{meta.badge}</span>}
+                  {!built && <span class="chip">Coming soon</span>}
+                  {(meta.chips ?? []).map((c) => <span class="chip">{c}</span>)}
+                </div>
+              )}
+              {meta.verdict && <p class="meta"><strong>Verdict:</strong> {meta.verdict}</p>}
+              {built && <p class="meta"><a href={p.slug}>Read →</a></p>}
+            </article>
+          );
+        })}
+      </div>
+    )}
+
+    <div class="disclosure-bar" style="margin-top:2.5rem">
+      <p><a class="btn" href={cta.href}>{cta.label}</a></p>
+    </div>
+  </div>
+</BaseLayout>
