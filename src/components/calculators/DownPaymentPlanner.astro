@@ -194,6 +194,45 @@ const isAssumption = (s: string) => s === "assumption" || s === "needs_reverific
 <script>
   import { defaultInput, plan, type PlannerInput, type Province } from "../../lib/calculators/down-payment-planner";
   import { renderResults } from "../../lib/calculators/down-payment-planner-render";
+  import { track } from "../../lib/analytics";
+
+  const CALC = "down_payment_planner";
+  // snake_case tokens for the assumption-row fields (spec: banded/class values only).
+  const ASSUMPTION_FIELDS: Record<string, string> = {
+    savingsRate: "savings_rate",
+    contractRate: "contract_rate",
+    amortYears: "amort_years",
+    fees: "fees",
+    buffer: "buffer",
+    rent: "rent",
+    propertyTaxRate: "property_tax_rate",
+    insuranceMonthly: "insurance_monthly",
+    condoFees: "condo_fees",
+  };
+  let started = false;
+  let resultViewed = false;
+  const firedOnce = new Set<string>(); // field keys already reported this session
+
+  function onUserInput(e: Event) {
+    if (!started) {
+      started = true;
+      track("calc_started", { calculator: CALC });
+    }
+    const t = e.target;
+    if (t instanceof HTMLInputElement || t instanceof HTMLSelectElement) {
+      const field = ASSUMPTION_FIELDS[t.name];
+      if (field) {
+        if (!firedOnce.has(field)) {
+          firedOnce.add(field);
+          track("calc_assumption_changed", { calculator: CALC, field });
+        }
+      } else if (t.name === "province" && !firedOnce.has("province")) {
+        firedOnce.add("province");
+        // field rolled into the value token: 2-prop budget per spec section 2b.
+        track("calc_input_set", { calculator: CALC, value: `province_${t.value.toLowerCase()}` });
+      }
+    }
+  }
 
   const form = document.getElementById("dpp-form") as HTMLFormElement | null;
   const out = document.getElementById("dpp-results");
@@ -259,10 +298,14 @@ const isAssumption = (s: string) => s === "assumption" || s === "needs_reverific
     const i = read(form);
     toggle(form, i);
     out.innerHTML = renderResults(plan(i));
+    if (!resultViewed) {
+      resultViewed = true;
+      track("calc_result_viewed", { calculator: CALC, mode: i.mode });
+    }
   }
 
-  form?.addEventListener("input", update);
-  form?.addEventListener("change", update);
+  form?.addEventListener("input", (e) => { onUserInput(e); update(); });
+  form?.addEventListener("change", (e) => { onUserInput(e); update(); });
   update();
 </script>
 

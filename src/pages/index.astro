@@ -72,9 +72,10 @@ const exSources = ex.sources.lines
   }));
 const exReached = Number.isFinite(ex.months) && ex.months > 0;
 
-const paths: { heading: string; items: { label: string; slug: string }[] }[] = [
+const paths: { heading: string; token: string; items: { label: string; slug: string }[] }[] = [
   {
     heading: "I'm new to all of this",
+    token: "new_to_money",
     items: [
       { label: "Filing taxes for the first time in Canada", slug: "/learn/first-time-tax-filing" },
       { label: "Credit score basics", slug: "/learn/credit-score" },
@@ -83,6 +84,7 @@ const paths: { heading: string; items: { label: string; slug: string }[] }[] = [
   },
   {
     heading: "I want to save or invest",
+    token: "optimize_taxes",
     items: [
       { label: "TFSA basics + 2026 limit", slug: "/learn/tfsa" },
       { label: "TFSA vs RRSP: the only comparison that recommends", slug: "/compare/tfsa-vs-rrsp" },
@@ -91,6 +93,7 @@ const paths: { heading: string; items: { label: string; slug: string }[] }[] = [
   },
   {
     heading: "I want to buy a home",
+    token: "home_buyer",
     items: [
       { label: "FHSA vs Home Buyers' Plan", slug: "/compare/fhsa-vs-home-buyers-plan" },
       { label: "How much house can I afford", slug: "/calculators/house-affordability" },
@@ -99,6 +102,8 @@ const paths: { heading: string; items: { label: string; slug: string }[] }[] = [
     ],
   },
 ];
+// Analytics token for a path link target ("/learn/tfsa" -> "learn_tfsa").
+const targetToken = (s: string) => s.replace(/^\//, "").replace(/[^a-z0-9]+/g, "_");
 // The planner page is built (in draft), so the home path may link it.
 builtSlugs.add(PLANNER);
 ---
@@ -325,7 +330,16 @@ builtSlugs.add(PLANNER);
               <h3>“{group.heading}”</h3>
               {live.length > 0 && (
                 <ol>
-                  {live.map((item) => <li><a href={item.slug}>{item.label}</a></li>)}
+                  {live.map((item) => (
+                    <li>
+                      <a
+                        href={item.slug}
+                        data-analytics-event="guided_path_clicked"
+                        data-analytics-path={group.token}
+                        data-analytics-target={targetToken(item.slug)}
+                      >{item.label}</a>
+                    </li>
+                  ))}
                 </ol>
               )}
               {upcoming.length > 0 && (
