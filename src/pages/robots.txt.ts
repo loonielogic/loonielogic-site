@@ -5,12 +5,13 @@ export const prerender = true;
 
 // robots.txt is generated per environment (SEO spec §2): preview/staging
 // hosts must never be crawled. Cloudflare Pages sets CF_PAGES_BRANCH on every
-// build — anything that isn't the production branch gets a full disallow.
-// A SITE_URL override to a non-production host is treated the same way.
+// build; anything that isn't the production branch gets a full disallow.
+// Indexing is also opt-in (ALLOW_INDEXING=true in the Pages production env)
+// so pinning SITE_URL does not silently open the site to crawlers before
+// launch. Until that flag is set, every build disallows everything.
 const branch = import.meta.env.CF_PAGES_BRANCH as string | undefined;
-const isProd =
-  SITE_URL === "https://loonielogic.ca" &&
-  (!branch || branch === "main");
+const allowIndexing = import.meta.env.ALLOW_INDEXING === "true";
+const isProd = allowIndexing && (!branch || branch === "main");
 
 export const GET: APIRoute = () => {
   const body = isProd

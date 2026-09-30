@@ -26,6 +26,7 @@ const d = entry.data;
   slug={d.slug}
   pageType={d.page_type}
   dateModified={d.last_reviewed}
+  breadcrumbs={[{ name: d.title, slug: d.slug }]}
 >
   <div class="wrap">
     <nav aria-label="Breadcrumb" class="page-meta" style="margin-top:1.5rem">

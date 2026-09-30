@@ -1,18 +1,20 @@
 ---
 /**
  * Homepage — adapted from files/loonielogic-homepage-draft-v1.md.
- * Guided-path items link only to pages that exist in this build; everything
- * else shows as "soon" until its page ships (no dead links in previews).
+ * Everything on this page describes what is live in this build: Learn/Try/Do
+ * cards list only built pages, and guided-path items that aren't built yet
+ * collapse into a "Coming next" line (no dead links, no implied promises).
  */
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
+import { pageBySlug } from "../lib/site";
 
-const title = "LoonieLogic: Learn Money, Try the Tools, Do It Right — Canadian Finance";
+const title = "LoonieLogic: Canadian Money, Explained in Plain English";
 const metaDescription =
-  "LoonieLogic is Canadian money made simple: plain-English explainers, interactive calculators, and honest comparisons of brokerages, banks, and accounts.";
+  "Canadian money made simple: plain-English explainers and comparisons with real 2026 numbers, the math shown, and a clear pick at the end. No jargon.";
 
-// Pages that actually exist in this build — guided-path items link only to
-// these; everything else renders as "soon" (no dead links in previews).
+// Pages that actually exist in this build. Guided-path items and the
+// Learn/Try/Do cards link only to these.
 const builtSlugs = new Set<string>(["/", "/learn/", "/calculators/", "/compare/"]);
 for (const coll of ["explainers", "comparisons", "legal"] as const) {
   for (const e of await getCollection(coll)) builtSlugs.add(e.data.slug);
@@ -21,6 +23,16 @@ for (const coll of ["explainers", "comparisons", "legal"] as const) {
 function link(slug: string) {
   return builtSlugs.has(slug);
 }
+
+function liveIn(prefix: string) {
+  return [...builtSlugs]
+    .filter((s) => s.startsWith(prefix) && s !== prefix)
+    .map((s) => ({ slug: s, title: pageBySlug.get(s)?.title ?? s }));
+}
+
+const liveExplainers = liveIn("/learn/");
+const liveCalculators = liveIn("/calculators/");
+const liveComparisons = liveIn("/compare/");
 
 const paths: { heading: string; items: { label: string; slug: string }[] }[] = [
   {
@@ -57,17 +69,17 @@ const paths: { heading: string; items: { label: string; slug: string }[] }[] = [
       <h1>Canadian money, decoded.</h1>
       <p class="lede">
         Not American money translated. Not bank marketing. Just plain-English
-        explainers, calculators that actually do the math, and comparisons that
-        tell you which one to pick — with the receipts.
+        explainers and comparisons that tell you which one to pick, with the
+        math shown.
       </p>
       <div class="btn-row">
-        <a class="btn btn-gold" href="/calculators/">Start with the tools →</a>
+        <a class="btn btn-gold" href="/compare/tfsa-vs-rrsp">Settle TFSA vs RRSP →</a>
         <a class="btn btn-outline" href="/learn/">Browse the explainers →</a>
       </div>
       <p class="trust">
         <em>
           Educational content only, not financial advice. We may earn a
-          commission from some links — always disclosed before you click.
+          commission from some links, and we always disclose it before you click.
         </em>
       </p>
     </div>
@@ -78,31 +90,56 @@ const paths: { heading: string; items: { label: string; slug: string }[] }[] = [
       <article class="card">
         <h3><a href="/learn/">Learn</a></h3>
         <p class="dek">
-          Plain-English explainers on the accounts and rules every Canadian
-          18–40 actually needs: TFSA, RRSP, FHSA, the Home Buyers' Plan, tax
-          brackets, first-time filing, fixing TFSA over-contributions, CPP +
-          OAS, RESPs, and credit scores.
+          Plain-English explainers on the accounts and rules Canadians 18 to 40
+          actually need, with real 2026 numbers and the mistakes that cost money.
         </p>
+        {liveExplainers.length > 0 && (
+          <p class="meta">
+            <strong>Live now:</strong>{" "}
+            {liveExplainers.map((p, i) => (
+              <>{i > 0 && ", "}<a href={p.slug}>{p.title}</a></>
+            ))}
+          </p>
+        )}
         <p><a href="/learn/">Read the explainers →</a></p>
       </article>
       <article class="card">
         <h3><a href="/calculators/">Try</a></h3>
-        <p class="dek">
-          Eight calculators that do real Canadian math: an income tax estimator
-          (federal + all provinces), a TFSA vs RRSP decision tool, TFSA and
-          RRSP room trackers, a house affordability calculator, a down payment
-          planner, a rent-vs-buy tool, and a compound-growth retirement saver.
-        </p>
-        <p><a href="/calculators/">Try the tools →</a></p>
+        {liveCalculators.length > 0 ? (
+          <>
+            <p class="dek">Calculators that do real Canadian math, with the assumptions shown.</p>
+            <p class="meta">
+              <strong>Live now:</strong>{" "}
+              {liveCalculators.map((p, i) => (
+                <>{i > 0 && ", "}<a href={p.slug}>{p.title}</a></>
+              ))}
+            </p>
+            <p><a href="/calculators/">Try the tools →</a></p>
+          </>
+        ) : (
+          <>
+            <p class="dek">
+              Calculators are in progress and none are live yet. Until they
+              launch, the TFSA vs RRSP comparison works through the math by hand.
+            </p>
+            <p><a href="/calculators/">See what's coming →</a></p>
+          </>
+        )}
       </article>
       <article class="card">
         <h3><a href="/compare/">Do</a></h3>
         <p class="dek">
-          Four comparisons where we actually recommend: TFSA vs RRSP,
-          Wealthsimple vs Questrade, FHSA vs Home Buyers' Plan, and the best
-          bank accounts for beginners. Verdict first, math second, edge cases
-          third.
+          Comparisons where we actually recommend. Verdict first, math second,
+          edge cases third.
         </p>
+        {liveComparisons.length > 0 && (
+          <p class="meta">
+            <strong>Live now:</strong>{" "}
+            {liveComparisons.map((p, i) => (
+              <>{i > 0 && ", "}<a href={p.slug}>{p.title}</a></>
+            ))}
+          </p>
+        )}
         <p><a href="/compare/">See the comparisons →</a></p>
       </article>
     </div>
@@ -137,20 +174,25 @@ const paths: { heading: string; items: { label: string; slug: string }[] }[] = [
   <section class="wrap">
     <h2>Start here</h2>
     <div class="card-grid">
-      {paths.map((group) => (
-        <article class="card">
-          <h3>“{group.heading}”</h3>
-          <ol>
-            {group.items.map((item) =>
-              link(item.slug) ? (
-                <li><a href={item.slug}>{item.label}</a></li>
-              ) : (
-                <li>{item.label} <span class="chip">soon</span></li>
-              ),
+      {paths.map((group) => {
+        const live = group.items.filter((item) => link(item.slug));
+        const upcoming = group.items.filter((item) => !link(item.slug));
+        return (
+          <article class="card">
+            <h3>“{group.heading}”</h3>
+            {live.length > 0 && (
+              <ol>
+                {live.map((item) => <li><a href={item.slug}>{item.label}</a></li>)}
+              </ol>
             )}
-          </ol>
-        </article>
-      ))}
+            {upcoming.length > 0 && (
+              <p class="meta">
+                <strong>Coming next:</strong> {upcoming.map((item) => item.label).join("; ")}.
+              </p>
+            )}
+          </article>
+        );
+      })}
     </div>
   </section>
 
@@ -158,7 +200,7 @@ const paths: { heading: string; items: { label: string; slug: string }[] }[] = [
     <h2>How this site makes money</h2>
     <p>
       Running LoonieLogic costs money, and honest revenue keeps it free. Some
-      links — mostly on the comparison pages — are affiliate links: if you open
+      links, mostly on the comparison pages, are affiliate links: if you open
       an account through one, the provider may pay us a commission at no extra
       cost to you.
     </p>
@@ -168,11 +210,11 @@ const paths: { heading: string; items: { label: string; slug: string }[] }[] = [
         Our recommendations come from the math, not from which provider pays.
       </li>
       <li>
-        We never recommend a specific investment product ("buy this ETF") —
-        rules and tools, not picks.
+        We never recommend a specific investment product ("buy this ETF").
+        Rules and tools, not picks.
       </li>
       <li>
-        We never publish an unverified rate or promo end date — it's flagged or
+        We never publish an unverified rate or promo end date. It's flagged or
         left out.
       </li>
     </ul>

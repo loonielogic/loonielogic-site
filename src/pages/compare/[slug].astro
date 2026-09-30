@@ -44,6 +44,7 @@ const srcSlug = d.slug.replace(/^\//, "");
   slug={d.slug}
   pageType={d.page_type}
   dateModified={d.last_reviewed}
+  breadcrumbs={[{ name: "Compare", slug: "/compare/" }, { name: d.title, slug: d.slug }]}
 >
   <div class="wrap">
     <nav aria-label="Breadcrumb" class="page-meta" style="margin-top:1.5rem">
@@ -63,7 +64,7 @@ const srcSlug = d.slug.replace(/^\//, "");
         <div class="disclosure-bar" role="note">
           <p>
             <em>
-              Heads up: some links on this page are affiliate links — if you
+              Heads up: some links on this page are affiliate links. If you
               sign up through them, we may earn a commission at no extra cost
               to you. Full details on our{" "}
               <a href="/affiliate-disclosure">affiliate disclosure page</a>.

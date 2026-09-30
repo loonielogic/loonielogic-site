@@ -1,8 +1,9 @@
 ---
 /**
  * Related-cards block, generated from the front-matter `related` array.
- * Only pages that exist in this build get links — everything else renders
- * as a "Coming soon" card (same pattern as the hub pages).
+ * Only pages that exist in this build render as cards (live first, short
+ * `card_dek` text); the rest collapse into one "Coming next" line, same
+ * pattern as the hub pages.
  */
 import { pageBySlug } from "../lib/site";
 
@@ -16,30 +17,29 @@ const { slugs, heading = "Keep reading", builtSlugs } = Astro.props;
 const cards = slugs
   .map((s) => pageBySlug.get(s))
   .filter((p): p is NonNullable<typeof p> => Boolean(p));
+const live = cards.filter((p) => builtSlugs.has(p.slug));
+const upcoming = cards.filter((p) => !builtSlugs.has(p.slug));
 ---
 
 {
   cards.length > 0 && (
     <section class="related-cards" aria-label={heading}>
       <h2>{heading}</h2>
-      <div class="card-grid">
-        {cards.map((p) => {
-          const built = builtSlugs.has(p.slug);
-          return (
+      {live.length > 0 && (
+        <div class="card-grid">
+          {live.map((p) => (
             <article class="card">
-              <h3>
-                {built ? <a href={p.slug}>{p.title}</a> : <span>{p.title}</span>}
-              </h3>
-              <p class="dek">{p.meta_description}</p>
-              {!built && (
-                <div class="chips">
-                  <span class="chip">Coming soon</span>
-                </div>
-              )}
+              <h3><a href={p.slug}>{p.title}</a></h3>
+              <p class="dek">{p.card_dek ?? p.meta_description}</p>
             </article>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      )}
+      {upcoming.length > 0 && (
+        <p class="page-meta">
+          <strong>Coming next:</strong> {upcoming.map((p) => p.title).join("; ")}.
+        </p>
+      )}
     </section>
   )
 }

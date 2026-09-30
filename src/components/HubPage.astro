@@ -2,8 +2,10 @@
 /**
  * HubPage — generated hub template (hub-page-templates-spec.md).
  * Card data comes from src/data/sitemap.json; `builtSlugs` marks which pages
- * actually exist in this build — everything else renders "Coming soon"
- * (hub renders only published cards per spec §7).
+ * actually exist in this build. Only live pages render as cards (using the
+ * short `card_dek`, falling back to meta_description); everything not yet
+ * built collapses into one plain "Coming next" list so nothing looks live
+ * that isn't (hub renders only published cards per spec §7).
  */
 import BaseLayout from "../layouts/BaseLayout.astro";
 import type { SitemapPage } from "../lib/site";
@@ -35,15 +37,31 @@ const {
 } = Astro.props;
 
 const bySlug = new Map(cards.map((c) => [c.slug, c]));
+const live = cards.filter((c) => builtSlugs.has(c.slug));
+const upcoming = cards.filter((c) => !builtSlugs.has(c.slug));
 
+// Grouped hubs keep their sections, but a section only appears once it has
+// at least one live page.
 const grouped = groups
   ? groups
-      .map((g) => ({ ...g, cards: g.slugs.map((s) => bySlug.get(s)).filter((c): c is SitemapPage => Boolean(c)) }))
+      .map((g) => ({
+        ...g,
+        cards: g.slugs
+          .map((s) => bySlug.get(s))
+          .filter((c): c is SitemapPage => Boolean(c) && builtSlugs.has(c!.slug)),
+      }))
       .filter((g) => g.cards.length > 0)
   : null;
+const sections = grouped ?? (live.length > 0 ? [{ label: null, cards: live }] : []);
 ---
 
-<BaseLayout title={title} metaDescription={metaDescription} slug={slug} pageType="hub">
+<BaseLayout
+  title={title}
+  metaDescription={metaDescription}
+  slug={slug}
+  pageType="hub"
+  breadcrumbs={[{ name: breadcrumb, slug }]}
+>
   <div class="wrap">
     <nav aria-label="Breadcrumb" class="page-meta" style="margin-top:1.5rem">
       <a href="/">Home</a> › {breadcrumb}
@@ -64,59 +82,39 @@ const grouped = groups
       </div>
     )}
 
-    {grouped ? (
-      grouped.map((g) => (
-        <section aria-label={g.label} style="margin-top:2.5rem">
-          <h2>{g.label}</h2>
-          <div class="card-grid">
-            {g.cards.map((p) => {
-              const built = builtSlugs.has(p.slug);
-              const meta = cardMeta[p.slug] ?? {};
-              return (
-                <article class="card">
-                  <h3>
-                    {built ? <a href={p.slug}>{p.title}</a> : <span>{p.title}</span>}
-                  </h3>
-                  <p class="dek">{p.meta_description}</p>
-                  {(meta.chips || meta.badge || !built) && (
-                    <div class="chips">
-                      {meta.badge && <span class="chip">{meta.badge}</span>}
-                      {!built && <span class="chip">Coming soon</span>}
-                      {(meta.chips ?? []).map((c) => <span class="chip">{c}</span>)}
-                    </div>
-                  )}
-                  {meta.verdict && <p class="meta"><strong>Verdict:</strong> {meta.verdict}</p>}
-                  {built && <p class="meta"><a href={p.slug}>Read →</a></p>}
-                </article>
-              );
-            })}
-          </div>
-        </section>
-      ))
-    ) : (
-      <div class="card-grid" style="margin-top:2rem">
-        {cards.map((p) => {
-          const built = builtSlugs.has(p.slug);
-          const meta = cardMeta[p.slug] ?? {};
-          return (
-            <article class="card">
-              <h3>
-                {built ? <a href={p.slug}>{p.title}</a> : <span>{p.title}</span>}
-              </h3>
-              <p class="dek">{p.meta_description}</p>
-              {(meta.chips || meta.badge || !built) && (
-                <div class="chips">
-                  {meta.badge && <span class="chip">{meta.badge}</span>}
-                  {!built && <span class="chip">Coming soon</span>}
-                  {(meta.chips ?? []).map((c) => <span class="chip">{c}</span>)}
-                </div>
-              )}
-              {meta.verdict && <p class="meta"><strong>Verdict:</strong> {meta.verdict}</p>}
-              {built && <p class="meta"><a href={p.slug}>Read →</a></p>}
-            </article>
-          );
-        })}
-      </div>
+    {sections.map((g) => (
+      <section aria-label={g.label ?? "Live now"} style="margin-top:2.5rem">
+        {g.label && <h2>{g.label}</h2>}
+        <div class="card-grid">
+          {g.cards.map((p) => {
+            const meta = cardMeta[p.slug] ?? {};
+            return (
+              <article class="card">
+                <h3><a href={p.slug}>{p.title}</a></h3>
+                <p class="dek">{p.card_dek ?? p.meta_description}</p>
+                {(meta.chips || meta.badge) && (
+                  <div class="chips">
+                    {meta.badge && <span class="chip">{meta.badge}</span>}
+                    {(meta.chips ?? []).map((c) => <span class="chip">{c}</span>)}
+                  </div>
+                )}
+                {meta.verdict && <p class="meta"><strong>Verdict:</strong> {meta.verdict}</p>}
+                <p class="meta"><a href={p.slug}>Read →</a></p>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+    ))}
+
+    {upcoming.length > 0 && (
+      <section class="coming-next" aria-label="Coming next" style="margin-top:2.5rem">
+        <h2>Coming next</h2>
+        <p class="page-meta">Not published yet. These pages are in progress:</p>
+        <ul>
+          {upcoming.map((p) => <li>{p.title}</li>)}
+        </ul>
+      </section>
     )}
 
     <div class="disclosure-bar" style="margin-top:2.5rem">

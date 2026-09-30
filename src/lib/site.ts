@@ -6,6 +6,7 @@ export interface SitemapPage {
   title: string;
   meta_description: string;
   hub: string | null;
+  card_dek?: string; // short card text; hubs and related cards fall back to meta_description
   cluster: string;
   related: string[];
   wave: number;
@@ -23,11 +24,13 @@ export const hubs: Hub[] = (sitemap as { hubs: Hub[] }).hubs;
 
 export const pageBySlug = new Map(pages.map((p) => [p.slug, p]));
 
-export const SITE_URL = (
-  process.env.SITE_URL ||
-  process.env.CF_PAGES_URL ||
-  "https://loonielogic.ca"
-).replace(/\/$/, "");
+// Production origin, pinned on purpose: canonicals, sitemap.xml, and JSON-LD
+// must never pick up a per-deployment preview URL (CF_PAGES_URL). Keep in sync
+// with `site` in astro.config.mjs.
+export const SITE_URL = "https://loonielogic-site.pages.dev";
+
+// Default share image (the loon avatar) for og:image / twitter:image.
+export const DEFAULT_OG_IMAGE = `${SITE_URL}/loonielogic-og.png`;
 
 export function canonicalUrl(slug: string): string {
   return `${SITE_URL}${slug === "/" ? "" : slug}`;

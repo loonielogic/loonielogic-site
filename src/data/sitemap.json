@@ -22,7 +22,7 @@
     {
       "cluster": "utility",
       "hub": null,
-      "meta_description": "LoonieLogic is Canadian money made simple: plain-English explainers, interactive calculators, and honest comparisons of brokerages, banks, and accounts. No jargon, no filler.",
+      "meta_description": "Canadian money made simple: plain-English explainers and comparisons with real 2026 numbers, the math shown, and a clear pick at the end. No jargon.",
       "page_type": "home",
       "related": [
         "/calculators/income-tax-calculator",
@@ -34,7 +34,7 @@
       ],
       "review_cadence": "annual",
       "slug": "/",
-      "title": "LoonieLogic: Learn Money, Try the Tools, Do It Right — Canadian Finance",
+      "title": "LoonieLogic: Canadian Money, Explained in Plain English",
       "wave": 0
     },
     {
@@ -43,7 +43,7 @@
       "cluster": "utility",
       "hub": null,
       "title": "Learn Canadian Money: Explainers 2026 | LoonieLogic",
-      "meta_description": "Plain-English explainers on TFSA, RRSP, FHSA, taxes, CPP and more — real 2026 Canadian numbers, the expensive mistakes, and what to do next.",
+      "meta_description": "Plain-English guides to Canadian money, starting with the TFSA: real 2026 numbers, the expensive mistakes, and what to do next. RRSP and FHSA guides follow.",
       "related": [
         "/calculators/",
         "/compare/tfsa-vs-rrsp"
@@ -57,7 +57,7 @@
       "cluster": "utility",
       "hub": null,
       "title": "Canadian Tax & Savings Calculators 2026 | LoonieLogic",
-      "meta_description": "Eight calculators with real Canadian math: income tax (federal + provinces), TFSA vs RRSP, room trackers, affordability, rent vs buy, and compound growth.",
+      "meta_description": "Canadian money calculators in progress: income tax, TFSA vs RRSP, room trackers, and home buying. Until they launch, our guides show the math by hand.",
       "related": [
         "/learn/",
         "/compare/tfsa-vs-rrsp"
@@ -71,7 +71,7 @@
       "cluster": "utility",
       "hub": null,
       "title": "TFSA vs RRSP, Brokerages & Banks Compared | LoonieLogic",
-      "meta_description": "Honest Canadian comparisons with verdicts: TFSA vs RRSP, Wealthsimple vs Questrade, FHSA vs Home Buyers' Plan, and the best beginner bank accounts.",
+      "meta_description": "Honest Canadian comparisons with verdicts, starting with TFSA vs RRSP. Wealthsimple vs Questrade, FHSA vs Home Buyers' Plan, and bank accounts are next.",
       "related": [
         "/learn/",
         "/calculators/tfsa-vs-rrsp"
@@ -91,6 +91,7 @@
       ],
       "review_cadence": "annual",
       "slug": "/calculators/income-tax-calculator",
+      "card_dek": "Your 2026 federal and provincial tax, plus what lands on each paycheque.",
       "title": "Canadian Income Tax Calculator 2026: Federal + All Provinces",
       "wave": 1
     },
@@ -106,6 +107,7 @@
       ],
       "review_cadence": "annual",
       "slug": "/calculators/tfsa-vs-rrsp",
+      "card_dek": "Six questions, one clear answer on which account to fund first.",
       "title": "TFSA vs RRSP Calculator Canada 2026: Which Is Better for You?",
       "wave": 1
     },
@@ -121,6 +123,7 @@
       ],
       "review_cadence": "annual",
       "slug": "/calculators/tfsa-room",
+      "card_dek": "Find your exact 2026 TFSA room from your birth year and history.",
       "title": "TFSA Contribution Room Tracker 2026: Find Your Limit",
       "wave": 2
     },
@@ -136,6 +139,7 @@
       ],
       "review_cadence": "annual",
       "slug": "/calculators/rrsp-room",
+      "card_dek": "Rebuild your RRSP room from scratch or from your latest NOA.",
       "title": "RRSP Contribution Room Calculator 2026",
       "wave": 2
     },
@@ -150,6 +154,7 @@
       ],
       "review_cadence": "annual",
       "slug": "/calculators/house-affordability",
+      "card_dek": "See the price you can actually qualify for under Canadian lending rules.",
       "title": "How Much House Can I Afford in Canada? 2026 Calculator",
       "wave": 3
     },
@@ -165,13 +170,14 @@
       ],
       "review_cadence": "annual",
       "slug": "/calculators/down-payment-planner",
+      "card_dek": "Map your down payment month by month, with the FHSA and HBP stacked.",
       "title": "Down Payment Planner Canada 2026: Timeline + FHSA/HBP Stack",
       "wave": 3
     },
     {
       "cluster": "housing",
       "hub": "/calculators/",
-      "meta_description": "Rent or buy in Canada? Compare net wealth over any timeframe with real mortgage math, closing costs, rent inflation — and get the breakeven year.",
+      "meta_description": "Rent or buy in Canada? Compare net wealth over any timeframe with real mortgage math, closing costs, rent inflation, and the breakeven year.",
       "page_type": "calculator",
       "related": [
         "/calculators/house-affordability",
@@ -179,13 +185,14 @@
       ],
       "review_cadence": "annual",
       "slug": "/calculators/rent-vs-buy",
+      "card_dek": "Compare renting and buying on net wealth, and find the breakeven year.",
       "title": "Rent vs Buy Calculator Canada 2026: Who Wins the Money Race?",
       "wave": 3
     },
     {
       "cluster": "retirement",
       "hub": "/calculators/",
-      "meta_description": "See what your savings become by retirement: project compound growth in today's dollars, add your CPP and OAS, and find the income gap — plus what closes it.",
+      "meta_description": "See what your savings become by retirement: project compound growth in today's dollars, add your CPP and OAS, and find the income gap, plus what closes it.",
       "page_type": "calculator",
       "related": [
         "/learn/cpp-oas",
@@ -194,6 +201,7 @@
       ],
       "review_cadence": "annual",
       "slug": "/calculators/compound-growth",
+      "card_dek": "Project your savings, add CPP and OAS, and find your retirement gap.",
       "title": "Compound Growth Calculator Canada 2026: Retirement Saver",
       "wave": 3
     },
@@ -209,6 +217,7 @@
       ],
       "review_cadence": "annual",
       "slug": "/learn/glossary",
+      "card_dek": "Canadian money terms, each explained in a sentence or two.",
       "title": "Canadian Finance Glossary: 49 Terms in Plain English",
       "wave": 3
     },
@@ -225,6 +234,7 @@
       ],
       "review_cadence": "annual",
       "slug": "/learn/tfsa",
+      "card_dek": "The 2026 limit, how your room adds up, and the mistakes that cost money.",
       "title": "TFSA Canada 2026: How It Works, Limits, and Rules",
       "wave": 4
     },
@@ -240,6 +250,7 @@
       ],
       "review_cadence": "annual",
       "slug": "/learn/rrsp",
+      "card_dek": "The 2026 limit, the deadline, and how the deduction really works.",
       "title": "RRSP Canada 2026: Contribution Limit, Deadline, and Rules",
       "wave": 4
     },
@@ -256,6 +267,7 @@
       ],
       "review_cadence": "annual",
       "slug": "/learn/fhsa",
+      "card_dek": "How the First Home Savings Account works and who qualifies.",
       "title": "FHSA Canada 2026: First Home Savings Account Explained",
       "wave": 2
     },
@@ -272,6 +284,7 @@
       ],
       "review_cadence": "annual",
       "slug": "/learn/home-buyers-plan",
+      "card_dek": "Borrowing from your RRSP for a first home, and paying it back.",
       "title": "Home Buyers' Plan (HBP) Canada 2026: Rules and Repayment",
       "wave": 2
     },
@@ -287,6 +300,7 @@
       ],
       "review_cadence": "annual",
       "slug": "/learn/federal-tax-brackets-2026",
+      "card_dek": "Every 2026 federal bracket, with a worked $100,000 example.",
       "title": "2026 Federal Tax Brackets Canada: Rates, BPA, and Examples",
       "wave": 1
     },
@@ -302,6 +316,7 @@
       ],
       "review_cadence": "annual",
       "slug": "/learn/first-time-tax-filing",
+      "card_dek": "Who has to file, the deadline, and free ways to get it done.",
       "title": "Filing Taxes for the First Time in Canada: 2026 Guide",
       "wave": 2
     },
@@ -317,6 +332,7 @@
       ],
       "review_cadence": "annual",
       "slug": "/learn/tfsa-overcontribution-fix",
+      "card_dek": "Over-contributed? The exact steps to stop the 1% monthly penalty.",
       "title": "TFSA Over-Contribution Canada: How to Fix It (2026)",
       "wave": 3
     },
@@ -331,6 +347,7 @@
       ],
       "review_cadence": "quarterly",
       "slug": "/learn/cpp-oas",
+      "card_dek": "What CPP and OAS pay in 2026, and when to start each one.",
       "title": "CPP and OAS Canada 2026: Amounts, Start Age, and Clawback",
       "wave": 3
     },
@@ -344,6 +361,7 @@
       ],
       "review_cadence": "annual",
       "slug": "/learn/resp",
+      "card_dek": "Free government money for your kid's education, and how to collect all of it.",
       "title": "RESP Canada 2026: Grants, the $209 Sweet Spot, and Traps",
       "wave": 3
     },
@@ -358,6 +376,7 @@
       ],
       "review_cadence": "annual",
       "slug": "/learn/credit-score",
+      "card_dek": "How Canadian credit scores work and the moves that actually raise yours.",
       "title": "Credit Score Canada 2026: How It Works and How to Raise Yours",
       "wave": 3
     },
@@ -373,6 +392,7 @@
       ],
       "review_cadence": "annual",
       "slug": "/compare/tfsa-vs-rrsp",
+      "card_dek": "Which account to fund first, with the 2026 math and a clear verdict.",
       "title": "TFSA vs RRSP Canada 2026: The Only Comparison That Recommends",
       "wave": 1
     },
@@ -387,6 +407,7 @@
       ],
       "review_cadence": "quarterly",
       "slug": "/compare/wealthsimple-vs-questrade",
+      "card_dek": "Fees, features, and which brokerage fits which kind of investor.",
       "title": "Wealthsimple vs Questrade 2026: Fees, Features, and Which to Pick",
       "wave": 1
     },
@@ -403,6 +424,7 @@
       ],
       "review_cadence": "annual",
       "slug": "/compare/fhsa-vs-home-buyers-plan",
+      "card_dek": "Which home-buying account to use first, and how to stack both.",
       "title": "FHSA vs Home Buyers' Plan 2026: Which First? (With Math)",
       "wave": 1
     },
@@ -417,13 +439,14 @@
       ],
       "review_cadence": "promo-watch",
       "slug": "/compare/best-bank-accounts-beginners",
+      "card_dek": "No-fee accounts for students and newcomers, and which ones to skip.",
       "title": "Best Bank Accounts for Beginners in Canada 2026 (Student/Newcomer)",
       "wave": 3
     },
     {
       "cluster": "utility",
       "hub": null,
-      "meta_description": "Who runs LoonieLogic, how we make money (affiliate disclosure summary), and why we recommend instead of sitting on the fence. Educational content only — not financial advice.",
+      "meta_description": "Who runs LoonieLogic, how we make money (affiliate disclosure summary), and why we recommend instead of sitting on the fence. Educational content only, not financial advice.",
       "page_type": "legal",
       "related": [
         "/affiliate-disclosure",
@@ -452,7 +475,7 @@
     {
       "cluster": "utility",
       "hub": null,
-      "meta_description": "How LoonieLogic makes money: affiliate commissions on broker/bank links, per Competition Act disclosure rules. Recommendations are never sold — here is the proof.",
+      "meta_description": "How LoonieLogic makes money: affiliate commissions on broker/bank links, per Competition Act disclosure rules. Recommendations are never sold. Here is the proof.",
       "page_type": "legal",
       "related": [
         "/about",

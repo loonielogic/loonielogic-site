@@ -5,7 +5,12 @@
  * per hidden_files/seo-technical-spec.md §1.
  */
 import "../styles/global.css";
-import { canonicalUrl, SITE_URL } from "../lib/site";
+import { canonicalUrl, SITE_URL, DEFAULT_OG_IMAGE } from "../lib/site";
+
+interface Crumb {
+  name: string;
+  slug: string;
+}
 
 interface Props {
   title: string;
@@ -15,6 +20,10 @@ interface Props {
   dateModified?: string;
   jsonLdExtra?: Record<string, unknown>;
   noindex?: boolean;
+  /** Absolute URL; defaults to the loon avatar. */
+  ogImage?: string;
+  /** Trail below Home, ending with the current page. Emits BreadcrumbList. */
+  breadcrumbs?: Crumb[];
 }
 
 const {
@@ -25,9 +34,12 @@ const {
   dateModified,
   jsonLdExtra,
   noindex = false,
+  ogImage = DEFAULT_OG_IMAGE,
+  breadcrumbs,
 } = Astro.props;
 
 const canonical = canonicalUrl(slug);
+const ogType = ["explainer", "comparison"].includes(pageType) ? "article" : "website";
 const today = new Date().toISOString().slice(0, 10);
 const modified = dateModified ?? today;
 
@@ -76,9 +88,29 @@ const primaryType: Record<string, unknown> =
             articleSection: pageType === "comparison" ? "Compare" : "Learn",
           };
 
+const breadcrumbNode: Record<string, unknown>[] =
+  breadcrumbs && breadcrumbs.length > 0
+    ? [
+        {
+          "@type": "BreadcrumbList",
+          itemListElement: [{ name: "Home", slug: "/" }, ...breadcrumbs].map((c, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            name: c.name,
+            item: canonicalUrl(c.slug),
+          })),
+        },
+      ]
+    : [];
+
 const graph = {
   "@context": "https://schema.org",
-  "@graph": [...baseNodes, primaryType, ...(jsonLdExtra ? [jsonLdExtra] : [])],
+  "@graph": [
+    ...baseNodes,
+    primaryType,
+    ...breadcrumbNode,
+    ...(jsonLdExtra ? [jsonLdExtra] : []),
+  ],
 };
 ---
 
@@ -91,6 +123,19 @@ const graph = {
     <meta name="description" content={metaDescription} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content="LoonieLogic" />
+    <meta property="og:locale" content="en_CA" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={metaDescription} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content="LoonieLogic logo: a gold common loon in a coin-style ring" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={metaDescription} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content="LoonieLogic logo: a gold common loon in a coin-style ring" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -162,7 +207,7 @@ const graph = {
             <strong>Affiliate disclosure:</strong> we may earn a commission from some
             links on this site, disclosed before the first affiliate link on any page.
             <strong>Numbers change:</strong> tax rules, limits, and promos are verified
-            against official sources on the dates shown — check the linked official
+            against official sources on the dates shown. Check the linked official
             pages before acting.
           </p>
         </div>

@@ -2,12 +2,12 @@
 import HubPage from "../../components/HubPage.astro";
 import { sectionPages } from "../../lib/site";
 
-// No calculator .astro shells exist yet in this build — all eight cards
-// render "Coming soon" until the calculator architecture spec ships them.
+// No calculator .astro shells exist yet in this build, so every tool lands in
+// the hub's "Coming next" list until the calculator architecture spec ships them.
 const cards = sectionPages("/calculators/");
 
 const cardMeta = {
-  "/calculators/income-tax-calculator": { badge: "Flagship — start here", chips: ["13 provinces", "paycheque mode"] },
+  "/calculators/income-tax-calculator": { badge: "Flagship: start here", chips: ["13 provinces", "paycheque mode"] },
   "/calculators/tfsa-vs-rrsp": { chips: ["6 questions", "verdict"] },
   "/calculators/house-affordability": { chips: ["GDS 39%", "TDS 44%"] },
   "/calculators/down-payment-planner": { chips: ["FHSA + HBP stack"] },
@@ -21,12 +21,12 @@ const cardMeta = {
 <HubPage
   slug="/calculators/"
   title="Canadian Tax & Savings Calculators 2026 | LoonieLogic"
-  metaDescription="Eight calculators with real Canadian math: income tax (federal + provinces), TFSA vs RRSP, room trackers, affordability, rent vs buy, and compound growth."
+  metaDescription="Canadian money calculators in progress: income tax, TFSA vs RRSP, room trackers, and home buying. Until they launch, our guides show the math by hand."
   h1="Calculators that do real Canadian math"
-  intro="Eight interactive tools with sane Canadian defaults pre-filled. Every result comes with a plain-language explanation of why — these are estimates, not advice, and the assumptions are shown."
+  intro="Our calculators are still being built, and none are live yet. Until they are, the TFSA vs RRSP comparison walks through the 2026 math by hand, with worked examples and a clear verdict."
   breadcrumb="Tools"
   cards={cards}
   builtSlugs={new Set()}
   cardMeta={cardMeta}
-  cta={{ label: "Decided which account to open? See the verdicts →", href: "/compare/tfsa-vs-rrsp" }}
+  cta={{ label: "See the math now: TFSA vs RRSP →", href: "/compare/tfsa-vs-rrsp" }}
 />

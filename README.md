@@ -21,7 +21,7 @@ is invalid. Do not bypass the gate.
 | Route | Status |
 |---|---|
 | `/` | Real — homepage with Learn/Try/Do cards and guided paths |
-| `/learn/`, `/calculators/`, `/compare/` | Real hubs; cards link only built pages, rest show "Coming soon" |
+| `/learn/`, `/calculators/`, `/compare/` | Real hubs; only built pages render as cards (using `card_dek` from `src/data/sitemap.json`), the rest collapse into one "Coming next" list |
 | `/learn/tfsa` | Real explainer (adapted from `files/tfsa-basics-explainer-v1.md`) |
 | `/compare/tfsa-vs-rrsp` | Real comparison, no affiliate links, explicit non-affiliate disclosure line |
 | `/about`, `/privacy`, `/affiliate-disclosure`, `/terms` | Real v1 legal stubs (honest, minimal; review before monetization) |
@@ -102,4 +102,10 @@ and sitemap.xml light up automatically — no manual wiring.
   material-change rule (git diff of content + figure keys) before launch so
   `lastmod` means something.
 - **robots.txt preview rule** assumes the production branch is `main`
-  (`CF_PAGES_BRANCH`); confirm when the Pages project exists.
+  (`CF_PAGES_BRANCH`); confirm when the Pages project exists. Crawling is
+  also opt-in: set `ALLOW_INDEXING=true` in the Pages production env at
+  launch. Until then every build serves a full disallow.
+- **Site origin** is pinned to `https://loonielogic-site.pages.dev` in both
+  `astro.config.mjs` and `src/lib/site.ts` (canonicals, sitemap, JSON-LD,
+  og:image). It is never derived from `CF_PAGES_URL`. Change both together
+  if a custom domain is ever bought.
