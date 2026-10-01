@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
 import { pages, canonicalUrl } from "../lib/site";
+import calculatorManifests from "../data/calculator-manifests.json";
 
 export const prerender = true;
 
@@ -30,6 +31,12 @@ export const GET: APIRoute = async () => {
       const v = (e.data as { last_reviewed?: unknown }).last_reviewed;
       lastmod.set(e.data.slug, v instanceof Date ? v.toISOString().slice(0, 10) : String(v ?? today));
     }
+  }
+  // Live calculator shells are hand-built .astro pages (not content
+  // collections), so they enter the XML from their manifests.
+  const manifests = (calculatorManifests as { manifests?: unknown[] }).manifests ?? calculatorManifests;
+  for (const m of manifests as { slug?: string; status?: string; last_reviewed?: string }[]) {
+    if (m.status === "live" && m.slug) lastmod.set(m.slug, m.last_reviewed ?? today);
   }
 
   const urls = pages
