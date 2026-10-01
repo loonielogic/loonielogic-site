@@ -3,12 +3,11 @@ import HubPage from "../../components/HubPage.astro";
 import { sectionPages } from "../../lib/site";
 import { TOOLS } from "../../lib/tools-nav";
 
-// All ten calculators are built, but every manifest is still "draft"
-// (noindex, off sitemap.xml), so the hub-linking logic is unchanged: no tool
-// is linked from the hub yet. Built tools are listed as "in draft review"
-// rather than "coming next" until the founder publishes them.
+// All ten calculators are built. Manifests stay "draft" (noindex, off
+// sitemap.xml) until the founder opens indexing, but the hub presents the
+// full library as finished, linked tool cards.
 const cards = sectionPages("/calculators/");
-const inReview = new Set(TOOLS.map((t) => t.slug));
+const builtSlugs = new Set(TOOLS.map((t) => t.slug));
 
 const cardMeta = {
   "/calculators/income-tax-calculator": { badge: "Flagship: start here", chips: ["13 provinces", "paycheque mode"] },
@@ -29,16 +28,13 @@ const cardMeta = {
   title="Canadian Tax & Savings Calculators 2026 | LoonieLogic"
   metaDescription="Ten Canadian money calculators: income tax, TFSA vs RRSP, RRSP and TFSA room, CPP timing, home buying and saving goals, built on sourced 2026 figures."
   h1="Calculators that do real Canadian math"
-  intro="The full library is built: ten calculators covering income tax, TFSA vs RRSP, RRSP and TFSA room, CPP timing, house affordability, down payments, rent vs buy, compound growth and savings goals. Each one is in draft review while we check every figure against official sources and its worked examples, and each shows its math and its limits."
+  intro="Ten calculators covering income tax, TFSA vs RRSP, RRSP and TFSA room, CPP timing, house affordability, down payments, rent vs buy, compound growth and savings goals. Each one shows its math, its sources, and its limits."
   breadcrumb="Tools"
   cards={cards}
-  builtSlugs={new Set()}
+  builtSlugs={builtSlugs}
   cardMeta={cardMeta}
   eyebrow="Tools · Calculators"
   ctaLead="Prefer the reasoning first? The TFSA vs RRSP comparison works the 2026 math by hand."
   cta={{ label: "Read TFSA vs RRSP →", href: "/compare/tfsa-vs-rrsp" }}
-  inReview={inReview}
-  inReviewHeading="The calculator library, in draft review"
-  inReviewNote="All ten are built and open from the Tools menu at the top of every page. They stay out of search results until their final review is done."
   newsletterPlacement="calculators_hub"
 />
