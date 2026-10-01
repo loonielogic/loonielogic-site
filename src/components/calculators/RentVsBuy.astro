@@ -1,0 +1,243 @@
+---
+/**
+ * RentVsBuy: the rent vs buy calculator island. Plain Astro markup plus one
+ * TypeScript <script> (no framework). Results are rendered once at build
+ * time from the spec's Toronto example, so the page is useful with JS off;
+ * the script recomputes on every input change. Every assumption sits in the
+ * form with its default visible, never buried.
+ */
+import "../../styles/calc-kit.css";
+import {
+  BC_GUIDELINE,
+  CALGARY_TAX,
+  DEFAULT_INPUT,
+  EDMONTON_TAX,
+  ON_GUIDELINE,
+  RATE_SNAPSHOT,
+  TORONTO_TAX,
+  compare,
+  rvbFigures,
+} from "../../lib/calculators/rent-vs-buy";
+import { renderResults } from "../../lib/calculators/rent-vs-buy-render";
+import { pct } from "../../lib/calculators/calc-kit";
+import CalcSources from "./CalcSources.astro";
+
+const d = DEFAULT_INPUT;
+const initialHtml = renderResults(compare(d));
+const p = (r: number, digits = 2) => Number((r * 100).toFixed(digits));
+---
+
+<div class="ck" id="rvb">
+  <form class="ck-form" id="rvb-form" novalidate>
+    <fieldset>
+      <legend>Renting</legend>
+      <label>Monthly rent ($)
+        <input type="number" name="rent" inputmode="decimal" min="0" step="50" value={d.rent} />
+      </label>
+      <p class="ck-error" data-error-for="rent" hidden></p>
+      <label>Rent increase each year (%)
+        <input type="number" name="rentGrowth" inputmode="decimal" min="0" max="10" step="0.1" value={p(d.rentGrowth!, 2)} />
+        <small>2026 caps: Ontario {pct(ON_GUIDELINE, 1)}, BC {pct(BC_GUIDELINE, 1)}. Other provinces: use your own estimate.</small>
+      </label>
+      <p class="ck-error" data-error-for="rentGrowth" hidden></p>
+      <label class="ck-check"><input type="checkbox" name="guidelineExempt" /> Ontario unit first occupied after November 15, 2018 (no rent cap)</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Buying</legend>
+      <label>Home price ($)
+        <input type="number" name="price" inputmode="decimal" min="0" step="5000" value={d.price} />
+      </label>
+      <p class="ck-error" data-error-for="price" hidden></p>
+      <label>Down payment (% of the price)
+        <input type="number" name="downPct" inputmode="decimal" min="5" max="100" step="0.5" value={p(d.downPct!, 1)} />
+        <small>Under 20%, the CMHC premium is added to the mortgage.</small>
+      </label>
+      <p class="ck-error" data-error-for="downPct" hidden></p>
+      <label>Mortgage rate (% a year)
+        <input type="number" name="rate" inputmode="decimal" min="0" max="20" step="0.05" value={p(d.rate!)} />
+        <small>Default {pct(d.rate!)} is illustrative (discount-broker 5-year fixed, Sept 2026). Best 5-year fixed snapshot: {pct(RATE_SNAPSHOT.best_5yr_fixed)}; rates move weekly.</small>
+      </label>
+      <p class="ck-error" data-error-for="rate" hidden></p>
+      <label>Amortization
+        <select name="amortYears">
+          <option value="25" selected>25 years</option>
+          <option value="30">30 years (first-time buyers and new builds)</option>
+        </select>
+      </label>
+      <label class="ck-check"><input type="checkbox" name="condo" /> It is a condo</label>
+      <label data-show="condo" hidden>Condo fees ($ a month)
+        <input type="number" name="condoFees" inputmode="decimal" min="0" step="25" value="0" />
+      </label>
+      <p class="ck-error" data-error-for="condoFees" hidden></p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Owning costs</legend>
+      <label>Property tax (% of value a year)
+        <input type="number" name="taxRate" inputmode="decimal" min="0" max="5" step="0.001" value={p(d.taxRate!, 4)} />
+        <small>2026 residential rates: Toronto {pct(TORONTO_TAX, 3)}, Calgary {pct(CALGARY_TAX, 3)}, Edmonton {pct(EDMONTON_TAX, 3)}.</small>
+      </label>
+      <p class="ck-error" data-error-for="taxRate" hidden></p>
+      <label>Home insurance ($ a month)
+        <input type="number" name="insurance" inputmode="decimal" min="0" step="10" value={d.insurance} />
+      </label>
+      <p class="ck-error" data-error-for="insurance" hidden></p>
+      <label>Maintenance (% of value a year)
+        <input type="number" name="maintenance" inputmode="decimal" min="0" max="5" step="0.1" value={p(d.maintenance!, 1)} />
+        <small>1% is a common rule of thumb; about 0.5% for condos.</small>
+      </label>
+      <p class="ck-error" data-error-for="maintenance" hidden></p>
+      <label>Buying closing costs (% of the price)
+        <input type="number" name="closingPct" inputmode="decimal" min="0" max="10" step="0.1" value={p(d.closingPct!, 1)} />
+        <small>Land transfer tax, legal and fees. Toronto at $800,000 is about 2% after first-time rebates; Alberta about 1% (no land transfer tax).</small>
+      </label>
+      <p class="ck-error" data-error-for="closingPct" hidden></p>
+    </fieldset>
+
+    <fieldset>
+      <legend>The assumptions nobody knows</legend>
+      <label>Home price growth (% a year)
+        <input type="number" name="appreciation" inputmode="decimal" min="-5" max="10" step="0.5" value={p(d.appreciation!, 1)} />
+        <small>An assumption, not a forecast. Negative values are allowed.</small>
+      </label>
+      <p class="ck-error" data-error-for="appreciation" hidden></p>
+      <label>Renter's investment return (% a year, after tax)
+        <input type="number" name="investReturn" inputmode="decimal" min="0" max="10" step="0.5" value={p(d.investReturn!, 1)} />
+        <small>For example, a balanced portfolio inside a TFSA.</small>
+      </label>
+      <p class="ck-error" data-error-for="investReturn" hidden></p>
+      <label>Selling commission (%)
+        <input type="number" name="commission" inputmode="decimal" min="0" max="10" step="0.25" value={p(d.commission!, 2)} />
+        <small>5% is common in Ontario; flat-fee options cost less.</small>
+      </label>
+      <p class="ck-error" data-error-for="commission" hidden></p>
+      <label>Moving costs, each move ($)
+        <input type="number" name="moving" inputmode="decimal" min="0" step="250" value={d.moving} />
+      </label>
+      <p class="ck-error" data-error-for="moving" hidden></p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Your plans</legend>
+      <label>Years you would stay in the home
+        <input type="number" name="years" inputmode="numeric" min="1" max="30" step="1" value={d.years} />
+      </label>
+      <p class="ck-error" data-error-for="years" hidden></p>
+      <label>Household income ($ a year, optional)
+        <input type="number" name="income" inputmode="decimal" min="0" step="1000" placeholder="For the qualification check" />
+      </label>
+      <p class="ck-error" data-error-for="income" hidden></p>
+    </fieldset>
+    <noscript><p class="ck-help">Turn on JavaScript to run your own numbers. The example is an $800,000 Toronto home against $2,600 rent.</p></noscript>
+  </form>
+
+  <div class="ck-results" id="rvb-results" aria-live="polite" set:html={initialHtml} />
+</div>
+
+<section class="ck-assumptions" aria-labelledby="rvb-h-how">
+  <h2 id="rvb-h-how">How the math works</h2>
+  <ul>
+    <li><strong>It compares net wealth, not monthly payments.</strong> The buyer's wealth is what they would walk away with if they sold: home value, minus selling commission, legal and moving, minus the mortgage left.</li>
+    <li><strong>The renter invests what the buyer spends.</strong> The down payment, closing costs and moving money go into investments on day one, and each month the renter invests the difference between the owner's costs and the rent. If owning is cheaper than renting in a month, the renter draws down instead.</li>
+    <li><strong>Month by month:</strong> rent grows at your rate; property tax and maintenance grow with the home's value; insurance and condo fees grow at the same rate as rent. The mortgage uses Canadian semi-annual compounding and stops once it is paid off.</li>
+    <li><strong>Breakeven</strong> is the first year the buyer is ahead. If that is after the years you plan to stay, or never within 30 years, the verdict is to rent.</li>
+    <li><strong>The 3 by 3 grid</strong> reruns everything at home price growth of 1%, 3% and 5% and investment returns of 3%, 5% and 7%. If most cells agree, the answer is sturdier than any single guess.</li>
+    <li><strong>Not modelled:</strong> rate changes at renewal, special assessments, FHSA and Home Buyers' Plan tax effects (the down payment is assumed to be saved already), capital gains (a principal residence is tax-free; investments in a TFSA are too), and the value of stability or flexibility.</li>
+  </ul>
+  <p class="page-meta">
+    This calculator shows the money side under assumptions you choose. It is an illustration, not a forecast or advice.
+  </p>
+</section>
+
+<CalcSources figures={[...rvbFigures.values()]} checked="2026-09-27 to 2026-09-30" />
+
+<script>
+  import { compare, validate, type Field, type RvbInput } from "../../lib/calculators/rent-vs-buy";
+  import { renderResults } from "../../lib/calculators/rent-vs-buy-render";
+  import { blocked } from "../../lib/calculators/calc-kit";
+  import { track } from "../../lib/analytics";
+
+  const CALC = "rent_vs_buy";
+  const FIELDS: Field[] = ["rent", "rentGrowth", "price", "downPct", "condoFees", "rate", "taxRate", "insurance", "maintenance", "appreciation", "investReturn", "closingPct", "commission", "moving", "years", "income"];
+  const ASSUMPTIONS = new Set(["rentGrowth", "rate", "taxRate", "insurance", "maintenance", "appreciation", "investReturn", "closingPct", "commission", "moving"]);
+  const form = document.getElementById("rvb-form") as HTMLFormElement | null;
+  const out = document.getElementById("rvb-results");
+  let started = false;
+  let resultViewed = false;
+  const fired = new Set<string>();
+
+  function num(fd: FormData, name: string): number | null {
+    const raw = String(fd.get(name) ?? "").trim();
+    if (raw === "") return null;
+    const v = Number(raw);
+    return Number.isFinite(v) ? v : NaN;
+  }
+  const pc = (v: number | null) => (v === null || !Number.isFinite(v) ? v : v / 100);
+
+  function read(f: HTMLFormElement): RvbInput {
+    const fd = new FormData(f);
+    const condo = fd.get("condo") === "on";
+    return {
+      rent: num(fd, "rent"),
+      rentGrowth: pc(num(fd, "rentGrowth")),
+      price: num(fd, "price"),
+      downPct: pc(num(fd, "downPct")),
+      condo,
+      condoFees: condo ? num(fd, "condoFees") : 0,
+      rate: pc(num(fd, "rate")),
+      amortYears: fd.get("amortYears") === "30" ? 30 : 25,
+      taxRate: pc(num(fd, "taxRate")),
+      insurance: num(fd, "insurance"),
+      maintenance: pc(num(fd, "maintenance")),
+      appreciation: pc(num(fd, "appreciation")),
+      investReturn: pc(num(fd, "investReturn")),
+      closingPct: pc(num(fd, "closingPct")),
+      commission: pc(num(fd, "commission")),
+      moving: num(fd, "moving"),
+      years: num(fd, "years"),
+      income: num(fd, "income"),
+      guidelineExempt: fd.get("guidelineExempt") === "on",
+    };
+  }
+
+  function update() {
+    if (!form || !out) return;
+    const i = read(form);
+    form.querySelectorAll<HTMLElement>('[data-show="condo"]').forEach((el) => { el.hidden = !i.condo; });
+    const errors = validate(i);
+    const messages: string[] = [];
+    for (const field of FIELDS) {
+      const el = form.querySelector<HTMLElement>(`[data-error-for="${field}"]`);
+      const e = errors[field];
+      if (el) { el.textContent = e ?? ""; el.hidden = !e; }
+      if (e) messages.push(e);
+    }
+    if (messages.length) {
+      out.innerHTML = blocked(messages);
+      return;
+    }
+    const x = compare(i);
+    out.innerHTML = renderResults(x);
+    if (started && !resultViewed) {
+      resultViewed = true;
+      track("calc_result_viewed", { calculator: CALC, outcome: `verdict_${x.verdict}` });
+    }
+  }
+
+  if (form) {
+    form.addEventListener("submit", (e) => e.preventDefault());
+    const onInput = (e: Event) => {
+      if (!started) { started = true; track("calc_started", { calculator: CALC }); }
+      const t = e.target;
+      if (t instanceof HTMLInputElement && ASSUMPTIONS.has(t.name) && !fired.has(t.name)) {
+        fired.add(t.name);
+        track("calc_assumption_changed", { calculator: CALC, field: t.name.replace(/[A-Z]/g, (c) => `_${c.toLowerCase()}`) });
+      }
+      update();
+    };
+    form.addEventListener("input", onInput);
+    form.addEventListener("change", onInput);
+    update();
+  }
+</script>

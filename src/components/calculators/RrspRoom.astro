@@ -1,0 +1,224 @@
+---
+/**
+ * RrspRoom: the RRSP contribution room calculator island (two modes: start
+ * from your CRA number, or rebuild the limit from its pieces). Plain Astro
+ * markup plus one TypeScript <script> (no framework). Results are rendered
+ * once at build time from the spec's worked example, so the page is useful
+ * with JS off; the script recomputes on every input change. Nothing is
+ * saved and CRA credentials are never asked for.
+ */
+import "../../styles/calc-kit.css";
+import { DEADLINE, DOLLAR_LIMIT, NADIA, NEXT_YEAR, TAX_YEAR, check, rrspFigures } from "../../lib/calculators/rrsp-room";
+import { renderResults } from "../../lib/calculators/rrsp-room-render";
+import { $, longDate } from "../../lib/calculators/calc-kit";
+import CalcSources from "./CalcSources.astro";
+
+const d = NADIA;
+const now = new Date();
+const asOf = now.toLocaleDateString("en-CA", { year: "numeric", month: "long", day: "numeric" });
+const initialHtml = renderResults(check(d), { asOf, example: true });
+---
+
+<div class="ck" id="rrr">
+  <form class="ck-form" id="rrr-form" novalidate>
+    <fieldset>
+      <legend>Where are you starting from?</legend>
+      <div class="ck-pills" role="group" aria-label="Mode">
+        <label class="ck-pill"><input type="radio" name="mode" value="noa" checked /> I have my CRA number</label>
+        <label class="ck-pill"><input type="radio" name="mode" value="rebuild" /> Rebuild my limit</label>
+      </div>
+      <label>Your age
+        <input type="number" name="age" inputmode="numeric" min="0" max="120" step="1" value={d.age} />
+      </label>
+      <p class="ck-error" data-error-for="age" hidden></p>
+      <label class="ck-check"><input type="checkbox" name="nonResident" /> I am a non-resident of Canada</label>
+      <label class="ck-check"><input type="checkbox" name="bestGuess" /> Some of my numbers are guesses</label>
+    </fieldset>
+
+    <fieldset data-show="noa">
+      <legend>From your Notice of Assessment</legend>
+      <label>RRSP deduction limit for {TAX_YEAR} ($)
+        <input type="number" name="deductionLimit" inputmode="decimal" min="0" step="100" value={d.deductionLimit} />
+        <small>On your {TAX_YEAR - 1} Notice of Assessment, in the "RRSP deduction limit statement" section, or in CRA My Account under RRSP.</small>
+      </label>
+      <p class="ck-error" data-error-for="deductionLimit" hidden></p>
+    </fieldset>
+
+    <fieldset data-show="rebuild" hidden>
+      <legend>The pieces CRA uses</legend>
+      <label>Unused deduction room carried forward ($)
+        <input type="number" name="unusedRoom" inputmode="decimal" min="0" step="100" value={d.unusedRoom} />
+        <small>From last year's notice. Unused room carries forward with no end date.</small>
+      </label>
+      <p class="ck-error" data-error-for="unusedRoom" hidden></p>
+      <label>{TAX_YEAR - 1} earned income ($)
+        <input type="number" name="earnedIncome" inputmode="decimal" min="0" step="1000" value={d.earnedIncome} />
+      </label>
+      <p class="ck-error" data-error-for="earnedIncome" hidden></p>
+      <details>
+        <summary>What counts as earned income?</summary>
+        <small><strong>Counts:</strong> salary and wages, self-employment and net rental income, taxable support received, CPP/QPP disability benefits, royalties on your own work. Minus employment expenses, union dues, business or rental losses, and deductible support paid.</small>
+        <small><strong>Does not count:</strong> pensions (including CPP, QPP and OAS), retiring allowances, RRSP or RRIF income, death benefits, and investment income (interest, dividends, capital gains). RRSP room runs on earned income, not total income.</small>
+      </details>
+      <label>{TAX_YEAR - 1} pension adjustment ($, T4 box 52)
+        <input type="number" name="pensionAdjustment" inputmode="decimal" min="0" step="100" value={d.pensionAdjustment} />
+      </label>
+      <p class="ck-error" data-error-for="pensionAdjustment" hidden></p>
+      <label>Pension adjustment reversal ($, T10 slip)
+        <input type="number" name="par" inputmode="decimal" min="0" step="100" value={d.par} />
+      </label>
+      <p class="ck-error" data-error-for="par" hidden></p>
+      <label>Net past service pension adjustment ($)
+        <input type="number" name="pspa" inputmode="decimal" min="0" step="100" value={d.pspa} />
+      </label>
+      <p class="ck-error" data-error-for="pspa" hidden></p>
+      <small>Most people have no PAR or PSPA. Leave them at $0 unless you have the slip.</small>
+    </fieldset>
+
+    <fieldset>
+      <legend>What has already gone in</legend>
+      <label>Unused RRSP contributions on your notice ($)
+        <input type="number" name="unusedContributions" inputmode="decimal" min="0" step="100" value={d.unusedContributions} />
+        <small>Contributions you made but never claimed as a deduction. Most people forget this line exists.</small>
+      </label>
+      <p class="ck-error" data-error-for="unusedContributions" hidden></p>
+      <label>Contributions since that statement, March to December {TAX_YEAR} ($)
+        <input type="number" name="contribSince" inputmode="decimal" min="0" step="100" value={d.contribSince} />
+        <small>All RRSPs: your own, group RRSP (including employer contributions), and spousal RRSPs you pay into. Leave out direct transfers between your own RRSPs. Saskatchewan Pension Plan contributions count too.</small>
+      </label>
+      <p class="ck-error" data-error-for="contribSince" hidden></p>
+      <label>Contributions January 1 to {longDate(DEADLINE)} ($)
+        <input type="number" name="contribFirst60" inputmode="decimal" min="0" step="100" value={d.contribFirst60} />
+      </label>
+      <p class="ck-error" data-error-for="contribFirst60" hidden></p>
+      <label>Claim those first-60-days contributions for
+        <select name="first60ClaimYear">
+          <option value="this" selected>My {TAX_YEAR} return</option>
+          <option value="next">My {NEXT_YEAR} return</option>
+        </select>
+      </label>
+      <label>Contributions you cannot date ($)
+        <input type="number" name="contribUndated" inputmode="decimal" min="0" step="100" value={d.contribUndated} />
+      </label>
+      <p class="ck-error" data-error-for="contribUndated" hidden></p>
+      <label>RRSP withdrawals this year ($)
+        <input type="number" name="withdrawals" inputmode="decimal" min="0" step="100" value={d.withdrawals} />
+        <small>Noted only: RRSP withdrawals do not give room back.</small>
+      </label>
+      <p class="ck-error" data-error-for="withdrawals" hidden></p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Next year (optional)</legend>
+      <label>Your {TAX_YEAR} earned income ($)
+        <input type="number" name="earnedThisYear" inputmode="decimal" min="0" step="1000" placeholder="Blank: skip the forecast" />
+      </label>
+      <p class="ck-error" data-error-for="earnedThisYear" hidden></p>
+      <small>Estimates the new room that arrives for {NEXT_YEAR}.</small>
+    </fieldset>
+    <noscript><p class="ck-help">Turn on JavaScript to run your own numbers. The example shows Nadia's room.</p></noscript>
+  </form>
+
+  <div class="ck-results" id="rrr-results" aria-live="polite" set:html={initialHtml} />
+</div>
+
+<section class="ck-assumptions" aria-labelledby="rrr-h-how">
+  <h2 id="rrr-h-how">How the math works</h2>
+  <ul>
+    <li><strong>CRA's deduction limit is the opening balance.</strong> Every contribution since the statement comes off it, and so do unused contributions already reported. What is left is your contribution room now.</li>
+    <li><strong>Rebuilding the limit</strong> uses CRA's formula: unused room carried forward, plus the lesser of 18% of last year's earned income and the {TAX_YEAR} dollar limit of {$(DOLLAR_LIMIT)}, minus last year's pension adjustment, plus any pension adjustment reversal, minus any past service pension adjustment.</li>
+    <li><strong>The first 60 days</strong> of {NEXT_YEAR} (to {longDate(DEADLINE)}) can count for {TAX_YEAR} or {NEXT_YEAR}. The tool subtracts them only from the year you pick.</li>
+    <li><strong>Over-contributions:</strong> a one-time lifetime cushion of $2,000 (none under 18), then 1% a month on the excess until it is removed or new room absorbs it.</li>
+    <li><strong>Group and spousal RRSPs count against your room</strong> as the contributor. Direct transfers between your own RRSPs do not. Withdrawals never give room back.</li>
+    <li><strong>Not in this version:</strong> Home Buyers' Plan and Lifelong Learning Plan tracking, withdrawal tax, RRIF planning, and non-resident or treaty rules beyond the earned-income note.</li>
+    <li><strong>Nothing is saved, and we never ask for your CRA login.</strong> Your numbers stay in this browser tab.</li>
+  </ul>
+  <p class="page-meta">
+    This is an estimate from your own records, not CRA's figure and not financial advice. CRA My Account and your Notice of Assessment are the source of truth.
+  </p>
+</section>
+
+<CalcSources figures={[...rrspFigures.values()]} checked="2026-09-26 to 2026-09-29" extra={[`${NEXT_YEAR} RRSP dollar limit: reported in seasonal research, <span class="ck-flag ck-flag-unverified">Not yet verified</span> on canada.ca`]} />
+
+<script>
+  import { check, validate, type Field, type RoomInput } from "../../lib/calculators/rrsp-room";
+  import { renderResults } from "../../lib/calculators/rrsp-room-render";
+  import { blocked } from "../../lib/calculators/calc-kit";
+  import { track } from "../../lib/analytics";
+
+  const CALC = "rrsp_room";
+  const FIELDS: Field[] = [
+    "age", "deductionLimit", "unusedRoom", "earnedIncome", "pensionAdjustment", "par", "pspa",
+    "unusedContributions", "contribSince", "contribFirst60", "contribUndated", "withdrawals", "earnedThisYear",
+  ];
+  const form = document.getElementById("rrr-form") as HTMLFormElement | null;
+  const out = document.getElementById("rrr-results");
+  let started = false;
+  let resultViewed = false;
+
+  function num(fd: FormData, name: string): number | null {
+    const raw = String(fd.get(name) ?? "").trim();
+    if (raw === "") return null;
+    const v = Number(raw);
+    return Number.isFinite(v) ? v : NaN;
+  }
+
+  function read(f: HTMLFormElement): RoomInput {
+    const fd = new FormData(f);
+    return {
+      mode: fd.get("mode") === "rebuild" ? "rebuild" : "noa",
+      age: num(fd, "age"),
+      nonResident: fd.get("nonResident") === "on",
+      deductionLimit: num(fd, "deductionLimit"),
+      unusedRoom: num(fd, "unusedRoom"),
+      earnedIncome: num(fd, "earnedIncome"),
+      pensionAdjustment: num(fd, "pensionAdjustment"),
+      par: num(fd, "par"),
+      pspa: num(fd, "pspa"),
+      unusedContributions: num(fd, "unusedContributions"),
+      contribSince: num(fd, "contribSince"),
+      contribFirst60: num(fd, "contribFirst60"),
+      first60ClaimYear: fd.get("first60ClaimYear") === "next" ? "next" : "this",
+      contribUndated: num(fd, "contribUndated"),
+      withdrawals: num(fd, "withdrawals"),
+      earnedThisYear: num(fd, "earnedThisYear"),
+      bestGuess: fd.get("bestGuess") === "on",
+    };
+  }
+
+  function update() {
+    if (!form || !out) return;
+    const i = read(form);
+    form.querySelectorAll<HTMLElement>("[data-show]").forEach((el) => { el.hidden = el.dataset.show !== i.mode; });
+    const errors = validate(i);
+    const messages: string[] = [];
+    for (const field of FIELDS) {
+      const el = form.querySelector<HTMLElement>(`[data-error-for="${field}"]`);
+      const e = errors[field];
+      if (el) { el.textContent = e ?? ""; el.hidden = !e; }
+      if (e) messages.push(e);
+    }
+    if (messages.length) {
+      out.innerHTML = blocked(messages);
+      return;
+    }
+    const r = check(i);
+    const asOf = new Date().toLocaleDateString("en-CA", { year: "numeric", month: "long", day: "numeric" });
+    out.innerHTML = renderResults(r, { asOf, example: !started });
+    if (started && !resultViewed) {
+      resultViewed = true;
+      track("calc_result_viewed", { calculator: CALC, outcome: `${i.mode}_${r.outcome}` });
+    }
+  }
+
+  if (form) {
+    form.addEventListener("submit", (e) => e.preventDefault());
+    const onInput = () => {
+      if (!started) { started = true; track("calc_started", { calculator: CALC }); }
+      update();
+    };
+    form.addEventListener("input", onInput);
+    form.addEventListener("change", onInput);
+    update();
+  }
+</script>

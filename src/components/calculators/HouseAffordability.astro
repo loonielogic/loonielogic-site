@@ -1,0 +1,210 @@
+---
+/**
+ * HouseAffordability: the house affordability calculator island. Plain Astro
+ * markup plus one TypeScript <script> (no framework). Results are rendered
+ * once at build time from the default household, so the page is useful with
+ * JS off; the script recomputes on every input change.
+ */
+import "../../styles/calc-kit.css";
+import {
+  DEFAULT_INPUT,
+  DEFAULT_LEGAL,
+  afford,
+  affordFigures,
+} from "../../lib/calculators/house-affordability";
+import { renderResults } from "../../lib/calculators/house-affordability-render";
+import { pct } from "../../lib/calculators/calc-kit";
+import CalcSources from "./CalcSources.astro";
+
+const d = DEFAULT_INPUT;
+const initialHtml = renderResults(afford(d));
+const pctNum = (r: number) => Number((r * 100).toFixed(3));
+---
+
+<div class="ck" id="haf">
+  <form class="ck-form" id="haf-form" novalidate>
+    <fieldset>
+      <legend>Your household</legend>
+      <label>Gross yearly household income ($, before tax)
+        <input type="number" name="income" inputmode="decimal" min="0" step="1000" value={d.income} />
+      </label>
+      <p class="ck-error" data-error-for="income" hidden></p>
+      <label>Cash for the down payment and closing costs ($)
+        <input type="number" name="cash" inputmode="decimal" min="0" step="1000" value={d.cash} />
+        <small>Savings, FHSA, Home Buyers' Plan (up to $60,000 each), gifts, sale proceeds. Borrowed down payments are generally not accepted for insured mortgages.</small>
+      </label>
+      <p class="ck-error" data-error-for="cash" hidden></p>
+      <label class="ck-check"><input type="checkbox" name="firstTimeBuyer" checked={d.firstTimeBuyer} /> First-time buyer</label>
+      <label class="ck-check"><input type="checkbox" name="newBuild" /> Newly built home</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Your mortgage</legend>
+      <label>Mortgage rate you would actually pay (% a year)
+        <input type="number" name="contractRate" inputmode="decimal" min="0" max="20" step="0.05" value={pctNum(d.contractRate!)} />
+        <small>Default {pct(d.contractRate!)} is illustrative, not a lender quote. You qualify at the higher of this plus 2 points and 5.25%.</small>
+      </label>
+      <p class="ck-error" data-error-for="contractRate" hidden></p>
+      <label class="ck-check" data-show="thirty"><input type="checkbox" name="wantThirty" /> Use a 30-year amortization (first-time buyers and new builds; adds 0.20% to the insurance premium)</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Your other debts</legend>
+      <label>Monthly debt payments ($: car, student loans, other loans)
+        <input type="number" name="debtPayments" inputmode="decimal" min="0" step="50" value={d.debtPayments} />
+      </label>
+      <p class="ck-error" data-error-for="debtPayments" hidden></p>
+      <details>
+        <summary>Only know a balance?</summary>
+        <label>Credit card and unsecured line of credit balances ($)
+          <input type="number" name="unsecuredBalance" inputmode="decimal" min="0" step="100" value={d.unsecuredBalance} />
+          <small>Lenders count 3% of the balance a month (or the minimum payment, if higher).</small>
+        </label>
+        <p class="ck-error" data-error-for="unsecuredBalance" hidden></p>
+        <label>Secured line of credit balance ($)
+          <input type="number" name="securedBalance" inputmode="decimal" min="0" step="100" value={d.securedBalance} />
+          <small>Counted at 0.65% of the balance a month.</small>
+        </label>
+        <p class="ck-error" data-error-for="securedBalance" hidden></p>
+      </details>
+    </fieldset>
+
+    <fieldset>
+      <legend>The home</legend>
+      <label>Province
+        <select name="province">
+          <option value="ON" selected>Ontario</option>
+          <option value="BC">British Columbia</option>
+          <option value="AB">Alberta</option>
+          <option value="MB">Manitoba</option>
+          <option value="SK">Saskatchewan</option>
+          <option value="QC">Quebec</option>
+          <option value="other">Another province or territory</option>
+        </select>
+      </label>
+      <label class="ck-check" data-show="ON"><input type="checkbox" name="toronto" /> In the City of Toronto (adds municipal land transfer tax)</label>
+      <label>Property tax (% of the price a year)
+        <input type="number" name="taxRate" inputmode="decimal" min="0" max="5" step="0.01" value={pctNum(d.taxRate!)} />
+        <small>A rough default. Your city's rate applies to the assessed value.</small>
+      </label>
+      <p class="ck-error" data-error-for="taxRate" hidden></p>
+      <label>Heating ($ a month)
+        <input type="number" name="heating" inputmode="decimal" min="0" step="10" value={d.heating} />
+        <small>Lenders often use the greater of $100 a month or $0.75 per square foot of living space.</small>
+      </label>
+      <p class="ck-error" data-error-for="heating" hidden></p>
+      <label>Condo fees ($ a month)
+        <input type="number" name="condoFees" inputmode="decimal" min="0" step="25" value={d.condoFees} />
+      </label>
+      <p class="ck-error" data-error-for="condoFees" hidden></p>
+      <label>Legal and other closing fees ($)
+        <input type="number" name="legal" inputmode="decimal" min="0" step="100" value={DEFAULT_LEGAL} />
+      </label>
+      <p class="ck-error" data-error-for="legal" hidden></p>
+    </fieldset>
+    <noscript><p class="ck-help">Turn on JavaScript to run your own numbers. The example is a $140,000 household in Ontario with $50,000 saved.</p></noscript>
+  </form>
+
+  <div class="ck-results" id="haf-results" aria-live="polite" set:html={initialHtml} />
+</div>
+
+<section class="ck-assumptions" aria-labelledby="haf-h-how">
+  <h2 id="haf-h-how">How the math works</h2>
+  <ul>
+    <li><strong>Three limits, the lowest wins.</strong> Housing costs up to 39% of gross income (GDS), housing plus other debt payments up to 44% (TDS), and enough cash for the minimum down payment plus closing costs.</li>
+    <li><strong>Housing costs</strong> are the mortgage payment at the qualifying rate, property tax, heating, and half of any condo fees.</li>
+    <li><strong>The stress test:</strong> lenders qualify you at the higher of your rate plus 2 points and 5.25%. Your real payment uses your own rate. Payments use Canadian semi-annual compounding.</li>
+    <li><strong>Minimum down payment:</strong> 5% of the first $500,000 and 10% of the rest, up to $1.5 million. Above $1.5 million, insurance is not available and 20% of the whole price is required.</li>
+    <li><strong>CMHC premium</strong> (4.00%, 3.10% or 2.80% of the loan, plus 0.20% for 30 years) is added to the mortgage and included in the payment lenders test. Sales tax on the premium is paid in cash in Ontario, Quebec, Manitoba and Saskatchewan.</li>
+    <li><strong>Cash covers closing costs first:</strong> land transfer tax after first-time buyer rebates (Ontario, Toronto and BC are calculated), sales tax on the premium, and legal fees. The rest is your down payment.</li>
+    <li><strong>Not included:</strong> moving costs, inspections, credit score checks (the 39%/44% ceilings assume a score of 680 or more), and each lender's own rules. Many lenders run tighter limits.</li>
+  </ul>
+  <p class="page-meta">
+    This calculator is an estimate, not a pre-approval or advice. A lender's pre-approval is the only real number.
+  </p>
+</section>
+
+<CalcSources figures={[...affordFigures.values()]} checked="2026-09-27 to 2026-09-30" />
+
+<script>
+  import { afford, validate, type AffordInput, type Field } from "../../lib/calculators/house-affordability";
+  import type { Province } from "../../lib/calculators/down-payment-planner";
+  import { renderResults } from "../../lib/calculators/house-affordability-render";
+  import { blocked } from "../../lib/calculators/calc-kit";
+  import { track } from "../../lib/analytics";
+
+  const CALC = "house_affordability";
+  const FIELDS: Field[] = ["income", "contractRate", "debtPayments", "unsecuredBalance", "securedBalance", "taxRate", "heating", "condoFees", "cash", "legal"];
+  const PROVS: Province[] = ["ON", "BC", "AB", "MB", "SK", "QC", "other"];
+  const form = document.getElementById("haf-form") as HTMLFormElement | null;
+  const out = document.getElementById("haf-results");
+  let started = false;
+  let resultViewed = false;
+
+  function num(fd: FormData, name: string): number | null {
+    const raw = String(fd.get(name) ?? "").trim();
+    if (raw === "") return null;
+    const v = Number(raw);
+    return Number.isFinite(v) ? v : NaN;
+  }
+  const rate = (v: number | null) => (v === null || !Number.isFinite(v) ? v : v / 100);
+
+  function read(f: HTMLFormElement): AffordInput {
+    const fd = new FormData(f);
+    const prov = String(fd.get("province") ?? "ON") as Province;
+    return {
+      income: num(fd, "income"),
+      contractRate: rate(num(fd, "contractRate")),
+      debtPayments: num(fd, "debtPayments"),
+      unsecuredBalance: num(fd, "unsecuredBalance"),
+      securedBalance: num(fd, "securedBalance"),
+      taxRate: rate(num(fd, "taxRate")),
+      heating: num(fd, "heating"),
+      condoFees: num(fd, "condoFees"),
+      cash: num(fd, "cash"),
+      firstTimeBuyer: fd.get("firstTimeBuyer") === "on",
+      newBuild: fd.get("newBuild") === "on",
+      wantThirty: fd.get("wantThirty") === "on",
+      province: PROVS.includes(prov) ? prov : "ON",
+      toronto: fd.get("toronto") === "on",
+      legal: num(fd, "legal"),
+    };
+  }
+
+  function update() {
+    if (!form || !out) return;
+    const i = read(form);
+    form.querySelectorAll<HTMLElement>("[data-show]").forEach((el) => {
+      el.hidden = el.dataset.show === "ON" ? i.province !== "ON" : !(i.firstTimeBuyer || i.newBuild);
+    });
+    const errors = validate(i);
+    const messages: string[] = [];
+    for (const field of FIELDS) {
+      const el = form.querySelector<HTMLElement>(`[data-error-for="${field}"]`);
+      const e = errors[field];
+      if (el) { el.textContent = e ?? ""; el.hidden = !e; }
+      if (e) messages.push(e);
+    }
+    if (messages.length) {
+      out.innerHTML = blocked(messages);
+      return;
+    }
+    const a = afford(i);
+    out.innerHTML = renderResults(a);
+    if (started && !resultViewed) {
+      resultViewed = true;
+      track("calc_result_viewed", { calculator: CALC, outcome: `limit_${a.binding}` });
+    }
+  }
+
+  if (form) {
+    form.addEventListener("submit", (e) => e.preventDefault());
+    const onInput = () => {
+      if (!started) { started = true; track("calc_started", { calculator: CALC }); }
+      update();
+    };
+    form.addEventListener("input", onInput);
+    form.addEventListener("change", onInput);
+    update();
+  }
+</script>

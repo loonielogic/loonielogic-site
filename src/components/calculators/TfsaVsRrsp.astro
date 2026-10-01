@@ -1,0 +1,218 @@
+---
+/**
+ * TfsaVsRrsp: the TFSA vs RRSP decision tool island. Plain Astro markup plus
+ * one TypeScript <script> (no framework). Results are rendered once at build
+ * time from the default example, so the page is useful with JS off; the
+ * script recomputes on every input change with the same functions.
+ */
+import "../../styles/calc-kit.css";
+import { PROVINCES } from "../../lib/calculators/income-tax";
+import {
+  DEFAULT_INPUT,
+  DEFAULT_RETURN,
+  HORIZON_MAX,
+  RRSP_CAP,
+  TFSA_ANNUAL,
+  decide,
+  decisionFigures,
+} from "../../lib/calculators/tfsa-vs-rrsp";
+import { taxFigures } from "../../lib/calculators/income-tax";
+import { renderResults } from "../../lib/calculators/tfsa-vs-rrsp-render";
+import CalcSources from "./CalcSources.astro";
+
+const d = DEFAULT_INPUT;
+const initialHtml = renderResults(decide(d));
+const sources = new Map([...taxFigures, ...decisionFigures]);
+---
+
+<div class="ck" id="tvr">
+  <form class="ck-form" id="tvr-form" novalidate>
+    <fieldset>
+      <legend>Three quick questions</legend>
+      <fieldset class="ck-inline">
+        <legend>1. Does your employer match RRSP contributions?</legend>
+        <div class="ck-pills">
+          <label class="ck-pill"><input type="radio" name="employerMatch" value="yes" /> Yes</label>
+          <label class="ck-pill"><input type="radio" name="employerMatch" value="no" checked /> No</label>
+        </div>
+      </fieldset>
+      <fieldset class="ck-inline">
+        <legend>2. Is this money for a first home within ~15 years?</legend>
+        <div class="ck-pills">
+          <label class="ck-pill"><input type="radio" name="homeSoon" value="yes" /> Yes</label>
+          <label class="ck-pill"><input type="radio" name="homeSoon" value="no" checked /> No</label>
+        </div>
+      </fieldset>
+      <fieldset class="ck-inline">
+        <legend>3. Might you need this money before retirement?</legend>
+        <div class="ck-pills">
+          <label class="ck-pill"><input type="radio" name="mayNeedEarly" value="yes" /> Yes</label>
+          <label class="ck-pill"><input type="radio" name="mayNeedEarly" value="no" checked /> No</label>
+        </div>
+      </fieldset>
+      <small>The other three questions (peak earning years, higher income in retirement, retirement income above ~$95,000) are answered from your numbers below.</small>
+    </fieldset>
+
+    <fieldset>
+      <legend>Your income, now and later</legend>
+      <label>Province or territory
+        <select name="province">
+          {PROVINCES.map((p) => <option value={p.code} selected={p.code === d.province}>{p.name}</option>)}
+        </select>
+      </label>
+      <label>Your income this year ($, before tax)
+        <input type="number" name="income" inputmode="decimal" min="0" step="1000" value={d.income} />
+      </label>
+      <p class="ck-error" data-error-for="income" hidden></p>
+      <label>Expected yearly income in retirement ($)
+        <input type="number" name="retirementIncome" inputmode="decimal" min="0" step="1000" value={d.retirementIncome} />
+        <small>Include RRSP or RRIF withdrawals, pensions, CPP and OAS. Leave out TFSA withdrawals.</small>
+      </label>
+      <p class="ck-error" data-error-for="retirementIncome" hidden></p>
+      <label class="ck-check"><input type="checkbox" name="estimateRetirement" /> Not sure: estimate it for me (65% of today's income)</label>
+      <label>Your age
+        <input type="number" name="age" inputmode="numeric" min="0" max="120" step="1" value={d.age} />
+      </label>
+      <p class="ck-error" data-error-for="age" hidden></p>
+    </fieldset>
+
+    <fieldset>
+      <legend>The money you are deciding on</legend>
+      <label>Amount to put away ($)
+        <input type="number" name="amount" inputmode="decimal" min="1" step="500" value={d.amount} />
+      </label>
+      <p class="ck-error" data-error-for="amount" hidden></p>
+      <label>Years until you withdraw it
+        <input type="number" name="years" inputmode="numeric" min="0" max={HORIZON_MAX} step="1" value={d.years} />
+      </label>
+      <p class="ck-error" data-error-for="years" hidden></p>
+      <label>Yearly return for the illustration (%)
+        <input type="number" name="expectedReturn" inputmode="decimal" min="0" max="15" step="0.5" value={DEFAULT_RETURN * 100} />
+        <small>The same return applies to both accounts, so it never changes which one wins.</small>
+      </label>
+      <p class="ck-error" data-error-for="expectedReturn" hidden></p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Anything else? (optional)</legend>
+      <label>TFSA room available ($)
+        <input type="number" name="tfsaRoom" inputmode="decimal" min="0" step="500" placeholder="Blank: assume enough" />
+      </label>
+      <p class="ck-error" data-error-for="tfsaRoom" hidden></p>
+      <label>RRSP room available ($)
+        <input type="number" name="rrspRoom" inputmode="decimal" min="0" step="500" placeholder="Blank: assume enough" />
+      </label>
+      <p class="ck-error" data-error-for="rrspRoom" hidden></p>
+      <small>New room in 2026: TFSA ${TFSA_ANNUAL.toLocaleString("en-CA")}; RRSP 18% of last year's earned income, up to ${RRSP_CAP.toLocaleString("en-CA")}. Your exact room is in CRA My Account.</small>
+      <label class="ck-check"><input type="checkbox" name="expectGis" /> I expect a low retirement income (may get the Guaranteed Income Supplement)</label>
+      <label class="ck-check"><input type="checkbox" name="spouseEarnsLess" /> My spouse or partner earns much less than I do</label>
+      <label class="ck-check"><input type="checkbox" name="selfEmployed" /> I am self-employed</label>
+      <label class="ck-check"><input type="checkbox" name="leavingCanada" /> I may leave Canada</label>
+    </fieldset>
+    <noscript><p class="ck-help">Turn on JavaScript to run your own numbers. The example is $5,000 for 30 years, earning $95,000 now and $55,000 in retirement in Ontario.</p></noscript>
+  </form>
+
+  <div class="ck-results" id="tvr-results" aria-live="polite" set:html={initialHtml} />
+</div>
+
+<section class="ck-assumptions" aria-labelledby="tvr-h-how">
+  <h2 id="tvr-h-how">How the math works</h2>
+  <ul>
+    <li><strong>It compares two tax rates.</strong> An RRSP deduction saves tax at your marginal rate today; the withdrawal is taxed at your marginal rate in retirement. A TFSA is the reverse: tax now, nothing later. Whichever rate is lower is the one you would rather pay.</li>
+    <li><strong>Marginal rates come from the 2026 federal and provincial brackets</strong> for all 13 provinces and territories, the same engine as our income tax calculator, including Ontario's surtax. Credits other than the basic personal amount are left out.</li>
+    <li><strong>OAS recovery tax:</strong> if your retirement income is above $95,323, 15% of each extra dollar is clawed back from Old Age Security, so the tool adds 15 points to your retirement rate.</li>
+    <li><strong>Within 3 points it is a tie,</strong> and the TFSA comes first for flexibility: tax-free withdrawals at any time, the room back next January 1, and no effect on income-tested benefits.</li>
+    <li><strong>The rates are on the next dollar.</strong> A large RRSP deduction that drops you into a lower bracket saves a little less than shown, and large withdrawals can be taxed a little more.</li>
+    <li><strong>Withholding is not the final tax.</strong> Banks hold back 10% on RRSP withdrawals up to $5,000, 20% from $5,000.01 to $15,000 and 30% above (Quebec differs). Your real tax is settled on your return; this tool models that final tax.</li>
+    <li><strong>Not modelled:</strong> CPP, OAS or GIS amounts (you supply retirement income), spousal planning, non-resident tax, and Quebec-specific rules. The projection is an illustration at the return you pick, not a forecast.</li>
+  </ul>
+  <p class="page-meta">
+    This tool is a planning estimate, not financial advice. It answers which account fits your numbers, not which investments to hold.
+  </p>
+</section>
+
+<CalcSources figures={[...sources.values()]} checked="2026-09-26 to 2026-09-28" />
+
+<script>
+  import { decide, validate, type DecisionInput, type Field } from "../../lib/calculators/tfsa-vs-rrsp";
+  import { isProv } from "../../lib/calculators/income-tax";
+  import { renderResults } from "../../lib/calculators/tfsa-vs-rrsp-render";
+  import { blocked } from "../../lib/calculators/calc-kit";
+  import { track } from "../../lib/analytics";
+
+  const CALC = "tfsa_vs_rrsp";
+  const FIELDS: Field[] = ["income", "retirementIncome", "amount", "years", "age", "tfsaRoom", "rrspRoom", "expectedReturn"];
+  const form = document.getElementById("tvr-form") as HTMLFormElement | null;
+  const out = document.getElementById("tvr-results");
+  let started = false;
+  let resultViewed = false;
+
+  function num(fd: FormData, name: string): number | null {
+    const raw = String(fd.get(name) ?? "").trim();
+    if (raw === "") return null;
+    const v = Number(raw);
+    return Number.isFinite(v) ? v : NaN;
+  }
+
+  function read(f: HTMLFormElement): DecisionInput {
+    const fd = new FormData(f);
+    const prov = String(fd.get("province") ?? "ON");
+    const ret = num(fd, "expectedReturn");
+    return {
+      province: isProv(prov) ? prov : "ON",
+      income: num(fd, "income"),
+      retirementIncome: num(fd, "retirementIncome"),
+      estimateRetirement: fd.get("estimateRetirement") === "on",
+      amount: num(fd, "amount"),
+      years: num(fd, "years"),
+      age: num(fd, "age"),
+      employerMatch: fd.get("employerMatch") === "yes",
+      homeSoon: fd.get("homeSoon") === "yes",
+      mayNeedEarly: fd.get("mayNeedEarly") === "yes",
+      expectGis: fd.get("expectGis") === "on",
+      spouseEarnsLess: fd.get("spouseEarnsLess") === "on",
+      selfEmployed: fd.get("selfEmployed") === "on",
+      leavingCanada: fd.get("leavingCanada") === "on",
+      tfsaRoom: num(fd, "tfsaRoom"),
+      rrspRoom: num(fd, "rrspRoom"),
+      expectedReturn: ret === null || !Number.isFinite(ret) ? ret : ret / 100,
+    };
+  }
+
+  function update() {
+    if (!form || !out) return;
+    const i = read(form);
+    const box = form.querySelector<HTMLInputElement>('input[name="retirementIncome"]');
+    if (box) box.disabled = i.estimateRetirement;
+    const errors = validate(i);
+    const messages: string[] = [];
+    for (const field of FIELDS) {
+      const el = form.querySelector<HTMLElement>(`[data-error-for="${field}"]`);
+      const e = errors[field];
+      if (el) { el.textContent = e ?? ""; el.hidden = !e; }
+      if (e) messages.push(e);
+    }
+    if (messages.length) {
+      out.innerHTML = blocked(messages, "Fix the highlighted answer to see your verdict.");
+      return;
+    }
+    const d = decide(i);
+    out.innerHTML = renderResults(d);
+    if (started && !resultViewed) {
+      resultViewed = true;
+      // Verdict class only: no amounts leave the page.
+      track("calc_result_viewed", { calculator: CALC, outcome: `${d.account}_${d.reason}` });
+    }
+  }
+
+  if (form) {
+    form.addEventListener("submit", (e) => e.preventDefault());
+    const onInput = () => {
+      if (!started) { started = true; track("calc_started", { calculator: CALC }); }
+      update();
+    };
+    form.addEventListener("input", onInput);
+    form.addEventListener("change", onInput);
+    update();
+  }
+</script>

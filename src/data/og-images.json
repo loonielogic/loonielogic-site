@@ -27,7 +27,7 @@
     "image": "/og/calculators.png",
     "alt": "LoonieLogic section page: Canadian Tax & Savings Calculators 2026",
     "title": "Canadian Tax & Savings Calculators 2026",
-    "line": "Canadian money calculators in progress: income tax, TFSA vs RRSP, room trackers, and home buying."
+    "line": "Ten Canadian money calculators: income tax, TFSA vs RRSP, RRSP and TFSA room, CPP timing…"
   },
   "/calculators/compound-growth": {
     "image": "/og/calculators-compound-growth.png",
@@ -53,11 +53,41 @@
     "title": "Savings Goal Planner Canada: Find the Return You Need",
     "line": "Set a savings goal and see the path: the yearly return your plan needs…"
   },
+  "/calculators/house-affordability": {
+    "image": "/og/calculators-house-affordability.png",
+    "alt": "LoonieLogic tool: How Much House Can I Afford in Canada? 2026 Calculator",
+    "title": "How Much House Can I Afford in Canada? 2026 Calculator",
+    "line": "Three-limit affordability calculator: GDS 39%, TDS 44%, and down payment rules…"
+  },
+  "/calculators/income-tax-calculator": {
+    "image": "/og/calculators-income-tax-calculator.png",
+    "alt": "LoonieLogic tool: Canadian Income Tax Calculator 2026: Federal + All Provinces",
+    "title": "Canadian Income Tax Calculator 2026: Federal + All Provinces",
+    "line": "Estimate your 2026 Canadian income tax in seconds: federal + provincial, CPP/EI premiums, paycheque mode…"
+  },
+  "/calculators/rent-vs-buy": {
+    "image": "/og/calculators-rent-vs-buy.png",
+    "alt": "LoonieLogic tool: Rent vs Buy Calculator Canada 2026: Who Wins the Money Race?",
+    "title": "Rent vs Buy Calculator Canada 2026: Who Wins the Money Race?",
+    "line": "Rent or buy in Canada? Compare net wealth over any timeframe with real mortgage math, closing costs…"
+  },
+  "/calculators/rrsp-room": {
+    "image": "/og/calculators-rrsp-room.png",
+    "alt": "LoonieLogic tool: RRSP Contribution Room Calculator Canada 2026: Rebuild Yours",
+    "title": "RRSP Contribution Room Calculator Canada 2026: Rebuild Yours",
+    "line": "Rebuild your RRSP room from scratch or forward-track from your NOA."
+  },
   "/calculators/tfsa-room-checker": {
     "image": "/og/calculators-tfsa-room-checker.png",
     "alt": "LoonieLogic tool: TFSA Over-Contribution Risk Checker: Find Your Safe Limit",
     "title": "TFSA Over-Contribution Risk Checker: Find Your Safe Limit",
     "line": "Can you still add to your TFSA this year without going over? Estimate your 2026 room…"
+  },
+  "/calculators/tfsa-vs-rrsp": {
+    "image": "/og/calculators-tfsa-vs-rrsp.png",
+    "alt": "LoonieLogic tool: TFSA vs RRSP Calculator 2026: Which Is Better for You?",
+    "title": "TFSA vs RRSP Calculator 2026: Which Is Better for You?",
+    "line": "Answer 6 questions and get a clear verdict: TFSA or RRSP for your income, now and in retirement."
   },
   "/compare/": {
     "image": "/og/compare.png",
