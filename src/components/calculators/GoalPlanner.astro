@@ -1,0 +1,411 @@
+---
+/**
+ * GoalPlanner: the Goal Planner island (phase 1 of goal tracking: set a
+ * goal, see the path). Plain Astro markup plus one TypeScript <script> (no
+ * framework). Results are rendered once at build time from the default goal,
+ * so the page is useful with JS off; the script recomputes on every input
+ * change with the same functions (no calculate button). Nothing is saved
+ * and the goal name never leaves the page.
+ */
+import {
+  DEFAULT_EXPECTED,
+  DEFAULT_GOAL,
+  EXPECTED_MAX,
+  EXPECTED_PRESETS,
+  NAME_MAX,
+  YEARS_MAX,
+  YEARS_MIN,
+  plan,
+} from "../../lib/calculators/goal-planner";
+import { renderResults } from "../../lib/calculators/goal-planner-render";
+
+const g = DEFAULT_GOAL;
+const now = new Date();
+const initialHtml = renderResults(plan(g, DEFAULT_EXPECTED, { year: now.getFullYear(), month: now.getMonth() + 1 }));
+const pctNum = (r: number) => Number((r * 100).toFixed(2));
+const yrs = (n: number) => `${n} ${n === 1 ? "year" : "years"}`;
+---
+
+<div class="gp" id="gp">
+  <form class="gp-form" id="gp-form" novalidate>
+    <fieldset>
+      <legend>Your goal</legend>
+      <label>What are you saving for?
+        <input type="text" name="name" maxlength={NAME_MAX} autocomplete="off" value={g.name} placeholder="First home down payment" />
+      </label>
+      <p class="gp-error" data-error-for="name" hidden></p>
+      <label>Target amount ($)
+        <input type="number" name="target" inputmode="decimal" min="1" step="500" value={g.target} />
+      </label>
+      <p class="gp-error" data-error-for="target" hidden></p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Your timeline</legend>
+      <label for="gp-years" class="gp-range-label">Years until you need it <output id="gp-years-out" for="gp-years">{yrs(g.years!)}</output></label>
+      <input id="gp-years" class="gp-range" type="range" name="years" min={YEARS_MIN} max={YEARS_MAX} step="1" value={g.years} />
+      <div class="gp-range-ends" aria-hidden="true"><span>{YEARS_MIN}</span><span>{YEARS_MAX}</span></div>
+      <p class="gp-error" data-error-for="years" hidden></p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Where you are now</legend>
+      <label>Saved so far ($)
+        <input type="number" name="currentSavings" inputmode="decimal" min="0" step="100" value={g.currentSavings} />
+      </label>
+      <p class="gp-error" data-error-for="currentSavings" hidden></p>
+      <label>Saving each month ($)
+        <input type="number" name="monthlyContribution" inputmode="decimal" min="0" step="25" value={g.monthlyContribution} />
+      </label>
+      <p class="gp-error" data-error-for="monthlyContribution" hidden></p>
+      <small>Blank counts as $0.</small>
+    </fieldset>
+
+    <fieldset>
+      <legend>Your own return guess</legend>
+      <div class="gp-presets" role="group" aria-label="Return presets">
+        {EXPECTED_PRESETS.map((r) => (
+          <label class="gp-chip"><input type="radio" name="expectedPreset" value={pctNum(r)} checked={r === DEFAULT_EXPECTED} /> {r === 0 ? "0% (cash)" : `${pctNum(r)}%`}</label>
+        ))}
+      </div>
+      <label>Or type your own (%)
+        <input type="number" name="expectedReturn" inputmode="decimal" min="0" max={pctNum(EXPECTED_MAX)} step="0.1" value={pctNum(DEFAULT_EXPECTED)} />
+      </label>
+      <p class="gp-error" data-error-for="expectedReturn" hidden></p>
+      <small>Used for "Pick your own return" and the milestones. It is a guess you control, not a promise. A high-interest savings account pays a few percent; long-run stock averages have been higher, with real drops along the way.</small>
+    </fieldset>
+    <noscript><p class="gp-help">Turn on JavaScript to plan your own goal. The example is $30,000 in 5 years, starting from $2,000 and saving $400 a month.</p></noscript>
+  </form>
+
+  <div class="gp-results" id="gp-results" aria-live="polite" set:html={initialHtml} />
+</div>
+
+<section class="gp-assumptions" aria-labelledby="gp-h-assumptions">
+  <h2 id="gp-h-assumptions">How the math works</h2>
+  <ul>
+    <li><strong>Required return</strong> is the yearly growth rate that makes your savings today, plus your monthly amount, land exactly on your target by your date. The planner finds it by trial: it tries a rate, checks the result, and narrows in until the two match.</li>
+    <li><strong>The search runs from 0% to 30% a year.</strong> If saving alone gets you there, the answer is 0%. If even 30% falls short, the planner says so instead of showing a made-up number.</li>
+    <li><strong>The verdict bands</strong> are 4% or less (steady), above 4% up to 8% (market-like growth), and above 8% (above historical averages). They describe the arithmetic, not what any account will earn.</li>
+    <li><strong>Growth is compounded monthly.</strong> The yearly rate is split into 12 equal steps, deposits go in at the end of each month, and the same rate applies every month. Real returns go up and down.</li>
+    <li><strong>Left out on purpose:</strong> fees, taxes and inflation. A goal priced in today's dollars may cost more later.</li>
+    <li><strong>Nothing is saved.</strong> Your goal stays in this browser tab. Tracking progress over time may come later.</li>
+  </ul>
+  <p class="page-meta">
+    This planner is education, not advice. The required return is math, not a recommendation, and no return is promised.
+  </p>
+</section>
+
+<script>
+  import { plan, validate, type Field, type Goal } from "../../lib/calculators/goal-planner";
+  import { renderResults } from "../../lib/calculators/goal-planner-render";
+  import { track } from "../../lib/analytics";
+
+  const CALC = "goal_planner";
+  const FIELDS: Field[] = ["name", "target", "years", "currentSavings", "monthlyContribution", "expectedReturn"];
+
+  const form = document.getElementById("gp-form") as HTMLFormElement | null;
+  const out = document.getElementById("gp-results");
+  const yearsOut = document.getElementById("gp-years-out");
+
+  let started = false;
+  let resultViewed = false;
+  let returnChanged = false;
+
+  function num(fd: FormData, name: string): number | null {
+    const raw = String(fd.get(name) ?? "").trim();
+    if (raw === "") return null;
+    const v = Number(raw);
+    return Number.isFinite(v) ? v : NaN;
+  }
+
+  function read(f: HTMLFormElement): { goal: Goal; expected: number | null } {
+    const fd = new FormData(f);
+    const r = num(fd, "expectedReturn");
+    return {
+      goal: {
+        name: String(fd.get("name") ?? ""),
+        target: num(fd, "target"),
+        years: num(fd, "years"),
+        currentSavings: num(fd, "currentSavings"),
+        monthlyContribution: num(fd, "monthlyContribution"),
+      },
+      expected: r === null || !Number.isFinite(r) ? r : r / 100,
+    };
+  }
+
+  function showErrors(f: HTMLFormElement, goal: Goal, expected: number | null): string[] {
+    const errors = validate(goal, expected);
+    const blocking: string[] = [];
+    for (const field of FIELDS) {
+      const el = f.querySelector<HTMLElement>(`[data-error-for="${field}"]`);
+      const e = errors[field];
+      if (el) { el.textContent = e ?? ""; el.hidden = !e; }
+      if (e) blocking.push(e);
+    }
+    return blocking;
+  }
+
+  function sync(f: HTMLFormElement, goal: Goal, expected: number | null) {
+    if (yearsOut && goal.years !== null) yearsOut.textContent = `${goal.years} ${goal.years === 1 ? "year" : "years"}`;
+    const typed = expected === null ? NaN : Math.round(expected * 10000);
+    f.querySelectorAll<HTMLInputElement>('input[name="expectedPreset"]').forEach((el) => {
+      el.checked = Math.round(Number(el.value) * 100) === typed;
+    });
+  }
+
+  function update() {
+    if (!form || !out) return;
+    const { goal, expected } = read(form);
+    sync(form, goal, expected);
+    const blocking = showErrors(form, goal, expected);
+    if (blocking.length || expected === null) {
+      out.innerHTML = `<div class="gp-blocked"><p><strong>Fix the highlighted answer to see your plan.</strong></p><ul>${blocking.map((b) => `<li>${b}</li>`).join("")}</ul></div>`;
+      return;
+    }
+    const d = new Date();
+    const p = plan(goal, expected, { year: d.getFullYear(), month: d.getMonth() + 1 });
+    out.innerHTML = renderResults(p);
+    if (started && !resultViewed) {
+      resultViewed = true;
+      // Band token only: the goal name and amounts never leave the page.
+      track("calc_result_viewed", { calculator: CALC, outcome: `band_${p.band}` });
+    }
+  }
+
+  function onUserInput(e: Event) {
+    if (!started) {
+      started = true;
+      track("calc_started", { calculator: CALC });
+    }
+    const t = e.target;
+    if (t instanceof HTMLInputElement && (t.name === "expectedReturn" || t.name === "expectedPreset") && !returnChanged) {
+      returnChanged = true;
+      track("calc_assumption_changed", { calculator: CALC, field: "expected_return" });
+    }
+  }
+
+  if (form) {
+    form.addEventListener("submit", (e) => e.preventDefault());
+    form.addEventListener("change", (e) => {
+      const t = e.target;
+      if (t instanceof HTMLInputElement && t.name === "expectedPreset") {
+        const box = form.querySelector<HTMLInputElement>('input[name="expectedReturn"]');
+        if (box) box.value = t.value;
+      }
+    });
+    form.addEventListener("input", (e) => { onUserInput(e); update(); });
+    form.addEventListener("change", (e) => { onUserInput(e); update(); });
+    update();
+  }
+</script>
+
+<style>
+  /* Same visual system as the other calculators: a control panel on the
+     left, a results statement on the right. */
+  .gp {
+    --gp-steady: #1b7a43;
+    --gp-market: #b8820f;
+    --gp-above: #b25e09;
+  }
+
+  /* minmax(0, 1fr): results must not stretch the column past a 320px phone. */
+  .gp { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
+  @media (min-width: 60rem) {
+    .gp { grid-template-columns: minmax(19rem, 25rem) minmax(0, 1fr); gap: 2rem; align-items: start; }
+    .gp-form { position: sticky; top: calc(var(--header-h) + 1rem); max-height: calc(100vh - var(--header-h) - 2rem); overflow-y: auto; }
+  }
+
+  /* ---------- control panel ---------- */
+  .gp-form {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg);
+    padding: 0.5rem 1.35rem 1rem;
+    counter-reset: step;
+    accent-color: var(--pine-700);
+    min-width: 0;
+  }
+  .gp-form > fieldset {
+    counter-increment: step;
+    border: 0;
+    border-top: 1px solid var(--line);
+    padding: 1.25rem 0 0.5rem;
+    margin: 0;
+    min-width: 0;
+  }
+  .gp-form > fieldset:first-of-type { border-top: 0; }
+  .gp-form > fieldset > legend {
+    display: flex; align-items: center; gap: 0.6rem;
+    float: left; width: 100%;
+    font-family: var(--font-display); font-optical-sizing: auto;
+    font-weight: 600; font-size: 1.12rem; color: var(--lake-900);
+    padding: 0; margin: 0 0 0.35rem;
+  }
+  .gp-form > fieldset > legend::before {
+    content: counter(step);
+    flex: none;
+    width: 1.6rem; height: 1.6rem; border-radius: 50%;
+    display: grid; place-items: center;
+    font-family: var(--font-body); font-size: 0.78rem; font-weight: 700;
+    background: var(--lake-900); color: var(--gold-bright);
+  }
+  .gp-form > fieldset > legend + * { clear: both; }
+
+  .gp-form label { display: block; font-size: 0.92rem; font-weight: 600; margin: 0.85rem 0; color: var(--ink); clear: both; }
+  .gp-form [hidden] { display: none !important; }
+  .gp-form input[type="number"], .gp-form input[type="text"] {
+    display: block; width: 100%; margin-top: 0.35rem; padding: 0.65rem 0.8rem;
+    font: inherit; font-weight: 500; font-size: 1rem; font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    border: 1px solid var(--line-strong); border-radius: 10px;
+    background: var(--paper);
+    min-height: 2.9rem;
+    transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+  }
+  .gp-form input:hover { border-color: var(--pine-500); }
+  .gp-form input[type="number"]:focus-visible, .gp-form input[type="text"]:focus-visible {
+    outline: none;
+    background: var(--card);
+    border-color: var(--pine-700);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 55%, transparent);
+  }
+  .gp-form small, .gp-help { display: block; font-weight: 400; color: var(--ink-soft); font-size: 0.8rem; line-height: 1.45; margin: 0.35rem 0 0; }
+  .gp-help { font-size: 0.86rem; margin: 0.5rem 0; }
+  .gp-error { margin: 0.35rem 0; font-size: 0.86rem; font-weight: 600; color: var(--danger); }
+
+  /* slider */
+  .gp-form .gp-range-label { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.4rem; }
+  .gp-range-label output { font-family: var(--font-display); font-size: 1.25rem; font-weight: 650; color: var(--lake-900); font-variant-numeric: tabular-nums; }
+  .gp-range { display: block; width: 100%; margin: 0.25rem 0 0; min-height: 2rem; }
+  .gp-range:focus-visible { outline: 3px solid color-mix(in srgb, var(--gold) 70%, transparent); outline-offset: 2px; border-radius: 6px; }
+  .gp-range-ends { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--ink-soft); }
+
+  /* presets: wrapping pills */
+  .gp-presets { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.5rem 0 0; }
+  .gp-form .gp-chip {
+    flex: 1 1 4.5rem;
+    display: flex; align-items: center; justify-content: center; gap: 0.35rem;
+    margin: 0; padding: 0.5rem 0.6rem;
+    border: 1px solid var(--line); border-radius: 999px; background: var(--paper);
+    font-weight: 550; font-variant-numeric: tabular-nums; cursor: pointer; white-space: nowrap;
+    transition: border-color 0.15s, background-color 0.15s, box-shadow 0.15s;
+  }
+  .gp-form .gp-chip:hover { border-color: var(--pine-500); }
+  .gp-form .gp-chip:has(input:checked) {
+    border-color: var(--pine-700); background: var(--moss-100);
+    box-shadow: inset 0 0 0 1px var(--pine-700); font-weight: 650; color: var(--lake-900);
+  }
+  .gp-chip input { width: 1rem; height: 1rem; margin: 0; }
+
+  /* ---------- results ---------- */
+  .gp-results { counter-reset: panel; font-variant-numeric: tabular-nums; min-width: 0; }
+  .gp-results :global(.gp-blocked) {
+    border: 2px solid var(--danger); background: var(--red-wash); border-radius: var(--radius);
+    padding: 1rem 1.25rem; font-size: 0.95rem;
+  }
+  .gp-results :global(.gp-blocked p) { margin: 0 0 0.4rem; }
+  .gp-results :global(.gp-blocked ul) { margin: 0; padding-left: 1.1rem; }
+  .gp-results :global(.gp-headline) {
+    position: relative;
+    margin: 0 0 1.25rem;
+    padding: 1.5rem 1.75rem;
+    border-radius: 20px;
+    background: var(--grain), radial-gradient(130% 140% at 100% 0%, var(--pine-800), var(--lake-950) 70%);
+    color: var(--on-dark);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+  .gp-results :global(.gp-headline)::after {
+    content: ""; position: absolute; right: -5rem; top: -5rem; width: 14rem; height: 14rem; border-radius: 50%;
+    background: repeating-radial-gradient(circle, transparent 0 18px, rgba(228, 185, 78, 0.12) 18px 19px);
+    pointer-events: none;
+  }
+  .gp-results :global(.gp-kicker) { margin: 0 0 0.35rem; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold-bright); }
+  .gp-results :global(.gp-big) {
+    margin: 0 0 0.5rem; font-family: var(--font-display); font-optical-sizing: auto;
+    font-size: clamp(2.2rem, 7vw, 3.4rem); font-weight: 650; line-height: 1.05; letter-spacing: -0.02em; color: var(--gold-bright);
+  }
+  .gp-results :global(.gp-lead) { margin: 0 0 1rem; font-size: 0.98rem; line-height: 1.55; position: relative; z-index: 1; overflow-wrap: anywhere; }
+  .gp-results :global(.gp-name) { color: var(--gold-bright); font-weight: 650; }
+  .gp-results :global(.gp-verdict) {
+    position: relative; z-index: 1;
+    display: flex; gap: 0.6rem; align-items: flex-start;
+    margin: 0; padding: 0.75rem 0.9rem; border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.16);
+    font-weight: 600; line-height: 1.45;
+  }
+  .gp-results :global(.gp-verdict-dot) { flex: none; width: 0.8rem; height: 0.8rem; margin-top: 0.3rem; border-radius: 50%; border: 2px solid var(--on-dark); }
+  .gp-results :global(.gp-band-steady .gp-verdict-dot) { background: #6fd39a; }
+  .gp-results :global(.gp-band-market .gp-verdict-dot) { background: var(--gold-bright); }
+  .gp-results :global(.gp-band-above .gp-verdict-dot) { background: #ffb4a8; }
+
+  .gp-results :global(.gp-card) {
+    counter-increment: panel;
+    border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 1.35rem 1.5rem 1.25rem; background: var(--card);
+    margin-bottom: 1rem; box-shadow: var(--shadow-sm); min-width: 0;
+  }
+  @media (max-width: 30rem) {
+    .gp-results :global(.gp-card) { padding: 1.1rem 1rem 1rem; }
+    .gp-results :global(.gp-headline) { padding: 1.25rem 1.1rem; }
+  }
+  .gp-results :global(h3) { display: flex; align-items: center; gap: 0.65rem; margin: 0 0 0.85rem; font-size: 1.3rem; }
+  .gp-results :global(h3)::before {
+    content: counter(panel, upper-alpha);
+    flex: none; width: 1.9rem; height: 1.9rem; border-radius: 50%;
+    display: grid; place-items: center;
+    font-size: 0.95rem; font-style: italic; font-weight: 600;
+    background: var(--gold-btn); color: var(--ink);
+  }
+  .gp-results :global(.gp-note) { font-size: 0.88rem; line-height: 1.55; color: var(--ink-soft); margin: 0.75rem 0 0; }
+  .gp-results :global(.gp-facts) { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); gap: 0.6rem 1rem; margin: 0; }
+  .gp-results :global(.gp-facts div) { min-width: 0; padding: 0.6rem 0.75rem; border-radius: 10px; background: var(--paper); border: 1px solid var(--line); }
+  .gp-results :global(.gp-facts dt) { font-size: 0.8rem; color: var(--ink-soft); }
+  .gp-results :global(.gp-facts dd) { margin: 0.15rem 0 0; font-weight: 650; color: var(--lake-900); overflow-wrap: anywhere; }
+  .gp-results :global(.gp-inverse) { margin: 0; font-size: 1.05rem; line-height: 1.5; }
+  .gp-results :global(.gp-inverse strong) { color: var(--lake-900); font-family: var(--font-display); font-size: 1.2rem; font-weight: 650; }
+
+  /* milestones: a vertical track that works at any width */
+  .gp-results :global(.gp-ms-lead) { margin: -0.35rem 0 0.85rem; }
+  .gp-results :global(.gp-milestones) { list-style: none; margin: 0; padding: 0; position: relative; }
+  .gp-results :global(.gp-milestones)::before {
+    content: ""; position: absolute; left: 1.45rem; top: 1rem; bottom: 1rem; width: 2px; background: var(--line-strong);
+  }
+  .gp-results :global(.gp-ms) { position: relative; display: flex; align-items: center; gap: 0.85rem; padding: 0.45rem 0; min-width: 0; }
+  .gp-results :global(.gp-ms-mark) {
+    flex: none; width: 2.9rem; height: 2.9rem; border-radius: 50%; display: grid; place-items: center;
+    font-size: 0.78rem; font-weight: 700; position: relative; z-index: 1;
+    background: var(--card); border: 2px solid var(--pine-500); color: var(--lake-900);
+  }
+  .gp-results :global(.gp-ms-done .gp-ms-mark) { background: var(--pine-700); border-color: var(--pine-700); color: var(--on-dark); }
+  .gp-results :global(.gp-ms-late .gp-ms-mark) { border-color: var(--gp-above); border-style: dashed; }
+  .gp-results :global(.gp-ms-body) { display: flex; flex-direction: column; min-width: 0; font-size: 0.92rem; }
+  .gp-results :global(.gp-ms-body strong) { font-family: var(--font-display); font-size: 1.15rem; font-weight: 650; color: var(--lake-900); }
+  .gp-results :global(.gp-ms-body span) { color: var(--ink-soft); overflow-wrap: anywhere; }
+  .gp-results :global(.gp-flag) {
+    display: inline-block; margin-left: 0.4rem; padding: 0 0.5rem; border-radius: 0.85em; max-width: 100%;
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+    background: var(--gold-wash); color: var(--gold-deep) !important; border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+  }
+  .gp-results :global(.gp-disclaimer) { font-size: 0.84rem; color: var(--ink-soft); margin: 0.5rem 0 0; font-style: italic; line-height: 1.5; }
+
+  /* ---------- how the math works ---------- */
+  .gp-assumptions { max-width: 52rem; margin-top: 3.5rem; }
+  .gp-assumptions h2 { position: relative; padding-top: 1.25rem; margin: 0 0 1rem; font-size: clamp(1.5rem, 3vw, 1.9rem); }
+  .gp-assumptions h2::before { content: ""; position: absolute; left: 0; top: 0; width: 2.5rem; height: 3px; border-radius: 3px; background: var(--gold); }
+  .gp-assumptions ul {
+    list-style: none; padding: 0; margin: 0 0 1rem;
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm);
+  }
+  .gp-assumptions li {
+    position: relative; margin: 0; padding: 0.9rem 1.25rem 0.9rem 2.75rem;
+    font-size: 0.93rem; line-height: 1.6; border-top: 1px solid var(--line);
+  }
+  .gp-assumptions li:first-child { border-top: 0; }
+  .gp-assumptions li::before {
+    content: ""; position: absolute; left: 1.2rem; top: 1.45rem;
+    width: 0.5rem; height: 0.5rem; border-radius: 50%; border: 2px solid var(--gold);
+  }
+  .gp-assumptions strong { color: var(--lake-900); }
+</style>

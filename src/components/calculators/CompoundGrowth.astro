@@ -1,0 +1,414 @@
+---
+/**
+ * CompoundGrowth: the Wealth Over Time calculator island. Plain Astro markup
+ * plus one TypeScript <script> (no framework). Results are rendered once at
+ * build time from the defaults, so the page is useful with JS off; the
+ * script recomputes on every input change with the same functions (no
+ * calculate button).
+ */
+import {
+  DEFAULT_INPUT,
+  DELAY_YEARS,
+  RETURN_MAX,
+  RETURN_PRESETS,
+  YEARS_MAX,
+  YEARS_MIN,
+  calculate,
+} from "../../lib/calculators/compound-growth";
+import { renderResults, RETURN_NOTE } from "../../lib/calculators/compound-growth-render";
+
+const d = DEFAULT_INPUT;
+const initialHtml = renderResults(calculate(d));
+const pctNum = (r: number) => Number((r * 100).toFixed(2));
+---
+
+<div class="cg" id="cg">
+  <form class="cg-form" id="cg-form" novalidate>
+    <fieldset>
+      <legend>What you start with</legend>
+      <label>Starting amount ($)
+        <input type="number" name="startingAmount" inputmode="decimal" min="0" step="100" value={d.startingAmount} />
+      </label>
+      <p class="cg-error" data-error-for="startingAmount" hidden></p>
+      <small>Money you could invest today. $0 is fine.</small>
+    </fieldset>
+
+    <fieldset>
+      <legend>What you add</legend>
+      <label>Monthly contribution ($)
+        <input type="number" name="monthlyContribution" inputmode="decimal" min="0" step="25" value={d.monthlyContribution} />
+      </label>
+      <p class="cg-error" data-error-for="monthlyContribution" hidden></p>
+      <small>Added at the end of every month. Even $25 shows the effect.</small>
+    </fieldset>
+
+    <fieldset>
+      <legend>How long</legend>
+      <label for="cg-years" class="cg-range-label">Number of years <output id="cg-years-out" for="cg-years">{d.years} years</output></label>
+      <input id="cg-years" class="cg-range" type="range" name="years" min={YEARS_MIN} max={YEARS_MAX} step="1" value={d.years} />
+      <div class="cg-range-ends" aria-hidden="true"><span>{YEARS_MIN}</span><span>{YEARS_MAX}</span></div>
+      <p class="cg-error" data-error-for="years" hidden></p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Expected yearly return</legend>
+      <div class="cg-presets" role="group" aria-label="Return presets">
+        {RETURN_PRESETS.map((r) => (
+          <label class="cg-chip"><input type="radio" name="returnPreset" value={pctNum(r)} checked={r === d.annualReturn} /> {pctNum(r)}%</label>
+        ))}
+      </div>
+      <label>Or type your own (%)
+        <input type="number" name="annualReturn" inputmode="decimal" min="0" max={pctNum(RETURN_MAX)} step="0.1" value={pctNum(d.annualReturn!)} />
+      </label>
+      <p class="cg-error" data-error-for="annualReturn" hidden></p>
+      <p class="cg-honest">{RETURN_NOTE}</p>
+      <small>This is your assumption, not a forecast. "Return" is how much your money grows in a year, as a percentage. Try a lower number to see a more cautious picture.</small>
+    </fieldset>
+    <noscript><p class="cg-help">Turn on JavaScript to try your own numbers. The example shows $1,000 plus $200 a month for 30 years at 7%.</p></noscript>
+  </form>
+
+  <div class="cg-results" id="cg-results" aria-live="polite" set:html={initialHtml} />
+</div>
+
+<section class="cg-assumptions" aria-labelledby="cg-h-assumptions">
+  <h2 id="cg-h-assumptions">How this works</h2>
+  <ul>
+    <li><strong>Compounding means growth on your growth.</strong> Each month your balance earns a little, and next month that little bit earns too. Over decades, that snowball does more of the work than your deposits.</li>
+    <li><strong>The return is your assumption.</strong> The yearly rate you pick is split into 12 equal monthly steps (7% a year becomes about 0.58% a month). The same rate applies every month. Real markets never move in a straight line; some years drop.</li>
+    <li><strong>Deposits go in at the end of each month.</strong> The starting amount is invested on day one.</li>
+    <li><strong>The start-later comparison keeps everything the same</strong> except the clock: same amounts and return, {DELAY_YEARS} fewer years, ending on the same date.</li>
+    <li><strong>Left out on purpose:</strong> fees, taxes and inflation. Fees and taxes shrink real results. A TFSA lets investment growth stay tax-free, which is why it pairs well with long-term saving.</li>
+  </ul>
+  <p class="page-meta">
+    This calculator is education, not advice. It illustrates how compounding works and does not predict what any investment will earn.
+  </p>
+</section>
+
+<script>
+  import { calculate, validate, type Field, type GrowthInput } from "../../lib/calculators/compound-growth";
+  import { renderResults } from "../../lib/calculators/compound-growth-render";
+  import { track } from "../../lib/analytics";
+
+  const CALC = "compound_growth";
+  const FIELDS: Field[] = ["startingAmount", "monthlyContribution", "years", "annualReturn"];
+
+  const form = document.getElementById("cg-form") as HTMLFormElement | null;
+  const out = document.getElementById("cg-results");
+  const yearsOut = document.getElementById("cg-years-out");
+
+  let started = false;
+  let resultViewed = false;
+  let returnChanged = false;
+
+  function num(fd: FormData, name: string): number | null {
+    const raw = String(fd.get(name) ?? "").trim();
+    if (raw === "") return null;
+    const v = Number(raw);
+    return Number.isFinite(v) ? v : NaN;
+  }
+
+  function read(f: HTMLFormElement): GrowthInput {
+    const fd = new FormData(f);
+    const r = num(fd, "annualReturn");
+    return {
+      startingAmount: num(fd, "startingAmount"),
+      monthlyContribution: num(fd, "monthlyContribution"),
+      years: num(fd, "years"),
+      annualReturn: r === null || !Number.isFinite(r) ? r : r / 100,
+    };
+  }
+
+  function showErrors(f: HTMLFormElement, i: GrowthInput): string[] {
+    const errors = validate(i);
+    const blocking: string[] = [];
+    for (const field of FIELDS) {
+      const el = f.querySelector<HTMLElement>(`[data-error-for="${field}"]`);
+      const e = errors[field];
+      if (el) { el.textContent = e ?? ""; el.hidden = !e; }
+      if (e) blocking.push(e);
+    }
+    return blocking;
+  }
+
+  function sync(f: HTMLFormElement, i: GrowthInput) {
+    if (yearsOut && i.years !== null) yearsOut.textContent = `${i.years} ${i.years === 1 ? "year" : "years"}`;
+    const typed = i.annualReturn === null ? NaN : Math.round(i.annualReturn * 10000);
+    f.querySelectorAll<HTMLInputElement>('input[name="returnPreset"]').forEach((el) => {
+      el.checked = Math.round(Number(el.value) * 100) === typed;
+    });
+  }
+
+  function update() {
+    if (!form || !out) return;
+    const i = read(form);
+    sync(form, i);
+    const blocking = showErrors(form, i);
+    if (blocking.length) {
+      out.innerHTML = `<div class="cg-blocked"><p><strong>Fix the highlighted answer to see your numbers.</strong></p><ul>${blocking.map((b) => `<li>${b}</li>`).join("")}</ul></div>`;
+      return;
+    }
+    out.innerHTML = renderResults(calculate(i));
+    if (started && !resultViewed) {
+      resultViewed = true;
+      track("calc_result_viewed", { calculator: CALC });
+    }
+  }
+
+  function onUserInput(e: Event) {
+    if (!started) {
+      started = true;
+      track("calc_started", { calculator: CALC });
+    }
+    const t = e.target;
+    if (t instanceof HTMLInputElement && (t.name === "annualReturn" || t.name === "returnPreset") && !returnChanged) {
+      returnChanged = true;
+      track("calc_assumption_changed", { calculator: CALC, field: "annual_return" });
+    }
+  }
+
+  if (form) {
+    form.addEventListener("submit", (e) => e.preventDefault());
+    form.addEventListener("change", (e) => {
+      const t = e.target;
+      if (t instanceof HTMLInputElement && t.name === "returnPreset") {
+        const box = form.querySelector<HTMLInputElement>('input[name="annualReturn"]');
+        if (box) box.value = t.value;
+      }
+    });
+    form.addEventListener("input", (e) => { onUserInput(e); update(); });
+    form.addEventListener("change", (e) => { onUserInput(e); update(); });
+    update();
+  }
+</script>
+
+<style>
+  /* Same visual system as the other calculators: a control panel on the
+     left, a results statement on the right. */
+  .cg, .cg-assumptions {
+    /* Chart colours: growth (gold) over money put in (pine); the late start is a dashed lake line. */
+    --cg-growth: #e1b24a;
+    --cg-growth-line: #b8820f;
+    --cg-paid: #3a7a6b;
+    --cg-later: #2a78d6;
+  }
+
+  /* minmax(0, 1fr): results must not stretch the column past a 320px phone. */
+  .cg { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
+  @media (min-width: 60rem) {
+    .cg { grid-template-columns: minmax(19rem, 25rem) minmax(0, 1fr); gap: 2rem; align-items: start; }
+    .cg-form { position: sticky; top: calc(var(--header-h) + 1rem); }
+  }
+
+  /* ---------- control panel ---------- */
+  .cg-form {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg);
+    padding: 0.5rem 1.35rem 1rem;
+    counter-reset: step;
+    accent-color: var(--pine-700);
+    min-width: 0;
+  }
+  .cg-form > fieldset {
+    counter-increment: step;
+    border: 0;
+    border-top: 1px solid var(--line);
+    padding: 1.25rem 0 0.5rem;
+    margin: 0;
+    min-width: 0;
+  }
+  .cg-form > fieldset:first-of-type { border-top: 0; }
+  .cg-form > fieldset > legend {
+    display: flex; align-items: center; gap: 0.6rem;
+    float: left; width: 100%;
+    font-family: var(--font-display); font-optical-sizing: auto;
+    font-weight: 600; font-size: 1.12rem; color: var(--lake-900);
+    padding: 0; margin: 0 0 0.35rem;
+  }
+  .cg-form > fieldset > legend::before {
+    content: counter(step);
+    flex: none;
+    width: 1.6rem; height: 1.6rem; border-radius: 50%;
+    display: grid; place-items: center;
+    font-family: var(--font-body); font-size: 0.78rem; font-weight: 700;
+    background: var(--lake-900); color: var(--gold-bright);
+  }
+  .cg-form > fieldset > legend + * { clear: both; }
+
+  .cg-form label { display: block; font-size: 0.92rem; font-weight: 600; margin: 0.85rem 0; color: var(--ink); clear: both; }
+  .cg-form [hidden] { display: none !important; }
+  .cg-form input[type="number"] {
+    display: block; width: 100%; margin-top: 0.35rem; padding: 0.65rem 0.8rem;
+    font: inherit; font-weight: 500; font-size: 1rem; font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    border: 1px solid var(--line-strong); border-radius: 10px;
+    background: var(--paper);
+    min-height: 2.9rem;
+    transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+  }
+  .cg-form input:hover { border-color: var(--pine-500); }
+  .cg-form input[type="number"]:focus-visible {
+    outline: none;
+    background: var(--card);
+    border-color: var(--pine-700);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 55%, transparent);
+  }
+  .cg-form small, .cg-help { display: block; font-weight: 400; color: var(--ink-soft); font-size: 0.8rem; line-height: 1.45; margin: 0.35rem 0 0; }
+  .cg-help { font-size: 0.86rem; margin: 0.5rem 0; }
+  .cg-error { margin: 0.35rem 0; font-size: 0.86rem; font-weight: 600; color: var(--danger); }
+  .cg-honest {
+    margin: 0.5rem 0 0; padding: 0.6rem 0.75rem; border-radius: 10px;
+    background: var(--gold-wash); color: var(--ink); font-size: 0.86rem; line-height: 1.45; font-weight: 550;
+    border-left: 3px solid var(--gold);
+  }
+
+  /* slider */
+  .cg-form .cg-range-label { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.4rem; }
+  .cg-range-label output { font-family: var(--font-display); font-size: 1.25rem; font-weight: 650; color: var(--lake-900); font-variant-numeric: tabular-nums; }
+  .cg-range { display: block; width: 100%; margin: 0.25rem 0 0; min-height: 2rem; }
+  .cg-range:focus-visible { outline: 3px solid color-mix(in srgb, var(--gold) 70%, transparent); outline-offset: 2px; border-radius: 6px; }
+  .cg-range-ends { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--ink-soft); }
+
+  /* presets: wrapping pills */
+  .cg-presets { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.5rem 0 0; }
+  .cg-form .cg-chip {
+    flex: 1 1 4.5rem;
+    display: flex; align-items: center; justify-content: center; gap: 0.35rem;
+    margin: 0; padding: 0.5rem 0.6rem;
+    border: 1px solid var(--line); border-radius: 999px; background: var(--paper);
+    font-weight: 550; font-variant-numeric: tabular-nums; cursor: pointer;
+    transition: border-color 0.15s, background-color 0.15s, box-shadow 0.15s;
+  }
+  .cg-form .cg-chip:hover { border-color: var(--pine-500); }
+  .cg-form .cg-chip:has(input:checked) {
+    border-color: var(--pine-700); background: var(--moss-100);
+    box-shadow: inset 0 0 0 1px var(--pine-700); font-weight: 650; color: var(--lake-900);
+  }
+  .cg-chip input { width: 1rem; height: 1rem; margin: 0; }
+
+  /* ---------- results ---------- */
+  .cg-results { counter-reset: panel; font-variant-numeric: tabular-nums; min-width: 0; }
+  .cg-results :global(.cg-blocked) {
+    border: 2px solid var(--danger); background: var(--red-wash); border-radius: var(--radius);
+    padding: 1rem 1.25rem; font-size: 0.95rem;
+  }
+  .cg-results :global(.cg-blocked p) { margin: 0 0 0.4rem; }
+  .cg-results :global(.cg-blocked ul) { margin: 0; padding-left: 1.1rem; }
+  .cg-results :global(.cg-headline) {
+    position: relative;
+    margin: 0 0 1.25rem;
+    padding: 1.5rem 1.75rem;
+    border-radius: 20px;
+    background: var(--grain), radial-gradient(130% 140% at 100% 0%, var(--pine-800), var(--lake-950) 70%);
+    color: var(--on-dark);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+  .cg-results :global(.cg-headline)::after {
+    content: ""; position: absolute; right: -5rem; top: -5rem; width: 14rem; height: 14rem; border-radius: 50%;
+    background: repeating-radial-gradient(circle, transparent 0 18px, rgba(228, 185, 78, 0.12) 18px 19px);
+    pointer-events: none;
+  }
+  .cg-results :global(.cg-kicker) { margin: 0 0 0.35rem; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold-bright); }
+  .cg-results :global(.cg-big) {
+    margin: 0 0 0.5rem; font-family: var(--font-display); font-optical-sizing: auto;
+    font-size: clamp(2.2rem, 7vw, 3.4rem); font-weight: 650; line-height: 1.05; letter-spacing: -0.02em; color: var(--gold-bright);
+    overflow-wrap: anywhere;
+  }
+  .cg-results :global(.cg-lead) { margin: 0; font-size: 0.98rem; line-height: 1.55; position: relative; z-index: 1; }
+
+  .cg-results :global(.cg-card) {
+    counter-increment: panel;
+    border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 1.35rem 1.5rem 1.25rem; background: var(--card);
+    margin-bottom: 1rem; box-shadow: var(--shadow-sm); min-width: 0;
+  }
+  @media (max-width: 30rem) {
+    .cg-results :global(.cg-card) { padding: 1.1rem 1rem 1rem; }
+    .cg-results :global(.cg-headline) { padding: 1.25rem 1.1rem; }
+  }
+  .cg-results :global(h3) { display: flex; align-items: center; gap: 0.65rem; margin: 0 0 0.85rem; font-size: 1.3rem; }
+  .cg-results :global(h3)::before {
+    content: counter(panel, upper-alpha);
+    flex: none; width: 1.9rem; height: 1.9rem; border-radius: 50%;
+    display: grid; place-items: center;
+    font-size: 0.95rem; font-style: italic; font-weight: 600;
+    background: var(--gold-btn); color: var(--ink);
+  }
+  .cg-results :global(.cg-note) { font-size: 0.88rem; line-height: 1.55; color: var(--ink-soft); margin: 0.75rem 0 0; }
+
+  /* start now vs later */
+  .cg-results :global(.cg-compare-card) { border: 2px solid var(--lake-900); }
+  .cg-results :global(.cg-compare-lead) { margin: -0.35rem 0 0.85rem; }
+  .cg-results :global(.cg-compare) { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: 0.75rem; }
+  .cg-results :global(.cg-col) { border-radius: 14px; padding: 0.9rem 1rem; min-width: 0; }
+  .cg-results :global(.cg-col-now) { background: var(--moss-100); border: 1px solid var(--pine-500); }
+  .cg-results :global(.cg-col-later) { background: var(--paper); border: 1px dashed var(--line-strong); }
+  .cg-results :global(.cg-col-label) { margin: 0 0 0.2rem; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); }
+  .cg-results :global(.cg-col-big) { margin: 0 0 0.25rem; font-family: var(--font-display); font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 650; color: var(--lake-900); overflow-wrap: anywhere; }
+  .cg-results :global(.cg-col-later .cg-col-big) { color: var(--ink-soft); }
+  .cg-results :global(.cg-col-sub) { margin: 0; font-size: 0.85rem; color: var(--ink-soft); line-height: 1.45; }
+  .cg-results :global(.cg-gap) {
+    display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.25rem 1rem;
+    margin: 0.85rem 0 0; padding-top: 0.75rem; border-top: 2px solid var(--lake-900);
+    font-weight: 700; color: var(--lake-900);
+  }
+  .cg-results :global(.cg-gap strong) { font-family: var(--font-display); font-size: clamp(1.4rem, 4vw, 1.8rem); font-weight: 650; overflow-wrap: anywhere; }
+
+  /* split */
+  .cg-results :global(.cg-bar) { display: flex; height: 0.9rem; border-radius: 999px; overflow: hidden; background: var(--line); }
+  .cg-results :global(.cg-bar-paid) { background: var(--cg-paid); }
+  .cg-results :global(.cg-bar-growth) { background: var(--cg-growth); }
+  .cg-results :global(.cg-split) { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr)); gap: 0.5rem 1rem; margin: 0.85rem 0 0; }
+  .cg-results :global(.cg-split div) { min-width: 0; }
+  .cg-results :global(.cg-split dt) { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: var(--ink-soft); }
+  .cg-results :global(.cg-split dd) { margin: 0.15rem 0 0; font-family: var(--font-display); font-size: 1.35rem; font-weight: 650; color: var(--lake-900); }
+  .cg-results :global(.cg-dot) { width: 0.7rem; height: 0.7rem; border-radius: 3px; flex: none; }
+  .cg-results :global(.cg-dot-paid) { background: var(--cg-paid); }
+  .cg-results :global(.cg-dot-growth) { background: var(--cg-growth); }
+
+  /* chart */
+  .cg-results :global(.cg-legend) { list-style: none; display: flex; flex-wrap: wrap; gap: 0.35rem 1.1rem; margin: 0 0 0.5rem; padding: 0; font-size: 0.84rem; color: var(--ink); }
+  .cg-results :global(.cg-legend li) { display: flex; align-items: center; gap: 0.4rem; }
+  .cg-results :global(.cg-key) { width: 0.9rem; height: 0.9rem; border-radius: 3px; }
+  .cg-results :global(.cg-l-growth .cg-key) { background: var(--cg-growth); }
+  .cg-results :global(.cg-l-paid .cg-key) { background: var(--cg-paid); }
+  .cg-results :global(.cg-l-later .cg-key) { width: 1.4rem; height: 0; border-radius: 0; border-top: 2px dashed var(--cg-later); }
+  .cg-results :global(.cg-chart) { display: block; width: 100%; height: auto; overflow: visible; }
+  .cg-results :global(.cg-grid) { stroke: var(--line); stroke-width: 1; }
+  .cg-results :global(.cg-axis) { font-family: var(--font-body); font-size: 11px; fill: var(--ink-soft); }
+  .cg-results :global(.cg-area-total) { fill: var(--cg-growth); opacity: 0.55; }
+  .cg-results :global(.cg-area-paid) { fill: var(--cg-paid); opacity: 0.85; }
+  .cg-results :global(.cg-line-total) { fill: none; stroke: var(--cg-growth-line); stroke-width: 2; stroke-linejoin: round; }
+  .cg-results :global(.cg-later) { fill: none; stroke: var(--cg-later); stroke-width: 2.4; stroke-dasharray: 7 4; stroke-linejoin: round; }
+  .cg-results :global(.cg-start) { stroke: var(--ink-soft); stroke-width: 1; stroke-dasharray: 3 3; }
+  .cg-results :global(.cg-start-label) { font-weight: 600; }
+  .cg-results :global(.cg-table-view) { margin-top: 0.75rem; font-size: 0.9rem; }
+  .cg-results :global(.cg-table-view summary) { cursor: pointer; font-weight: 600; color: var(--lake-900); }
+  .cg-results :global(.cg-scroll) { overflow-x: auto; max-width: 100%; margin-top: 0.5rem; }
+  .cg-results :global(.cg-table) { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  .cg-results :global(.cg-table th), .cg-results :global(.cg-table td) { padding: 0.4rem 0.35rem; border-bottom: 1px solid var(--line); text-align: right; }
+  .cg-results :global(.cg-table th[scope="row"]), .cg-results :global(.cg-table thead th:first-child) { text-align: left; }
+  .cg-results :global(.cg-table thead th) { font-size: 0.78rem; color: var(--ink-soft); font-weight: 600; }
+  .cg-results :global(.cg-disclaimer) { font-size: 0.84rem; color: var(--ink-soft); margin: 0.5rem 0 0; font-style: italic; line-height: 1.5; }
+
+  /* ---------- how this works ---------- */
+  .cg-assumptions { max-width: 52rem; margin-top: 3.5rem; }
+  .cg-assumptions h2 { position: relative; padding-top: 1.25rem; margin: 0 0 1rem; font-size: clamp(1.5rem, 3vw, 1.9rem); }
+  .cg-assumptions h2::before { content: ""; position: absolute; left: 0; top: 0; width: 2.5rem; height: 3px; border-radius: 3px; background: var(--gold); }
+  .cg-assumptions ul {
+    list-style: none; padding: 0; margin: 0 0 1rem;
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm);
+  }
+  .cg-assumptions li {
+    position: relative; margin: 0; padding: 0.9rem 1.25rem 0.9rem 2.75rem;
+    font-size: 0.93rem; line-height: 1.6; border-top: 1px solid var(--line);
+  }
+  .cg-assumptions li:first-child { border-top: 0; }
+  .cg-assumptions li::before {
+    content: ""; position: absolute; left: 1.2rem; top: 1.45rem;
+    width: 0.5rem; height: 0.5rem; border-radius: 50%; border: 2px solid var(--gold);
+  }
+  .cg-assumptions strong { color: var(--lake-900); }
+</style>

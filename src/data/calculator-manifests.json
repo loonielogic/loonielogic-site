@@ -1,5 +1,5 @@
 {
-  "_note": "Per-tool manifests for the 8 calculators. Validated by src/scripts/validate-content.ts against calculatorManifestSchema (page-manifest.ts). The .astro shells in src/pages/calculators/ read these via getEntry \u2014 the island components consume the shared library from calculator-architecture-spec.md. Figure keys must exist in src/data/figures/*.json with status != rejected.",
+  "_note": "Per-tool manifests for the calculators. Validated by src/scripts/validate-content.ts against calculatorManifestSchema (page-manifest.ts). The .astro shells in src/pages/calculators/ read these via getEntry \u2014 the island components consume the shared library from calculator-architecture-spec.md. Figure keys must exist in src/data/figures/*.json with status != rejected.",
   "generated": "2026-09-29",
   "manifests": [
     {
@@ -631,87 +631,57 @@
     {
       "affiliate_disclosure": false,
       "affiliate_links": [],
-      "calculator_spec": "hidden_files/compound-growth-retirement-saver-calculator-spec.md",
-      "cluster": "retirement",
-      "faq": [
-        {
-          "a": "Not the maximum \u2014 the average is what most people actually get, which keeps the projection honest. The tool lets you override it with your own Service Canada estimate if you have one.",
-          "q": "Why does the tool default to the average CPP benefit instead of the maximum?"
-        },
-        {
-          "a": "The fee-drag card shows the same monthly contribution growing at 0.2% vs 2% fees over 30 years. A 2% fee can eat roughly a third of your final balance \u2014 that is why low-cost index funds matter more than picking winners.",
-          "q": "How much do investment fees really cost over 30 years?"
-        },
-        {
-          "a": "Today's dollars divide the nominal projection by expected inflation, so $500,000 in 30 years shows as what it buys at today's prices. It stops big future numbers from misleading you.",
-          "q": "What does 'in today's dollars' mean on the projection?"
-        }
-      ],
-      "faq_pages": [
-        "FAQPage"
-      ],
-      "figures": [
-        {
-          "expires": "2026-10-01",
-          "key": "cpp.max_benefit_65",
-          "source": "ESDC \u2014 CPP maximum at 65 (Q3 2026 quarterly report)",
-          "verified": "2026-09-27"
-        },
-        {
-          "expires": "2026-10-01",
-          "key": "cpp.average_new_benefit",
-          "source": "ESDC \u2014 CPP average new benefit (Q3 2026 quarterly report)",
-          "verified": "2026-09-27"
-        },
-        {
-          "expires": "2026-10-01",
-          "key": "oas.amount_65_74.q3_2026",
-          "source": "canada.ca \u2014 OAS amounts Q3 2026",
-          "verified": "2026-09-28"
-        },
-        {
-          "expires": null,
-          "key": "oas.recovery_tax.threshold.2026",
-          "source": "canada.ca \u2014 OAS recovery tax threshold",
-          "verified": "2026-09-28"
-        },
-        {
-          "expires": null,
-          "key": "capital_gains.inclusion_rate.2026",
-          "source": "canada.ca \u2014 capital gains inclusion rate",
-          "verified": "2026-09-28"
-        },
-        {
-          "expires": null,
-          "key": "tfsa.annual_limit.2026",
-          "source": "canada.ca \u2014 TFSA contribution limit",
-          "verified": "2026-09-28"
-        },
-        {
-          "expires": null,
-          "key": "rrsp.cap.2026",
-          "source": "canada.ca \u2014 RRSP deduction limit",
-          "verified": "2026-09-28"
-        }
-      ],
+      "calculator_spec": "hidden_files/compound-growth-wealth-over-time-calculator-spec.md",
+      "cluster": "investing",
+      "faq": [],
+      "faq_pages": [],
+      "figures": [],
       "hub": "/calculators/",
-      "last_reviewed": "2026-09-28",
-      "meta_description": "See what your savings become by retirement: project compound growth in today's dollars, add your CPP and OAS, and find the income gap \u2014 plus what closes it.",
+      "last_reviewed": "2026-10-01",
+      "meta_description": "See what your savings could become: a compound growth calculator with a return you set, a year-by-year chart, and the cost of starting 10 years later.",
       "newsletter_placement": "soft-link",
-      "next_review_due": "2026-12-01",
+      "next_review_due": "2027-10-01",
       "page_type": "calculator",
       "publish_date": null,
       "quiz_spec": null,
       "related": [
-        "/learn/cpp-oas",
-        "/compare/tfsa-vs-rrsp",
+        "/learn/tfsa",
+        "/calculators/goal-planner",
         "/calculators/tfsa-room-checker"
       ],
       "review_cadence": "annual",
       "schema_primary": "WebApplication",
       "slug": "/calculators/compound-growth",
       "status": "draft",
-      "title": "Compound Growth Calculator Canada 2026: Retirement Saver",
+      "title": "Compound Growth Calculator Canada: Wealth Over Time",
+      "wave": 3
+    },
+    {
+      "affiliate_disclosure": false,
+      "affiliate_links": [],
+      "calculator_spec": "hidden_files/goal-planner-calculator-spec.md",
+      "cluster": "investing",
+      "faq": [],
+      "faq_pages": [],
+      "figures": [],
+      "hub": "/calculators/",
+      "last_reviewed": "2026-10-01",
+      "meta_description": "Set a savings goal and see the path: the yearly return your plan needs, the monthly amount at a return you pick, and when you pass 25%, 50% and 75%.",
+      "newsletter_placement": "soft-link",
+      "next_review_due": "2027-10-01",
+      "page_type": "calculator",
+      "publish_date": null,
+      "quiz_spec": null,
+      "related": [
+        "/calculators/compound-growth",
+        "/calculators/down-payment-planner",
+        "/learn/tfsa"
+      ],
+      "review_cadence": "annual",
+      "schema_primary": "WebApplication",
+      "slug": "/calculators/goal-planner",
+      "status": "draft",
+      "title": "Savings Goal Planner Canada: Find the Return You Need",
       "wave": 3
     },
     {

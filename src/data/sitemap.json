@@ -190,19 +190,35 @@
       "wave": 3
     },
     {
-      "cluster": "retirement",
+      "cluster": "investing",
       "hub": "/calculators/",
-      "meta_description": "See what your savings become by retirement: project compound growth in today's dollars, add your CPP and OAS, and find the income gap, plus what closes it.",
+      "meta_description": "See what your savings could become: a compound growth calculator with a return you set, a year-by-year chart, and the cost of starting 10 years later.",
       "page_type": "calculator",
       "related": [
-        "/learn/cpp-oas",
-        "/compare/tfsa-vs-rrsp",
+        "/learn/tfsa",
+        "/calculators/goal-planner",
         "/calculators/tfsa-room-checker"
       ],
       "review_cadence": "annual",
       "slug": "/calculators/compound-growth",
-      "card_dek": "Project your savings, add CPP and OAS, and find your retirement gap.",
-      "title": "Compound Growth Calculator Canada 2026: Retirement Saver",
+      "card_dek": "See what regular saving can grow into, and what waiting 10 years costs.",
+      "title": "Compound Growth Calculator Canada: Wealth Over Time",
+      "wave": 3
+    },
+    {
+      "cluster": "investing",
+      "hub": "/calculators/",
+      "meta_description": "Set a savings goal and see the path: the yearly return your plan needs, the monthly amount at a return you pick, and when you pass 25%, 50% and 75%.",
+      "page_type": "calculator",
+      "related": [
+        "/calculators/compound-growth",
+        "/calculators/down-payment-planner",
+        "/learn/tfsa"
+      ],
+      "review_cadence": "annual",
+      "slug": "/calculators/goal-planner",
+      "card_dek": "Name a goal and a date, then see the return and the monthly saving it takes.",
+      "title": "Savings Goal Planner Canada: Find the Return You Need",
       "wave": 3
     },
     {

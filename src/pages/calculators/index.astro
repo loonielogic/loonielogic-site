@@ -2,8 +2,9 @@
 import HubPage from "../../components/HubPage.astro";
 import { sectionPages } from "../../lib/site";
 
-// No calculator .astro shells exist yet in this build, so every tool lands in
-// the hub's "Coming next" list until the calculator architecture spec ships them.
+// Several calculator shells are built, but every manifest is still "draft"
+// (noindex, off sitemap.xml), so no tool is linked from the hub yet: every
+// card lands in the "in progress" list until the founder publishes it.
 const cards = sectionPages("/calculators/");
 
 const cardMeta = {
@@ -12,7 +13,8 @@ const cardMeta = {
   "/calculators/house-affordability": { chips: ["GDS 39%", "TDS 44%"] },
   "/calculators/down-payment-planner": { chips: ["FHSA + HBP stack"] },
   "/calculators/rent-vs-buy": { chips: ["breakeven year", "net wealth"] },
-  "/calculators/compound-growth": { chips: ["CPP + OAS", "income gap"] },
+  "/calculators/compound-growth": { chips: ["wealth over time", "start early"] },
+  "/calculators/goal-planner": { chips: ["set the goal", "find the path"] },
   "/calculators/tfsa-room-checker": { chips: ["$109,000 max lookup"] },
   "/calculators/rrsp-room": { chips: ["dual mode", "$2,000 buffer"] },
   "/calculators/cpp-timing": { chips: ["60 vs 65 vs 70", "breakeven ages"] },
@@ -24,7 +26,7 @@ const cardMeta = {
   title="Canadian Tax & Savings Calculators 2026 | LoonieLogic"
   metaDescription="Canadian money calculators in progress: income tax, TFSA vs RRSP, room trackers, and home buying. Until they launch, our guides show the math by hand."
   h1="Calculators that do real Canadian math"
-  intro="Our calculators are still being built. The First Home Savings Planner is open in draft; the rest are in progress. Until they launch, the TFSA vs RRSP comparison walks through the 2026 math by hand, with worked examples and a clear verdict."
+  intro="Five calculators are built and in draft review while we double-check the math: the First Home Savings Planner, the TFSA Over-Contribution Risk Checker, the CPP Timing Calculator, Wealth Over Time (compound growth), and the Goal Planner. The income tax calculator, TFSA vs RRSP, RRSP room, house affordability, and rent vs buy tools are still in progress. Until they launch, the TFSA vs RRSP comparison walks through the 2026 math by hand, with worked examples and a clear verdict."
   breadcrumb="Tools"
   cards={cards}
   builtSlugs={new Set()}
