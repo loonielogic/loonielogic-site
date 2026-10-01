@@ -2,8 +2,7 @@
 /**
  * Related-cards block, generated from the front-matter `related` array.
  * Only pages that exist in this build render as cards (live first, short
- * `card_dek` text); the rest collapse into one "Coming next" line, same
- * pattern as the hub pages.
+ * `card_dek` text). Unbuilt pages are hidden entirely.
  */
 import { pageBySlug } from "../lib/site";
 
@@ -18,14 +17,13 @@ const cards = slugs
   .map((s) => pageBySlug.get(s))
   .filter((p): p is NonNullable<typeof p> => Boolean(p));
 const live = cards.filter((p) => builtSlugs.has(p.slug));
-const upcoming = cards.filter((p) => !builtSlugs.has(p.slug));
 
 const kindOf = (slug: string) =>
   slug.startsWith("/learn/") ? "Explainer" : slug.startsWith("/compare/") ? "Comparison" : slug.startsWith("/calculators/") ? "Tool" : "Page";
 ---
 
 {
-  cards.length > 0 && (
+  live.length > 0 && (
     <section class="related-cards" aria-label={heading}>
       <p class="eyebrow">Next up</p>
       <h2>{heading}</h2>
@@ -40,11 +38,6 @@ const kindOf = (slug: string) =>
             </article>
           ))}
         </div>
-      )}
-      {upcoming.length > 0 && (
-        <p class="coming-line">
-          <strong>Coming next:</strong> {upcoming.map((p) => p.title).join("; ")}.
-        </p>
       )}
     </section>
   )

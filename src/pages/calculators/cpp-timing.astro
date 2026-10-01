@@ -23,7 +23,10 @@ const builtSlugs = new Set<string>(["/", "/learn/", "/calculators/", "/compare/"
 for (const coll of ["explainers", "comparisons", "legal"] as const) {
   for (const e of await getCollection(coll)) builtSlugs.add(e.data.slug);
 }
-// Until the explainer and the tax tool are published, those next steps render unlinked.
+// Calculator pages are built as routes, not content collections, so add their
+// manifest slugs too. Until the explainer is published, that next step renders
+// unlinked.
+for (const x of manifests.manifests) builtSlugs.add(x.slug);
 const basicsHref = builtSlugs.has(BASICS) ? BASICS : null;
 const taxToolHref = builtSlugs.has(TAX_TOOL) ? TAX_TOOL : null;
 

@@ -2,8 +2,8 @@
 /**
  * Homepage — adapted from files/loonielogic-homepage-draft-v1.md.
  * Everything on this page describes what is live in this build: Learn/Try/Do
- * cards list only built pages, and guided-path items that aren't built yet
- * collapse into a "Coming next" line (no dead links, no implied promises).
+ * cards and guided paths list only built pages (no dead links, no
+ * implied promises).
  *
  * The hero's worked example is computed at build time by the planner's own
  * functions (src/lib/calculators/), using its default inputs, so the numbers
@@ -332,7 +332,6 @@ builtSlugs.add(PLANNER);
       <div class="paths">
         {paths.map((group) => {
           const live = group.items.filter((item) => link(item.slug));
-          const upcoming = group.items.filter((item) => !link(item.slug));
           return (
             <article class="path">
               <h3>“{group.heading}”</h3>
@@ -349,11 +348,6 @@ builtSlugs.add(PLANNER);
                     </li>
                   ))}
                 </ol>
-              )}
-              {upcoming.length > 0 && (
-                <p class="coming-line">
-                  <strong>Coming next:</strong> {upcoming.map((item) => item.label).join("; ")}.
-                </p>
               )}
             </article>
           );

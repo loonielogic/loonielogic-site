@@ -401,10 +401,10 @@ function workedExamples(): string {
 function nextSteps(o: RenderOptions): string {
   const basics = o.basicsHref
     ? `<li><a href="${o.basicsHref}">Learn: CPP + OAS basics</a>: how both pensions work and fit together.</li>`
-    : `<li>Learn: CPP + OAS basics (our guide is coming soon). Until then, <a href="${CPP_OVERVIEW_URL}" rel="noopener">the CPP overview on canada.ca</a> covers the rules.</li>`;
+    : `<li>Learn: CPP + OAS basics. Until our guide is published, <a href="${CPP_OVERVIEW_URL}" rel="noopener">the CPP overview on canada.ca</a> covers the rules.</li>`;
   const tax = o.taxToolHref
     ? `<li><a href="${o.taxToolHref}">After-tax view</a>: CPP is taxed at your marginal rate; the income tax estimator shows the after-tax picture.</li>`
-    : `<li>After-tax view: CPP is taxed at your marginal rate. Our income tax estimator (coming soon) will show the after-tax picture.</li>`;
+    : `<li>After-tax view: CPP is taxed at your marginal rate.</li>`;
   return `<ul class="cpt-links">
 <li><strong>Check your real estimate:</strong> <a href="${MSCA_URL}" rel="noopener">My Service Canada Account</a> (Statement of Contributions) has your own figure, and the <a href="${CRIC_URL}" rel="noopener">Canadian Retirement Income Calculator</a> is the official next step.</li>
 ${basics}
