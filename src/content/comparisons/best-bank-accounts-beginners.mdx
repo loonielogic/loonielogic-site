@@ -22,6 +22,10 @@ figures:
     source: "EQ Bank personal accounts page"
     verified: 2026-09-28
     expires: 2026-10-15
+  - key: eq.everyday_terms
+    source: "EQ Bank Personal Account page"
+    verified: 2026-10-01
+    expires: 2027-01-01
   - key: ws.chequing_rates.2026_09
     source: "Wealthsimple help centre: how interest is paid on cash"
     verified: 2026-09-28
@@ -42,10 +46,18 @@ figures:
     source: "Simplii high interest savings page"
     verified: 2026-10-01
     expires: 2026-11-01
+  - key: simplii.everyday_terms
+    source: "Simplii All Special Offers page (everyday chequing terms)"
+    verified: 2026-10-01
+    expires: 2027-01-01
   - key: tangerine.payroll_250
     source: "Tangerine offers page (terms partly third-party)"
     verified: 2026-09-28
     expires: 2026-11-01
+  - key: tangerine.everyday_terms
+    source: "Tangerine No-Fee Chequing page"
+    verified: 2026-10-01
+    expires: 2027-01-01
   - key: neo.essentials_fees
     source: "Neo fee schedule (March 31, 2026 disclosure)"
     verified: 2026-09-28
@@ -119,16 +131,16 @@ Welcome bonuses are a side dish. <PromoCopy figure="simplii.bonus_2026" fallback
 
 | | Interest on balance | Welcome bonus | Fees and fine print we've verified |
 |---|---|---|---|
-| **EQ Bank Personal Account** | **2.75%** with $2,000+/month pay deposit; 1.00% without | None | Not yet in our verified data |
+| **EQ Bank Personal Account** | **2.75%** with $2,000+/month pay deposit; 1.00% without | None | $0 monthly fees; no minimum balance; unlimited transactions; free Interac e-Transfers; free withdrawals at any ATM in Canada |
 | **Wealthsimple Chequing** | 1.25% base; 1.75% at Premium ($100K+ in assets); 2.25% at Generation ($500K+); +0.5% with direct deposit, capped at 2.25% | None verified | $0 monthly fees; CDIC coverage up to $1M through its trust structure |
 | **Simplii No Fee Chequing** | Not yet verified | <PromoCopy figure="simplii.bonus_2026" fallback="Ended January 31, 2027">**$350 cash** (ends Jan 31, 2027)</PromoCopy> | Not available in Quebec; $100/mo direct deposit x4 months within 150 days required for bonus |
-| **Tangerine No-Fee Daily Chequing** | Not yet verified | <PromoCopy figure="tangerine.payroll_250" fallback="Ended October 31, 2026">$250 for $200+/month payroll deposits for 2 consecutive months; ends October 31, 2026</PromoCopy> | Not yet in our verified data |
+| **Tangerine No-Fee Daily Chequing** | Not yet verified | <PromoCopy figure="tangerine.payroll_250" fallback="Ended October 31, 2026">$250 for $200+/month payroll deposits for 2 consecutive months; ends October 31, 2026</PromoCopy> | $0 monthly fees; no minimum balance; unlimited daily transactions; free Interac e-Transfers; free access to 3,500+ Scotiabank ABMs |
 | **Neo Chequing** | Not yet verified | None verified | Free Essentials tier; from January 1, 2027: $1 per e-Transfer sent, $1.50 per ATM withdrawal, $4.99 per NSF |
 | **CIBC Smart Start** | Not yet verified | Not yet verified | Not yet in our verified data |
 
 *"Not yet verified" means the figure is not in our registry with a source and a date, so we don't print it. Rates and fees move; confirm with the bank before you open an account.*
 
-{/* TODO(figure): Not in the registry, so not printed (all from the 2026-09-27/28 draft): monthly fees and transaction/e-Transfer limits for EQ, Simplii, Tangerine, Neo; everyday rates for Simplii (0.01%), Tangerine (0.01-0.10%), Neo (0.10%), CIBC (~0%); ATM network sizes (Simplii 3,400+, Tangerine 3,500+, Wealthsimple 60,000+); EQ free Canadian ATM withdrawals and EFT holds up to 5 business days; Wealthsimple ATM fee reimbursement and chequing-card FX; Wealthsimple $2,000 direct-deposit threshold; Wealthsimple $25 new-client bonus (third-party only); CIBC Smart Start $0 until 25 then $16.95, SPC $125, SPC+; Neo 1-3% cashback and current NSF. */}
+{/* TODO(figure): Not in the registry, so not printed (all from the 2026-09-27/28 draft): monthly fees and transaction/e-Transfer limits for Neo; everyday rates for Simplii (0.01%), Tangerine (0.01-0.10%), Neo (0.10%), CIBC (~0%); Wealthsimple ATM network size (60,000+); EQ EFT holds up to 5 business days; Wealthsimple ATM fee reimbursement and chequing-card FX; Wealthsimple $2,000 direct-deposit threshold; Wealthsimple $25 new-client bonus (third-party only); CIBC Smart Start $0 until 25 then $16.95, SPC $125, SPC+; Neo 1-3% cashback and current NSF. */}
 
 ## The math behind the verdict
 
@@ -207,8 +219,8 @@ New to this? Our explainers on credit scores and filing taxes for the first time
 
 ## Sources
 
-- EQ Bank, [personal banking accounts](https://www.eqbank.ca/personal-banking/accounts): 2.75% with $2,000+/month pay direct deposit, 1.00% base. Checked 2026-09-28.
+- EQ Bank, [personal banking accounts](https://www.eqbank.ca/personal-banking/accounts): 2.75% with $2,000+/month pay direct deposit, 1.00% base. Checked 2026-09-28. Everyday terms on eqbank.ca: zero everyday banking fees, no monthly fees or minimums, unlimited transactions, free Interac e-Transfers, free withdrawals from any ATM in Canada. Verified 2026-10-01.
 - Wealthsimple help centre, [how interest is paid on cash](https://help.wealthsimple.com/hc/en-ca/articles/360061583072-How-Interest-is-Paid-on-Cash): 1.25% / 1.75% / 2.25% by tier, +0.5% direct-deposit boost capped at 2.25%, $0 monthly fees, CDIC coverage up to $1M. Wealthsimple [pricing page](https://www.wealthsimple.com/en-ca/pricing): tier thresholds and Visa card terms. Checked 2026-09-28.
-- Simplii, [All Special Offers page](https://www.simplii.com/en/simplii-special-offers.html) and No Fee Chequing offer page: $350 cash for $100+/month eligible direct deposit (paycheque, pension, government benefits, social assistance, or EI) for 4 consecutive months within 150 days of opening; apply as primary account holder by January 31, 2027; not available in Quebec. Re-verified live 2026-10-01; this replaces the $300 plus $50 Skip gift card offer that ended September 30, 2026. Simplii high interest savings promotional rate of 4.60% (5 months, deposits up to $200,000) re-confirmed running to October 31, 2026. Checked 2026-10-01.
-- Tangerine, [offers page](https://www.tangerine.ca/en/landing-page/tangerine-offers): $250 for $200+/month payroll deposits for 2 consecutive months, until October 31, 2026 (terms partly confirmed through third-party sources). Checked 2026-09-28.
+- Simplii, [All Special Offers page](https://www.simplii.com/en/simplii-special-offers.html) and No Fee Chequing offer page: $350 cash for $100+/month eligible direct deposit (paycheque, pension, government benefits, social assistance, or EI) for 4 consecutive months within 150 days of opening; apply as primary account holder by January 31, 2027; not available in Quebec. Re-verified live 2026-10-01; this replaces the $300 plus $50 Skip gift card offer that ended September 30, 2026. Simplii high interest savings promotional rate of 4.60% (5 months, deposits up to $200,000) re-confirmed running to October 31, 2026. Checked 2026-10-01. Everyday terms on simplii.com: no monthly fees, no minimum balance, free unlimited Interac e-Transfers, free access to all CIBC ATMs. Verified 2026-10-01.
+- Tangerine, [offers page](https://www.tangerine.ca/en/landing-page/tangerine-offers): $250 for $200+/month payroll deposits for 2 consecutive months, until October 31, 2026 (terms partly confirmed through third-party sources). Checked 2026-09-28. Everyday terms on tangerine.ca: $0 daily chequing fees, no monthly fee, no minimum balance, free Interac e-Transfers, unlimited daily transactions, free access to 3,500+ Scotiabank ABMs. Verified 2026-10-01.
 - Neo Financial, [fee schedule](https://www.neofinancial.com/legal/fee-schedule) (March 31, 2026 disclosure): Essentials tier charges from January 1, 2027. Checked 2026-09-28.

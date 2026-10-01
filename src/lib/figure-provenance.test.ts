@@ -63,9 +63,12 @@ test("real registry: Simplii bonus is gone from Feb 1, 2027, Tangerine from Nov 
   assert.equal(promoIsLive("tangerine.payroll_250", realRegistry, "2026-11-01"), false);
 });
 
-test("real registry: Questwealth fees stay flagged unconfirmed", () => {
+test("real registry: Questwealth fees verified until Nov 1; Questrade promos stay unconfirmed", () => {
   const [row] = provenanceRows(["qt.questwealth"], realRegistry, "2026-10-01");
-  assert.equal(row.status, "unconfirmed");
+  assert.equal(row.status, "verified");
+  assert.equal(promoIsLive("qt.questwealth", realRegistry, "2026-10-31"), true);
+  assert.equal(promoIsLive("qt.questwealth", realRegistry, "2026-11-01"), false);
+  assert.equal(promoIsLive("qt.promos.2026", realRegistry, "2026-10-01"), false, "third-party cash back never shows");
 });
 
 test("longDate writes absolute dates", () => {
