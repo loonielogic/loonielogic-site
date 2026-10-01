@@ -42,6 +42,8 @@ interface Props {
   newsletterPlacement?: NewsletterPlacementToken;
   /** Built pages still in draft review: listed (unlinked) instead of "Coming next". */
   inReview?: Set<string>;
+  /** When true, unbuilt pages are hidden entirely instead of a "Coming next" list. */
+  hideUpcoming?: boolean;
   /** Heading and one-line note for the draft-review list. */
   inReviewHeading?: string;
   inReviewNote?: string;
@@ -53,6 +55,7 @@ const {
   ctaLead = "Ready for the next step?", newsletterPlacement,
   inReview = new Set<string>(), inReviewHeading = "In draft review",
   inReviewNote = "Built and being double-checked against official sources before they are published.",
+  hideUpcoming = false,
 } = Astro.props;
 
 const bySlug = new Map(cards.map((c) => [c.slug, c]));
@@ -169,7 +172,7 @@ const ctaText = cta.label.replace(/\s*→\s*$/, "");
       </section>
     )}
 
-    {upcoming.length > 0 && (
+    {upcoming.length > 0 && !hideUpcoming && (
       <section class="coming-next" aria-label="Coming next">
         <h2>Coming next</h2>
         <p class="page-meta">Not published yet. These pages are in progress:</p>
