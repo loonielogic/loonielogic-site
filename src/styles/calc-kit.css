@@ -163,8 +163,8 @@
   .ck-card { padding: 1.1rem 1rem 1rem; }
   .ck-headline { padding: 1.25rem 1.1rem; }
 }
-.ck-card h3 { display: flex; align-items: center; gap: 0.65rem; margin: 0 0 0.85rem; font-size: 1.3rem; }
-.ck-card h3::before {
+.ck-card h2 { display: flex; align-items: center; gap: 0.65rem; margin: 0 0 0.85rem; font-size: 1.3rem; }
+.ck-card h2::before {
   content: counter(ck-panel, upper-alpha);
   flex: none; width: 1.9rem; height: 1.9rem; border-radius: 50%;
   display: grid; place-items: center;

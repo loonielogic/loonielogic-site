@@ -122,7 +122,7 @@ function marginal(r: TaxResult): string {
   const body = `<p class="ck-inverse">Your next dollar of taxable income is taxed at <strong class="ck-big-inline">${pct(m)}</strong> (federal plus ${provinceName(r.input.province)}).</p>
 <p>Your average rate is much lower: <strong>${pct(r.averageRate)}</strong> of your total income goes to income tax. With ${r.core.payroll.pensionLabel} and EI included, ${pct(r.effectiveRate)} of your income is deducted.</p>
 <p>On your next $1,000 of income, you would keep about <strong>${$(r.keepPer1000)}</strong> after tax and payroll contributions.</p>
-<h4 class="ck-h4">What if</h4>
+<h3 class="ck-h4">What if</h3>
 <ul>
 <li><strong>Put ${$(RRSP_WHAT_IF)} more in an RRSP:</strong> your income tax drops by about ${$(r.rrspWhatIf)}, if you have the room.</li>
 <li><strong>Earn ${$(INCOME_WHAT_IF)} more:</strong> about ${$(r.incomeWhatIf)} of it reaches your bank account.</li>

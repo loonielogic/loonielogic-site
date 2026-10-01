@@ -109,7 +109,7 @@ function renderSplit(r: GrowthResult): string {
   const sentence = now.growth > 0
     ? `Growth makes up about ${growthPct}% of the final balance. That is money your money earned, not money you saved.`
     : "At 0% there is no growth: the balance is exactly what you put in.";
-  return `<section class="cg-card"><h3>Where the money comes from</h3>
+  return `<section class="cg-card"><h2>Where the money comes from</h2>
 <div class="cg-bar" role="img" aria-label="${$(now.contributed)} put in, ${$(now.growth)} growth"><span class="cg-bar-paid" style="width:${(paidShare * 100).toFixed(1)}%"></span><span class="cg-bar-growth" style="width:${((1 - paidShare) * 100).toFixed(1)}%"></span></div>
 <dl class="cg-split"><div><dt><span class="cg-dot cg-dot-paid" aria-hidden="true"></span>Money you put in</dt><dd>${$(now.contributed)}</dd></div><div><dt><span class="cg-dot cg-dot-growth" aria-hidden="true"></span>Growth earned</dt><dd>${$(now.growth)}</dd></div></dl>
 <p class="cg-note">${sentence}</p></section>`;
@@ -127,7 +127,7 @@ function renderCompare(r: GrowthResult): string {
     : gap > 0
       ? `Waiting ${DELAY_YEARS} years leaves ${$(gap)} on the table in this example. Time is the part of compounding nobody can buy back.`
       : "With $0 going in, both columns stay at $0. Add a starting amount or a monthly amount to see the gap.";
-  return `<section class="cg-card cg-compare-card"><h3>Start now vs start ${DELAY_YEARS} years later</h3>
+  return `<section class="cg-card cg-compare-card"><h2>Start now vs start ${DELAY_YEARS} years later</h2>
 <p class="cg-note cg-compare-lead">Same amounts, same return. The only difference is when the clock starts.</p>
 <div class="cg-compare"><div class="cg-col cg-col-now"><p class="cg-col-label">Start today</p><p class="cg-col-big">${$(now.futureValue)}</p><p class="cg-col-sub">${yrs(n)} of growth. ${$(now.contributed)} put in.</p></div><div class="cg-col cg-col-later"><p class="cg-col-label">Start in ${DELAY_YEARS} years</p>${laterBody}</div></div>
 <p class="cg-gap"><span>The cost of waiting</span> <strong>${$(gap)}</strong></p>
@@ -139,6 +139,6 @@ export function renderResults(r: GrowthResult): string {
   const headline = `<div class="cg-headline"><p class="cg-kicker">After ${yrs(now.years)} at ${pct(input.annualReturn)} a year</p>
 <p class="cg-big">${$(now.futureValue)}</p>
 <p class="cg-lead">${input.startingAmount > 0 ? `${$(input.startingAmount)} today` : "Nothing today"}${input.monthlyContribution > 0 ? ` plus ${$(input.monthlyContribution)} a month` : ""} could grow to about this much, if your money earned ${pct(input.annualReturn)} every year. This illustrates compounding; it is not a forecast.</p></div>`;
-  const chart = `<section class="cg-card"><h3>Year by year</h3>${renderChart(r)}${renderTable(r)}</section>`;
+  const chart = `<section class="cg-card"><h2>Year by year</h2>${renderChart(r)}${renderTable(r)}</section>`;
   return `${headline}${renderCompare(r)}${renderSplit(r)}${chart}<p class="cg-disclaimer">${DISCLAIMER}</p>`;
 }

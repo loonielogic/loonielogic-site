@@ -350,8 +350,8 @@ const yrs = (n: number) => `${n} ${n === 1 ? "year" : "years"}`;
     .gp-results :global(.gp-card) { padding: 1.1rem 1rem 1rem; }
     .gp-results :global(.gp-headline) { padding: 1.25rem 1.1rem; }
   }
-  .gp-results :global(h3) { display: flex; align-items: center; gap: 0.65rem; margin: 0 0 0.85rem; font-size: 1.3rem; }
-  .gp-results :global(h3)::before {
+  .gp-results :global(h2) { display: flex; align-items: center; gap: 0.65rem; margin: 0 0 0.85rem; font-size: 1.3rem; }
+  .gp-results :global(h2)::before {
     content: counter(panel, upper-alpha);
     flex: none; width: 1.9rem; height: 1.9rem; border-radius: 50%;
     display: grid; place-items: center;

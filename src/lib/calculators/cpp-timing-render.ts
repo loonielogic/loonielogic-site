@@ -96,7 +96,7 @@ function row(label: string, value: string, cls = ""): string {
 }
 
 const card = (id: string, title: string, body: string, cls = "") =>
-  body ? `<section class="cpt-card${cls ? ` ${cls}` : ""}" aria-labelledby="${id}"><h3 id="${id}">${title}</h3>${body}</section>` : "";
+  body ? `<section class="cpt-card${cls ? ` ${cls}` : ""}" aria-labelledby="${id}"><h2 id="${id}">${title}</h2>${body}</section>` : "";
 
 /** Series colour slot follows the start age, never the rank. */
 export const seriesSlot = (startAge: number) => (startAge === LATEST_AGE ? 3 : startAge === STANDARD_AGE ? 2 : 1);
@@ -270,8 +270,8 @@ function flippers(r: CppResult): string {
     item("You want the largest inflation-indexed cheque for life."),
   ];
   return `<p class="cpt-note cpt-flip-intro">The tool does not pick an age. These are the personal factors that flip the answer, in both directions.</p>
-<div class="cpt-flip"><div class="cpt-flip-side"><h4>${earlyHead}</h4><ul>${early.join("")}</ul></div>
-<div class="cpt-flip-side"><h4>Waiting to ${LATEST_AGE} can win when</h4><ul>${late.join("")}</ul></div></div>`;
+<div class="cpt-flip"><div class="cpt-flip-side"><h3>${earlyHead}</h3><ul>${early.join("")}</ul></div>
+<div class="cpt-flip-side"><h3>Waiting to ${LATEST_AGE} can win when</h3><ul>${late.join("")}</ul></div></div>`;
 }
 
 /* ------------------------------------------------------------------ */

@@ -136,14 +136,14 @@ const ctaText = cta.label.replace(/\s*→\s*$/, "");
             const meta = cardMeta[p.slug] ?? {};
             return (
               <article class="card is-linked">
-                <h3>
+                <h2>
                   <a
                     href={p.slug}
                     data-analytics-event="hub_card_clicked"
                     data-analytics-hub={hubToken}
                     data-analytics-card={cardToken(p.slug)}
                   >{p.title}</a>
-                </h3>
+                </h2>
                 <p class="dek">{p.card_dek ?? p.meta_description}</p>
                 {(meta.chips || meta.badge) && (
                   <div class="chips">

@@ -208,7 +208,7 @@ function checkAgainstCra(o: RenderOptions): string {
 }
 
 const card = (id: string, title: string, body: string, cls = "") =>
-  body ? `<section class="trc-card${cls ? ` ${cls}` : ""}" aria-labelledby="${id}"><h3 id="${id}">${title}</h3>${body}</section>` : "";
+  body ? `<section class="trc-card${cls ? ` ${cls}` : ""}" aria-labelledby="${id}"><h2 id="${id}">${title}</h2>${body}</section>` : "";
 
 export function renderResults(r: CheckResult, o: RenderOptions): string {
   const intro = o.example ? exampleIntro() : "";
