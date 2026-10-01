@@ -268,7 +268,28 @@
       "slug": "/learn/tfsa",
       "card_dek": "The 2026 limit, how your room adds up, and the mistakes that cost money.",
       "title": "TFSA Canada 2026: How It Works, Limits, and Rules",
-      "wave": 4
+      "wave": 4,
+      "faq": [
+        {
+          "q": "What is the TFSA contribution limit for 2026?",
+          "a": "The 2026 TFSA limit is $7,000, unchanged since 2024. The limit is indexed to inflation but only moves in $500 steps, which is why it has sat at $7,000 for three years. Your personal room is last year's unused room carried forward plus $7,000, minus what you already contributed in 2026. If you were eligible since 2009 and never contributed, your lifetime room is $109,000 as of January 1, 2026."
+        },
+        {
+          "q": "Can I withdraw from my TFSA and put the money back in the same year?",
+          "a": "Only if you have unused contribution room left. Withdrawn amounts restore your room on January 1 of the following year, not immediately. Withdraw $3,000 in 2026 and that room comes back on January 1, 2027. Re-contribute earlier without spare room and the CRA treats it as a brand-new contribution, which triggers the 1% per month over-contribution tax on the excess."
+        },
+        {
+          "q": "What happens if I over-contribute to my TFSA?",
+          "a": "The CRA charges 1% per month on the highest excess amount in each calendar month, and a partial month counts as a full month. A $2,000 excess left in for four months costs $80. Fix it by withdrawing the excess immediately, then filing Form RC243 with Schedule A by June 30 of the following year. The CRA can waive or cancel the tax when the mistake was reasonable and fixed quickly."
+        },
+        {
+          "q": "Is a TFSA only for savings accounts?",
+          "a": "No. A TFSA is a tax wrapper that can hold cash, high-interest savings accounts, GICs, bonds, mutual funds, ETFs, and stocks. The name is misleading: everything inside grows tax-sheltered and withdrawals are tax-free, so many people hold investments inside it rather than just cash."
+        }
+      ],
+      "faq_pages": [
+        "FAQPage"
+      ]
     },
     {
       "cluster": "retirement",
@@ -284,7 +305,28 @@
       "slug": "/learn/rrsp",
       "card_dek": "The 2026 limit, the deadline, and how the deduction really works.",
       "title": "RRSP Canada 2026: Contribution Limit, Deadline, and Rules",
-      "wave": 4
+      "wave": 4,
+      "faq": [
+        {
+          "q": "What is the RRSP contribution limit for 2026?",
+          "a": "The 2026 maximum is $33,810, but your personal limit is the smaller of 18% of your 2025 earned income and $33,810, minus any pension adjustment from a workplace pension, plus unused room carried forward. Do not anchor on the headline number: check your Notice of Assessment for your actual deduction limit before contributing."
+        },
+        {
+          "q": "When is the RRSP deadline for the 2026 tax year?",
+          "a": "March 1, 2027. RRSP deadlines fall in the first 60 days of the new year, and contributions in that window can be claimed on either the previous year's return or the current year's return. If you expect to be in a higher bracket next year, you can contribute now and defer the deduction for a bigger refund later."
+        },
+        {
+          "q": "What is the RRSP over-contribution penalty?",
+          "a": "The CRA allows a $2,000 lifetime over-contribution cushion, though you get no deduction on that amount. Beyond the buffer, excess contributions are taxed at 1% per month until withdrawn or absorbed by new room, reported on Form RC339 (the T1-OVP). Check your Notice of Assessment before any large lump-sum contribution."
+        },
+        {
+          "q": "What tax is withheld when I withdraw from my RRSP?",
+          "a": "Your issuer withholds 10% on withdrawals up to $5,000, 20% on $5,001 to $15,000, and 30% above $15,000 (outside Quebec), and the rate applies to the whole withdrawal, not just the slice above the threshold. This is only a prepayment: the full withdrawal is added to your taxable income, so you may owe more or get a refund at filing. Withdrawn RRSP room is never restored, unlike TFSA room."
+        }
+      ],
+      "faq_pages": [
+        "FAQPage"
+      ]
     },
     {
       "cluster": "housing",
@@ -301,7 +343,28 @@
       "slug": "/learn/fhsa",
       "card_dek": "How the First Home Savings Account works and who qualifies.",
       "title": "FHSA Canada 2026: First Home Savings Account Explained",
-      "wave": 2
+      "wave": 2,
+      "faq": [
+        {
+          "q": "How much can I contribute to an FHSA in 2026?",
+          "a": "The annual participation limit is a flat $8,000, not income-based, and the lifetime limit is $40,000 across all FHSAs you hold. Unused room carries forward but the carry-forward is capped at $8,000, so the most room you can ever have in one year is $16,000. Unlike TFSA limits, the FHSA limits are fixed by law and not indexed to inflation."
+        },
+        {
+          "q": "Do I need to buy a home to open an FHSA?",
+          "a": "No. To open one you must be a Canadian resident, 18 or older, and not have lived in a home you owned as your principal residence in the current year plus the previous four calendar years. The important move is opening early: contribution room only starts accumulating after you open your first FHSA, so every year you delay is room you never get back."
+        },
+        {
+          "q": "Can both spouses open an FHSA?",
+          "a": "Yes. Each eligible partner gets their own FHSA with their own $40,000 lifetime limit, so a couple can stack up to $80,000 plus growth toward the same home. Each person must individually pass the first-time-buyer tests, which look at homes owned and lived in during the current year and the four years before."
+        },
+        {
+          "q": "What happens to my FHSA if I never buy a home?",
+          "a": "There is no penalty. You can transfer the full balance, including growth, tax-free into your RRSP or RRIF without using up any RRSP room, or withdraw it and pay tax on it as ordinary income like an RRSP withdrawal. The account must close by December 31 of the year after its 15th anniversary, or the year you turn 71, whichever comes first."
+        }
+      ],
+      "faq_pages": [
+        "FAQPage"
+      ]
     },
     {
       "cluster": "housing",
@@ -318,7 +381,28 @@
       "slug": "/learn/home-buyers-plan",
       "card_dek": "Borrowing from your RRSP for a first home, and paying it back.",
       "title": "Home Buyers' Plan (HBP) Canada 2026: Rules and Repayment",
-      "wave": 2
+      "wave": 2,
+      "faq": [
+        {
+          "q": "How much can I withdraw under the Home Buyers' Plan?",
+          "a": "Up to $60,000 from your RRSP, tax-free and with no withholding. The limit was raised from $35,000 for withdrawals after April 16, 2024. Each partner withdraws from their own RRSP, so a couple can access up to $120,000. The money must have sat in the RRSP for at least 90 days before withdrawal."
+        },
+        {
+          "q": "When do Home Buyers' Plan repayments start?",
+          "a": "The standard rule is that repayments begin in the second year after the withdrawal year, with a minimum of one-fifteenth of the withdrawal each year for 15 years. Budget 2024 added a five-year grace period, but it applies only to people who made their first withdrawal between January 1, 2022 and December 31, 2025. For first withdrawals in 2026, the standard second-year schedule applies unless new legislation extends the relief."
+        },
+        {
+          "q": "What happens if I miss an HBP repayment?",
+          "a": "The year's minimum repayment is added to your taxable income for that year, and a skipped year cannot be caught up later. Designate every repayment on Schedule 7 of your tax return: contributing to your RRSP alone is not enough, and an undesignated contribution leaves the full minimum amount taxable."
+        },
+        {
+          "q": "Can I use the Home Buyers' Plan and the FHSA for the same home?",
+          "a": "Yes, they stack. You can make an FHSA qualifying withdrawal and an HBP withdrawal toward the same purchase as long as you meet every condition at the time of each withdrawal. The strategic difference: FHSA qualifying withdrawals are never repaid, while HBP withdrawals must be repaid to your RRSP over 15 years. Separate from both, the Home Buyer's Amount gives first-time buyers a federal credit worth about $1,400 in 2026 tax savings."
+        }
+      ],
+      "faq_pages": [
+        "FAQPage"
+      ]
     },
     {
       "cluster": "tax",
@@ -334,7 +418,28 @@
       "slug": "/learn/federal-tax-brackets-2026",
       "card_dek": "Every 2026 federal bracket, with a worked $100,000 example.",
       "title": "2026 Federal Tax Brackets Canada: Rates, BPA, and Examples",
-      "wave": 1
+      "wave": 1,
+      "faq": [
+        {
+          "q": "What are the 2026 federal tax brackets in Canada?",
+          "a": "The 2026 federal brackets are 14% on the first $58,523, 20.5% on $58,523 to $117,045, 26% on $117,045 to $181,440, 29% on $181,440 to $258,482, and 33% above $258,482. These are federal brackets only: every province adds its own brackets on top, so your total income tax is always federal plus provincial."
+        },
+        {
+          "q": "What is the basic personal amount for 2026?",
+          "a": "The federal basic personal amount is $16,452 for 2026, which provides a non-refundable credit worth up to $2,303.28 (14% of $16,452). In practical terms, the first $16,452 of income is free of federal income tax. The enhanced amount phases down for high earners above $181,440, settling at a base of about $14,829."
+        },
+        {
+          "q": "Does moving into a higher tax bracket tax all my income at the higher rate?",
+          "a": "No. Each bracket taxes only the slice of income inside it. On $100,000 of 2026 taxable income you pay 14% on the first $58,523 and 20.5% only on the remaining $41,477. Crossing into a higher bracket can never make your total take-home pay smaller: more income always means more take-home."
+        },
+        {
+          "q": "What is the difference between my marginal and average tax rate?",
+          "a": "Your marginal rate is the tax on your next dollar earned: 20.5% federally if you are inside the second 2026 bracket. Your average rate is total tax divided by total income. On $100,000 of taxable income, the federal marginal rate is 20.5% but the average federal rate is about 14.4% after the basic personal amount. The marginal rate is what matters for raises, overtime, freelance work, and RRSP contribution decisions."
+        }
+      ],
+      "faq_pages": [
+        "FAQPage"
+      ]
     },
     {
       "cluster": "tax",
@@ -350,7 +455,28 @@
       "slug": "/learn/first-time-tax-filing",
       "card_dek": "Who has to file, the deadline, and free ways to get it done.",
       "title": "Filing Taxes for the First Time in Canada: 2026 Guide",
-      "wave": 2
+      "wave": 2,
+      "faq": [
+        {
+          "q": "Do I need to file a tax return if I earned very little in 2026?",
+          "a": "Probably yes. There is no minimum income for filing, and filing with little or no income unlocks real money: the GST/HST credit, the Canada workers benefit, tuition carry-forwards for students, and RRSP room that only builds from income you actually report. Skipping a year can cost you benefits you cannot claim retroactively."
+        },
+        {
+          "q": "When is the 2026 tax return due?",
+          "a": "April 30, 2027 is the deadline for filing and for paying any tax owing. If you or your spouse or common-law partner are self-employed, you get until June 15, 2027 to file, but any tax owing is still due April 30 and interest starts May 1. File on time even if you cannot pay: the 5% late-filing penalty only applies when you owe tax and file late, and filing on time keeps it off the table."
+        },
+        {
+          "q": "Can I file my first tax return without a SIN?",
+          "a": "If you are still waiting for your Social Insurance Number, file a paper return without it and attach a note explaining that you applied. Do not miss the deadline waiting for the number. Newcomers whose SIN starts with 9 generally cannot NETFILE their first return, so paper is the normal route for year one."
+        },
+        {
+          "q": "How long does it take to get my tax refund?",
+          "a": "A NETFILE return with direct deposit can land a refund in about eight business days. A paper return can take eight to twelve weeks. After your first return is processed, register for CRA My Account to track refunds, benefit payments, and slips for the following year."
+        }
+      ],
+      "faq_pages": [
+        "FAQPage"
+      ]
     },
     {
       "cluster": "tax",
@@ -406,7 +532,28 @@
       "slug": "/learn/cpp-oas",
       "card_dek": "What CPP and OAS pay in 2026, and when to start each one.",
       "title": "CPP and OAS Canada 2026: Amounts, Start Age, and Clawback",
-      "wave": 3
+      "wave": 3,
+      "faq": [
+        {
+          "q": "What is the maximum CPP payment for 2026?",
+          "a": "The maximum CPP retirement pension at age 65 is $1,507.65 per month in 2026, but the maximum is rare: it takes roughly 39 years of earnings at or above the maximum pensionable earnings to qualify. The average new pension at 65 is $877.01 per month, about 58% of the maximum. Use your own Service Canada estimate, not the headline number."
+        },
+        {
+          "q": "Should I take CPP at 60 or wait until 70?",
+          "a": "Starting at 60 cuts the pension by 0.6% per month before 65, up to 36% less. Waiting past 65 adds 0.7% per month, up to 42% more at 70. Early means more years of smaller cheques; late means bigger cheques for life. The breakeven lands around age 82: live past that and waiting pays."
+        },
+        {
+          "q": "What are the OAS amounts for 2026?",
+          "a": "For the July to September 2026 quarter, the maximum OAS pension is $751.97 per month for ages 65 to 74 and $827.17 for 75 and over, including the permanent 10% boost from July 2022. OAS is reviewed every quarter against inflation and can rise but never falls, so the October 2026 review may move it again. You can also defer OAS to 70 for up to 36% more."
+        },
+        {
+          "q": "How does the OAS clawback work in 2026?",
+          "a": "The OAS recovery tax takes back 15 cents of pension per dollar of net world income above $95,323 in 2026, until the pension is fully eliminated at roughly $155,320 of income ($161,320 for those 75 and over). The elimination points are estimates derived from the official recovery-tax formula. If your retirement income will approach $95,000, where you hold assets can matter."
+        }
+      ],
+      "faq_pages": [
+        "FAQPage"
+      ]
     },
     {
       "cluster": "retirement",
@@ -420,7 +567,28 @@
       "slug": "/learn/resp",
       "card_dek": "Free government money for your kid's education, and how to collect all of it.",
       "title": "RESP Canada 2026: Grants, the $209 Sweet Spot, and Traps",
-      "wave": 3
+      "wave": 3,
+      "faq": [
+        {
+          "q": "How much free government money can an RESP get?",
+          "a": "The main grant is the Canada Education Savings Grant: 20% of contributions, up to $500 a year and $7,200 per child over a lifetime. Lower-income families can add up to $2,000 through the Canada Learning Bond with zero contributions required, plus up to $3,600 from Quebec's QESI or a one-time $1,200 BC grant. Federal grants alone can total $9,200 per child."
+        },
+        {
+          "q": "What is the best monthly RESP contribution to get the full grant?",
+          "a": "About $209 a month, or $2,508 a year. That captures the full $500 annual Canada Education Savings Grant and lands exactly at the $7,200 lifetime cap around the time the child turns 14. Missed years can be caught up one prior year at a time, so the most grant you can ever collect in one year is $1,000 with a $5,000 contribution."
+        },
+        {
+          "q": "What happens to the RESP money when my child goes to school?",
+          "a": "Grants and growth come out as Education Assistance Payments, taxed in the student's hands, where low income and tuition credits usually make the tax near zero. Your own contributions come back to you tax-free. Withdraw the EAPs first while the child is enrolled: the first $5,000 in the first 13 weeks of full-time study is capped, and the cap lifts after that."
+        },
+        {
+          "q": "What if my child does not go to school?",
+          "a": "Your contributions are always yours to take back. Grants return to the government, and earnings taken as an Accumulated Income Payment are taxed at your marginal rate plus a 20% penalty, unless up to $50,000 is transferred to your RRSP. The plan can also stay open up to 35 years, or the funds can be redirected to an eligible sibling under 21."
+        }
+      ],
+      "faq_pages": [
+        "FAQPage"
+      ]
     },
     {
       "cluster": "banking",
@@ -435,7 +603,28 @@
       "slug": "/learn/credit-score",
       "card_dek": "How Canadian credit scores work and the moves that actually raise yours.",
       "title": "Credit Score Canada 2026: How It Works and How to Raise Yours",
-      "wave": 3
+      "wave": 3,
+      "faq": [
+        {
+          "q": "What is a good credit score in Canada?",
+          "a": "Scores run from 300 to 900. Per Equifax Canada, 660 and above is good and qualifies you for most credit products at normal rates, 760 and above is excellent with the best rates, 560 to 659 is fair, and below 560 is poor. The 660 line matters most: above it you are priced like a normal borrower, below it you pay subprime rates."
+        },
+        {
+          "q": "Does checking my own credit score lower it?",
+          "a": "No. Checking your own score is a soft inquiry and cannot hurt your number, so check as often as you like. In Canada you can check free through Borrowell (Equifax score), Credit Karma (TransUnion score), most bank apps, or directly from the bureaus. Only hard inquiries, when you actually apply for credit, cause a small temporary dip."
+        },
+        {
+          "q": "What affects my credit score the most?",
+          "a": "Payment history is the biggest factor at about 35%: one 30-day late payment can drop a good score by 50 to 110 points and stay on your report for about six years. Credit utilization is next at about 30%: the Financial Consumer Agency of Canada recommends using less than 30% of your total limit, with below 10% ideal. Length of history, credit mix, and new inquiries make up the rest."
+        },
+        {
+          "q": "Why do I have two different credit scores?",
+          "a": "Canada has two credit bureaus, Equifax and TransUnion, and each computes its own score. Not every lender reports to both bureaus, the scoring models differ slightly, and updates arrive at different times, so a 10 to 40 point gap between them is normal. Check both if you are building toward a mortgage or a large loan."
+        }
+      ],
+      "faq_pages": [
+        "FAQPage"
+      ]
     },
     {
       "cluster": "retirement",
