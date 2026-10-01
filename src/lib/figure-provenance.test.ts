@@ -56,8 +56,9 @@ test("promos are live only before expiry, only when verified", () => {
   assert.equal(promoIsLive("missing", fixture, "2026-09-30"), false);
 });
 
-test("real registry: Simplii bonus is gone from Oct 1, Tangerine from Nov 1", () => {
-  assert.equal(promoIsLive("simplii.bonus_2026", realRegistry, "2026-10-01"), false);
+test("real registry: Simplii bonus is gone from Feb 1, 2027, Tangerine from Nov 1", () => {
+  assert.equal(promoIsLive("simplii.bonus_2026", realRegistry, "2027-01-31"), true);
+  assert.equal(promoIsLive("simplii.bonus_2026", realRegistry, "2027-02-01"), false);
   assert.equal(promoIsLive("tangerine.payroll_250", realRegistry, "2026-10-31"), true);
   assert.equal(promoIsLive("tangerine.payroll_250", realRegistry, "2026-11-01"), false);
 });
