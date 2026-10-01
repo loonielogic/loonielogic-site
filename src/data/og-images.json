@@ -137,6 +137,12 @@
     "title": "Learn Canadian Money: Explainers 2026",
     "line": "Plain-English guides to Canadian money, starting with the TFSA: real 2026 numbers, the expensive mistakes…"
   },
+  "/learn/first-paycheque-playbook": {
+    "image": "/og/learn-first-paycheque-playbook.png",
+    "alt": "LoonieLogic explainer: First paycheque, decoded: CPP, EI, tax, and the first $1,000",
+    "title": "First paycheque, decoded: CPP, EI, tax, and the first $1,000",
+    "line": "Your first paycheque is smaller than hours times rate. CPP at 5.95%, EI at 1.63%…"
+  },
   "/learn/tfsa": {
     "image": "/og/learn-tfsa.png",
     "alt": "LoonieLogic explainer: TFSA Canada 2026: How It Works, Limits, and Rules",
