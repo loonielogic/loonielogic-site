@@ -487,8 +487,8 @@ main:focus { outline: none; }
 .card h3 a { color: var(--lake-900); text-decoration: none; }
 .card h3 a:hover { text-decoration: underline; text-decoration-color: var(--gold); }
 /* whole card clickable via the title link */
-.card.is-linked h3 a::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
-.card.is-linked h3 a:focus-visible { outline: none; }
+.card.is-linked h2 a::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+.card.is-linked h2 a:focus-visible { outline: none; }
 .card.is-linked:has(h3 a:focus-visible) { outline: 3px solid var(--gold); outline-offset: 3px; }
 .card .dek { color: var(--ink-soft); font-size: 0.97rem; flex: 1; margin-bottom: 0.75rem; }
 .card .meta { font-size: 0.85rem; color: var(--ink-soft); margin: 0.6rem 0 0; }

@@ -28,7 +28,7 @@ export const flag = (text: string) => `<span class="ck-flag">${text}</span>`;
 /** The required label for any figure the research has not verified. */
 export const NOT_VERIFIED = `<span class="ck-flag ck-flag-unverified">Not yet verified</span>`;
 
-export const card = (title: string, body: string) => `<section class="ck-card"><h3>${title}</h3>${body}</section>`;
+export const card = (title: string, body: string) => `<section class="ck-card"><h2>${title}</h2>${body}</section>`;
 
 export function row(label: string, value: string, cls = ""): string {
   return `<tr${cls ? ` class="${cls}"` : ""}><th scope="row">${label}</th><td>${value}</td></tr>`;

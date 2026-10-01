@@ -59,7 +59,7 @@ function renderHeadline(p: GoalPlan, name: string): string {
 
 function renderPath(p: GoalPlan): string {
   const gap = p.goal.target - p.savedByDeadline;
-  return `<section class="gp-card"><h3>The path in plain numbers</h3>
+  return `<section class="gp-card"><h2>The path in plain numbers</h2>
 <dl class="gp-facts">
 <div><dt>Goal</dt><dd>${$(p.goal.target)} by ${monthLabel(p.targetDate)}</dd></div>
 <div><dt>Saved today</dt><dd>${$(p.goal.currentSavings)}</dd></div>
@@ -84,7 +84,7 @@ function renderInverse(p: GoalPlan): string {
       : diff > 0
         ? `<p class="gp-note">That is ${$(diff)} more a month than the ${$(now)} you save now.</p>`
         : `<p class="gp-note">That is ${$(-diff)} less a month than the ${$(now)} you save now, so there is some room to spare at this return.</p>`;
-  return `<section class="gp-card"><h3>Pick your own return</h3>
+  return `<section class="gp-card"><h2>Pick your own return</h2>
 <p class="gp-inverse">${line}</p>${compare}
 <p class="gp-note">At ${r} a year and ${$(now)} a month, the projection lands at ${$(p.projectedAtDeadline)} by ${monthLabel(p.targetDate)}. Change your return guess in step 4 to see how the monthly amount moves.</p></section>`;
 }
@@ -104,7 +104,7 @@ function renderMilestones(p: GoalPlan): string {
       return `<li class="gp-ms gp-ms-${state}"><span class="gp-ms-mark" aria-hidden="true">${label}</span><span class="gp-ms-body"><strong>${$(m.amount)}</strong><span>${milestoneWhen(m)}${flag}</span></span></li>`;
     })
     .join("");
-  return `<section class="gp-card"><h3>Milestones on the way</h3>
+  return `<section class="gp-card"><h2>Milestones on the way</h2>
 <p class="gp-note gp-ms-lead">When your balance first passes each marker, at ${$(p.goal.monthlyContribution)} a month and ${pct(p.expectedReturn)} a year. Projected, not promised.</p>
 <ol class="gp-milestones">${items}</ol></section>`;
 }

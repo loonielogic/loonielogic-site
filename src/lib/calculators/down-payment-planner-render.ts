@@ -158,7 +158,7 @@ function budgetPanel(p: Plan): string {
   let hbp = "";
   if (b.standardSchedule.length > 0) {
     const std = b.standardSchedule[0];
-    hbp = `<h4>Home Buyers' Plan repayments</h4>
+    hbp = `<h3>Home Buyers' Plan repayments</h3>
 <p class="dpp-note">Repaying the ${$(p.chosen.hbpUsed)} withdrawn takes ${$(std.amount)} a year (about ${$(b.hbpRepaymentMonthly)} a month) for ${HBP_REPAY_YEARS} years. Missed amounts are added to taxable income.</p>
 <table class="dpp-table"><tbody>
 ${row("Standard rule: first repayment year", `${std.year} to ${b.standardSchedule[b.standardSchedule.length - 1].year}`)}
@@ -172,8 +172,8 @@ ${row("Monthly cost of owning plus HBP repayment", $(b.totalWithHbp), "dpp-total
 
 export function renderResults(p: Plan): string {
   return `${headline(p)}
-<section class="dpp-card" aria-labelledby="dpp-h-stack"><h3 id="dpp-h-stack">Your cash stack</h3>${stackTable(p)}</section>
-<section class="dpp-card" aria-labelledby="dpp-h-sources"><h3 id="dpp-h-sources">Where the money comes from</h3>${sourcesTable(p)}</section>
-<section class="dpp-card" aria-labelledby="dpp-h-tradeoff"><h3 id="dpp-h-tradeoff">The 20%-down tradeoff</h3>${tradeoffCard(p)}</section>
-<section class="dpp-card" aria-labelledby="dpp-h-budget"><h3 id="dpp-h-budget">After you buy: the budget shock</h3>${budgetPanel(p)}</section>`;
+<section class="dpp-card" aria-labelledby="dpp-h-stack"><h2 id="dpp-h-stack">Your cash stack</h2>${stackTable(p)}</section>
+<section class="dpp-card" aria-labelledby="dpp-h-sources"><h2 id="dpp-h-sources">Where the money comes from</h2>${sourcesTable(p)}</section>
+<section class="dpp-card" aria-labelledby="dpp-h-tradeoff"><h2 id="dpp-h-tradeoff">The 20%-down tradeoff</h2>${tradeoffCard(p)}</section>
+<section class="dpp-card" aria-labelledby="dpp-h-budget"><h2 id="dpp-h-budget">After you buy: the budget shock</h2>${budgetPanel(p)}</section>`;
 }

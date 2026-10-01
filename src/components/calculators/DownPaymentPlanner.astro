@@ -449,11 +449,11 @@ const isAssumption = (s: string) => s === "assumption" || s === "needs_reverific
     padding: 1.35rem 1.5rem 1.25rem; background: var(--card);
     margin-bottom: 1rem; box-shadow: var(--shadow-sm);
   }
-  .dpp-results :global(h3) {
+  .dpp-results :global(h2) {
     display: flex; align-items: center; gap: 0.65rem;
     margin: 0 0 0.85rem; font-size: 1.3rem;
   }
-  .dpp-results :global(h3)::before {
+  .dpp-results :global(h2)::before {
     content: counter(panel, upper-alpha);
     flex: none; width: 1.9rem; height: 1.9rem; border-radius: 50%;
     display: grid; place-items: center;
