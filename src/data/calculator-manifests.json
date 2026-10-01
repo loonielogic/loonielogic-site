@@ -88,7 +88,7 @@
    "newsletter_placement": "soft-link",
    "next_review_due": "2026-12-01",
    "page_type": "calculator",
-   "publish_date": null,
+   "publish_date": "2026-09-30",
    "quiz_spec": null,
    "related": [
     "/learn/federal-tax-brackets-2026",
@@ -153,7 +153,7 @@
    "newsletter_placement": "soft-link",
    "next_review_due": "2026-12-01",
    "page_type": "calculator",
-   "publish_date": null,
+   "publish_date": "2026-09-30",
    "quiz_spec": "hidden_files/tfsa-vs-rrsp-quiz-spec.md",
    "related": [
     "/compare/tfsa-vs-rrsp",
@@ -236,7 +236,7 @@
    "newsletter_placement": "soft-link",
    "next_review_due": "2026-12-01",
    "page_type": "calculator",
-   "publish_date": null,
+   "publish_date": "2026-09-30",
    "quiz_spec": null,
    "related": [
     "/learn/tfsa",
@@ -289,7 +289,7 @@
    "newsletter_placement": "soft-link",
    "next_review_due": "2026-12-01",
    "page_type": "calculator",
-   "publish_date": null,
+   "publish_date": "2026-09-30",
    "quiz_spec": null,
    "related": [
     "/learn/rrsp",
@@ -354,7 +354,7 @@
    "newsletter_placement": "soft-link",
    "next_review_due": "2026-12-01",
    "page_type": "calculator",
-   "publish_date": null,
+   "publish_date": "2026-09-30",
    "quiz_spec": null,
    "related": [
     "/calculators/down-payment-planner",
@@ -556,7 +556,7 @@
    "newsletter_placement": "soft-link",
    "next_review_due": "2026-12-01",
    "page_type": "calculator",
-   "publish_date": null,
+   "publish_date": "2026-09-30",
    "quiz_spec": null,
    "related": [
     "/learn/fhsa",
@@ -615,7 +615,7 @@
    "newsletter_placement": "soft-link",
    "next_review_due": "2026-12-01",
    "page_type": "calculator",
-   "publish_date": null,
+   "publish_date": "2026-09-30",
    "quiz_spec": null,
    "related": [
     "/calculators/house-affordability",
@@ -642,7 +642,7 @@
    "newsletter_placement": "soft-link",
    "next_review_due": "2027-10-01",
    "page_type": "calculator",
-   "publish_date": null,
+   "publish_date": "2026-09-30",
    "quiz_spec": null,
    "related": [
     "/learn/tfsa",
@@ -670,7 +670,7 @@
    "newsletter_placement": "soft-link",
    "next_review_due": "2027-10-01",
    "page_type": "calculator",
-   "publish_date": null,
+   "publish_date": "2026-09-30",
    "quiz_spec": null,
    "related": [
     "/calculators/compound-growth",
@@ -789,7 +789,7 @@
    "newsletter_placement": "soft-link",
    "next_review_due": "2026-12-01",
    "page_type": "calculator",
-   "publish_date": null,
+   "publish_date": "2026-09-30",
    "quiz_spec": null,
    "related": [
     "/learn/cpp-oas",
