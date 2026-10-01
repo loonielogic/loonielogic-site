@@ -1,1 +1,56 @@
-{"entries":[{"expires":"2027-01-01","key":"bpa.federal.max.2026","label":"2026 federal basic personal amount (maximum)","notes":"Credit value = $16,452 x 14% = $2,303.28. Reduces to $14,829 base at net income above $258,482 (phase-down from $181,440).","source":"https://www.canada.ca/en/revenue-agency/services/tax/rates.html","source_note":"CRA; verified 2026-09-27 via Fidelity, Waypoint Budget, Lifemoney, money.ca.","status":"verified","unit":"cad","value":16452,"verified_date":"2026-09-27"},{"expires":"2027-01-01","key":"bpa.federal.base.2026","label":"2026 federal basic personal amount (high-income base)","notes":"Phase-down band: net income $181,440-$258,482.","source":"https://www.canada.ca/en/revenue-agency/services/tax/rates.html","source_note":"UBM Tax + money.ca, verified 2026-09-27.","status":"verified","unit":"cad","value":14829,"verified_date":"2026-09-27"},{"expires":"2027-01-01","key":"bpa.provincial.2026","label":"2026 provincial/territorial basic personal amounts","notes":"Provincial credits = BPA x lowest provincial rate. PE raised its BPA to $15,000 (announced 2026); NS indexed 1.6%; BC indexed; AB capped 2%; QC indexed 2.05%; MB and PE not indexed for 2026 (PE 15k figure verified via income-tax-estimator research); NL indexed 1.1%; territories indexed.","source":"https://assets.kpmg.com/content/dam/kpmgsites/ca/pdf/services/tax/personal-tables/ca-federal-and-provincial-territorial-income-tax-rates-and-brackets-for-2026.pdf.coredownload.inline.pdf","source_note":"KPMG federal/provincial personal-tax tables (current as of June 30, 2026), cross-checked vs income-tax-estimator research (Lifemoney, Waypoint Budget, TurboTax). Primary ministry pages not individually re-pulled this run - January 2027 sweep should cross-check against ministry tables.","status":"verified","unit":"table","value":{"AB":22769,"BC":13216,"MB":15780,"NB":13664,"NL":11188,"NS":11932,"NT":18198,"NU":19659,"ON":12989,"PE":15000,"QC":18952,"SK":20381,"YT":14829},"verified_date":"2026-09-27"}],"tax_year":2026,"topic":"2026 basic personal amounts (federal + all 13 provinces/territories)"}
+{
+ "entries": [
+  {
+   "expires": "2027-01-01",
+   "key": "bpa.federal.max.2026",
+   "label": "2026 federal basic personal amount (maximum)",
+   "notes": "Credit value = $16,452 x 14% = $2,303.28. Reduces to $14,829 base at net income above $258,482 (phase-down from $181,440).",
+   "source": "https://www.canada.ca/en/revenue-agency/services/tax/rates.html",
+   "source_note": "CRA; verified 2026-09-27 via Fidelity, Waypoint Budget, Lifemoney, money.ca.",
+   "status": "verified",
+   "unit": "cad",
+   "value": 16452,
+   "verified_date": "2026-09-27"
+  },
+  {
+   "expires": "2027-01-01",
+   "key": "bpa.federal.base.2026",
+   "label": "2026 federal basic personal amount (high-income base)",
+   "notes": "Phase-down band: net income $181,440-$258,482.",
+   "source": "https://www.canada.ca/en/revenue-agency/services/tax/rates.html",
+   "source_note": "UBM Tax + money.ca, verified 2026-09-27.",
+   "status": "verified",
+   "unit": "cad",
+   "value": 14829,
+   "verified_date": "2026-09-27"
+  },
+  {
+   "expires": "2027-01-01",
+   "key": "bpa.provincial.2026",
+   "label": "2026 provincial/territorial basic personal amounts",
+   "notes": "Provincial credits = BPA x lowest provincial rate. PE raised its BPA to $15,000 (announced 2026); NS indexed 1.6%; BC indexed; AB capped 2%; QC indexed 2.05%; MB and PE not indexed for 2026 (PE 15k figure verified via income-tax-estimator research); NL BPA raised to $13,094 effective Jan 1, 2026 (announced Apr 29, 2026; was $11,188); YT BPA mirrors federal maximum $16,452 (base $14,829 for high incomes); territories indexed.",
+   "source": "https://assets.kpmg.com/content/dam/kpmgsites/ca/pdf/services/tax/personal-tables/ca-federal-and-provincial-territorial-income-tax-rates-and-brackets-for-2026.pdf.coredownload.inline.pdf",
+   "source_note": "NL $13,094 verified 2026-09-30 via CRA T4008-NL payroll supplementary tables (canada.ca); YT $16,452 verified 2026-09-30 via 2026 TD1YT and yukon.ca. KPMG tables (June 30, 2026) predate the NL April 2026 budget increase.",
+   "status": "verified",
+   "unit": "table",
+   "value": {
+    "AB": 22769,
+    "BC": 13216,
+    "MB": 15780,
+    "NB": 13664,
+    "NL": 13094,
+    "NS": 11932,
+    "NT": 18198,
+    "NU": 19659,
+    "ON": 12989,
+    "PE": 15000,
+    "QC": 18952,
+    "SK": 20381,
+    "YT": 16452
+   },
+   "verified_date": "2026-09-30"
+  }
+ ],
+ "tax_year": 2026,
+ "topic": "2026 basic personal amounts (federal + all 13 provinces/territories)"
+}
