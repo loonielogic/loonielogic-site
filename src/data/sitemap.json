@@ -813,7 +813,28 @@
         "/learn/first-time-home-buyer-incentives"
       ],
       "review_cadence": "annual",
-      "note": "Time-sensitive campaign: publish early-mid November 2026. Page build to schedule before the push."
+      "note": "Time-sensitive campaign: publish early-mid November 2026. Page build to schedule before the push.",
+      "faq_pages": [
+        "FAQPage"
+      ],
+      "faq": [
+        {
+          "q": "Do I have to put money in my FHSA during 2026?",
+          "a": "No. Opening the account is what banks the room; funding is a separate step. An FHSA opened in December 2026 with $0 contributed carries $8,000 of unused room into 2027, for $16,000 of total 2027 room. Wait until January 2027 to open and the 2027 room is $8,000, because the 2026 room never existed."
+        },
+        {
+          "q": "Can my partner and I both open an FHSA before Dec 31?",
+          "a": "Yes, if each person qualifies on their own. Every eligible person gets separate limits of $8,000 a year and $40,000 lifetime, so a couple can bank up to $80,000 of room toward the same first home. At opening, a spouse or common-law partner's owned-and-lived-in homes count against first-time-buyer status, so both housing histories matter."
+        },
+        {
+          "q": "What happens to the FHSA if I never end up buying a home?",
+          "a": "The FHSA has an exit ramp. The balance can be transferred to an RRSP or RRIF tax-free without using any RRSP room, or withdrawn as taxable income. The account must close by the end of its maximum participation period: the 15th anniversary year, the year of turning 71, or the year after the first qualifying withdrawal, whichever comes first."
+        },
+        {
+          "q": "I already opened an FHSA in a previous year. Does the Dec 31 deadline apply?",
+          "a": "No. Room has been accruing since the year the first FHSA was opened, and unused room carries forward up to $8,000. The notice of assessment shows current FHSA room and carry-forward, and the Dec 31 deadline only matters for anyone who has never opened one."
+        }
+      ]
     },
     {
       "slug": "/learn/first-paycheque-playbook",
