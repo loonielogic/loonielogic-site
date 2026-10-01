@@ -29,6 +29,12 @@
     "title": "Canadian Tax & Savings Calculators 2026",
     "line": "Canadian money calculators in progress: income tax, TFSA vs RRSP, room trackers, and home buying."
   },
+  "/calculators/compound-growth": {
+    "image": "/og/calculators-compound-growth.png",
+    "alt": "LoonieLogic tool: Compound Growth Calculator Canada: Wealth Over Time",
+    "title": "Compound Growth Calculator Canada: Wealth Over Time",
+    "line": "See what your savings could become: a compound growth calculator with a return you set…"
+  },
   "/calculators/cpp-timing": {
     "image": "/og/calculators-cpp-timing.png",
     "alt": "LoonieLogic tool: CPP Timing Calculator 2026: Start at 60, 65, or 70?",
@@ -40,6 +46,12 @@
     "alt": "LoonieLogic tool: Down Payment Planner Canada 2026: Timeline + FHSA/HBP Stack",
     "title": "Down Payment Planner Canada 2026: Timeline + FHSA/HBP Stack",
     "line": "Plan your down payment month by month: timeline or target-date mode, closing costs…"
+  },
+  "/calculators/goal-planner": {
+    "image": "/og/calculators-goal-planner.png",
+    "alt": "LoonieLogic tool: Savings Goal Planner Canada: Find the Return You Need",
+    "title": "Savings Goal Planner Canada: Find the Return You Need",
+    "line": "Set a savings goal and see the path: the yearly return your plan needs…"
   },
   "/calculators/tfsa-room-checker": {
     "image": "/og/calculators-tfsa-room-checker.png",
