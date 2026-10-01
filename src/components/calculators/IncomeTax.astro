@@ -1,0 +1,216 @@
+---
+/**
+ * IncomeTax: the Canadian income tax calculator island. Plain Astro markup
+ * plus one TypeScript <script> (no framework). Results are rendered once at
+ * build time from the default example, so the page is useful with JS off;
+ * the script recomputes on every input change with the same functions (no
+ * calculate button). Two views share one engine: annual and paycheque.
+ */
+import "../../styles/calc-kit.css";
+import {
+  DEFAULT_INPUT,
+  FEDERAL_BPA_MAX,
+  PROVINCES,
+  TAX_YEAR,
+  estimate,
+  taxFigures,
+} from "../../lib/calculators/income-tax";
+import { renderAnnual } from "../../lib/calculators/income-tax-render";
+import CalcSources from "./CalcSources.astro";
+
+const d = DEFAULT_INPUT;
+const initialHtml = renderAnnual(estimate(d));
+---
+
+<div class="ck" id="itx">
+  <form class="ck-form" id="itx-form" novalidate>
+    <fieldset>
+      <legend>What do you want to see?</legend>
+      <div class="ck-pills" role="group" aria-label="View">
+        <label class="ck-pill"><input type="radio" name="mode" value="annual" checked /> The whole year</label>
+        <label class="ck-pill"><input type="radio" name="mode" value="paycheque" /> Each paycheque</label>
+      </div>
+      <label>Province or territory on December 31
+        <select name="province">
+          {PROVINCES.map((p) => <option value={p.code} selected={p.code === d.province}>{p.name}</option>)}
+        </select>
+      </label>
+      <label>Your age
+        <input type="number" name="age" inputmode="numeric" min="0" max="120" step="1" value={d.age} />
+      </label>
+      <p class="ck-error" data-error-for="age" hidden></p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Your {TAX_YEAR} income</legend>
+      <label>Employment income ($ a year, before tax)
+        <input type="number" name="employment" inputmode="decimal" min="0" step="1000" value={d.employment} />
+      </label>
+      <p class="ck-error" data-error-for="employment" hidden></p>
+      <label>Self-employment income ($, net of expenses)
+        <input type="number" name="selfEmployment" inputmode="decimal" min="0" step="1000" value={d.selfEmployment} />
+      </label>
+      <p class="ck-error" data-error-for="selfEmployment" hidden></p>
+      <label>Other income ($: pension, rental, interest, dividends, capital gains)
+        <input type="number" name="otherIncome" inputmode="decimal" min="0" step="500" value={d.otherIncome} />
+      </label>
+      <p class="ck-error" data-error-for="otherIncome" hidden></p>
+      <label class="ck-check"><input type="checkbox" name="otherHasDividendsOrGains" /> Some of that is dividends or capital gains</label>
+      <small>Blank counts as $0.</small>
+    </fieldset>
+
+    <fieldset>
+      <legend>Deductions</legend>
+      <label>RRSP contributions you will deduct ($)
+        <input type="number" name="rrsp" inputmode="decimal" min="0" step="500" value={d.rrsp} />
+      </label>
+      <p class="ck-error" data-error-for="rrsp" hidden></p>
+      <label>FHSA contributions ($)
+        <input type="number" name="fhsa" inputmode="decimal" min="0" step="500" value={d.fhsa} />
+      </label>
+      <p class="ck-error" data-error-for="fhsa" hidden></p>
+      <label>Union or professional dues ($)
+        <input type="number" name="dues" inputmode="decimal" min="0" step="50" value={d.dues} />
+      </label>
+      <p class="ck-error" data-error-for="dues" hidden></p>
+    </fieldset>
+
+    <fieldset data-show="paycheque" hidden>
+      <legend>Your pay</legend>
+      <label>How often are you paid?
+        <select name="payFrequency">
+          <option value="weekly">Weekly (52 pays)</option>
+          <option value="biweekly" selected>Every two weeks (26 pays)</option>
+          <option value="semimonthly">Twice a month (24 pays)</option>
+          <option value="monthly">Monthly (12 pays)</option>
+        </select>
+      </label>
+      <details>
+        <summary>TD1 claim amounts (advanced)</summary>
+        <label>Federal TD1 claim ($)
+          <input type="number" name="td1Federal" inputmode="decimal" min="0" step="100" placeholder={String(FEDERAL_BPA_MAX)} />
+        </label>
+        <p class="ck-error" data-error-for="td1Federal" hidden></p>
+        <label>Provincial TD1 claim ($)
+          <input type="number" name="td1Provincial" inputmode="decimal" min="0" step="100" placeholder="Basic personal amount" />
+        </label>
+        <p class="ck-error" data-error-for="td1Provincial" hidden></p>
+        <small>Blank uses the basic personal amount, which is what most people claim on their TD1 forms.</small>
+      </details>
+    </fieldset>
+    <noscript><p class="ck-help">Turn on JavaScript to run your own numbers. The example is $75,000 of employment income in Ontario.</p></noscript>
+  </form>
+
+  <div class="ck-results" id="itx-results" aria-live="polite" set:html={initialHtml} />
+</div>
+
+<section class="ck-assumptions" aria-labelledby="itx-h-how">
+  <h2 id="itx-h-how">How the math works</h2>
+  <ul>
+    <li><strong>Taxable income</strong> is all your income minus RRSP and FHSA contributions and union or professional dues.</li>
+    <li><strong>Tax is worked bracket by bracket.</strong> Each slice of income is taxed at its own federal and provincial rate, using the {TAX_YEAR} brackets for all 13 provinces and territories. Ontario's surtax shows as its own line.</li>
+    <li><strong>Credits: the basic personal amount only.</strong> Federal and provincial basic personal amounts are taken off at the lowest rate. Credits for CPP and EI contributions, the Canada employment amount, the age amount and the pension amount are not in this version, so the estimate runs a little high, often by several hundred dollars.</li>
+    <li><strong>The federal basic personal amount phases down</strong> between $181,440 and $258,482 of income. The tool uses a straight line between the two endpoints, which is not yet checked against CRA's worksheet.</li>
+    <li><strong>Payroll:</strong> CPP (or QPP in Quebec), CPP2, EI and QPIP use the {TAX_YEAR} rates and yearly maximums. Self-employed income pays both halves of CPP and no EI.</li>
+    <li><strong>Left out on purpose:</strong> the dividend gross-up and credit, the capital gains inclusion rate, the Ontario Health Premium, pension income splitting, and part-year or multi-province residence. Quebec taxable income can differ slightly from the federal figure used here.</li>
+    <li><strong>Paycheque mode</strong> assumes the same pay every period, no other income, and your TD1 claims. Your employer's payroll follows CRA's exact formulas.</li>
+    <li><strong>Nothing is saved.</strong> Your numbers stay in this browser tab.</li>
+  </ul>
+  <p class="page-meta">
+    This calculator is an estimate for education, not tax advice. For your real numbers, use CRA's Payroll Deductions Online Calculator, your Notice of Assessment, or an accountant.
+  </p>
+</section>
+
+<CalcSources figures={[...taxFigures.values()]} checked="2026-09-27 to 2026-09-28" />
+
+<script>
+  import { estimate, paycheque, validate, isProv, type Field, type PayFrequency, type TaxInput } from "../../lib/calculators/income-tax";
+  import { renderAnnual, renderPaycheque } from "../../lib/calculators/income-tax-render";
+  import { blocked } from "../../lib/calculators/calc-kit";
+  import { track } from "../../lib/analytics";
+
+  const CALC = "income_tax";
+  const FIELDS: Field[] = ["employment", "selfEmployment", "otherIncome", "rrsp", "fhsa", "dues", "age", "td1Federal", "td1Provincial"];
+  const FREQS: PayFrequency[] = ["weekly", "biweekly", "semimonthly", "monthly"];
+
+  const form = document.getElementById("itx-form") as HTMLFormElement | null;
+  const out = document.getElementById("itx-results");
+  let started = false;
+  let resultViewed = false;
+  let provinceSent = false;
+
+  function num(fd: FormData, name: string): number | null {
+    const raw = String(fd.get(name) ?? "").trim();
+    if (raw === "") return null;
+    const v = Number(raw);
+    return Number.isFinite(v) ? v : NaN;
+  }
+
+  function read(f: HTMLFormElement): { input: TaxInput; mode: "annual" | "paycheque" } {
+    const fd = new FormData(f);
+    const prov = String(fd.get("province") ?? "ON");
+    const freq = String(fd.get("payFrequency") ?? "biweekly") as PayFrequency;
+    return {
+      mode: fd.get("mode") === "paycheque" ? "paycheque" : "annual",
+      input: {
+        province: isProv(prov) ? prov : "ON",
+        employment: num(fd, "employment"),
+        selfEmployment: num(fd, "selfEmployment"),
+        otherIncome: num(fd, "otherIncome"),
+        otherHasDividendsOrGains: fd.get("otherHasDividendsOrGains") === "on",
+        rrsp: num(fd, "rrsp"),
+        fhsa: num(fd, "fhsa"),
+        dues: num(fd, "dues"),
+        age: num(fd, "age"),
+        payFrequency: FREQS.includes(freq) ? freq : "biweekly",
+        td1Federal: num(fd, "td1Federal"),
+        td1Provincial: num(fd, "td1Provincial"),
+      },
+    };
+  }
+
+  function update() {
+    if (!form || !out) return;
+    const { input, mode } = read(form);
+    form.querySelectorAll<HTMLElement>("[data-show]").forEach((el) => { el.hidden = el.dataset.show !== mode; });
+    const errors = validate(input);
+    const messages: string[] = [];
+    for (const field of FIELDS) {
+      const el = form.querySelector<HTMLElement>(`[data-error-for="${field}"]`);
+      const e = errors[field];
+      if (el) { el.textContent = e ?? ""; el.hidden = !e; }
+      if (e) messages.push(e);
+    }
+    if (messages.length) {
+      out.innerHTML = blocked(messages);
+      if (started) track("calc_error_shown", { calculator: CALC, error_class: "invalid_input" });
+      return;
+    }
+    const annual = estimate(input);
+    out.innerHTML = mode === "paycheque" ? renderPaycheque(paycheque(input), annual) : renderAnnual(annual);
+    if (started && !resultViewed) {
+      resultViewed = true;
+      // Mode token only (2-prop budget): no amounts leave the page.
+      track("calc_result_viewed", { calculator: CALC, mode });
+    }
+  }
+
+  function onUserInput(e: Event) {
+    if (!started) {
+      started = true;
+      track("calc_started", { calculator: CALC });
+    }
+    const t = e.target;
+    if (t instanceof HTMLSelectElement && t.name === "province" && !provinceSent) {
+      provinceSent = true;
+      track("calc_input_set", { calculator: CALC, value: `province_${t.value.toLowerCase()}` });
+    }
+  }
+
+  if (form) {
+    form.addEventListener("submit", (e) => e.preventDefault());
+    form.addEventListener("input", (e) => { onUserInput(e); update(); });
+    form.addEventListener("change", (e) => { onUserInput(e); update(); });
+    update();
+  }
+</script>

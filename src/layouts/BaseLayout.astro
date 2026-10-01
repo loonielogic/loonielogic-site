@@ -1,8 +1,9 @@
 ---
 /**
  * BaseLayout — shared chrome for every LoonieLogic page.
- * Zero client JS on content pages (Astro default). JSON-LD per page_type
- * per the SEO technical spec §1.
+ * Content pages carry no client JS beyond the small Tools-dropdown script
+ * (open/close state, aria-expanded, Escape). JSON-LD per page_type per the
+ * SEO technical spec §1.
  */
 import "../styles/global.css";
 import { canonicalUrl, SITE_URL, DEFAULT_OG_IMAGE, WEBFONT_CSS } from "../lib/site";
@@ -16,6 +17,7 @@ import {
   isUmamiEnabled,
 } from "../lib/analytics";
 import { ogImageFor, OG_WIDTH, OG_HEIGHT } from "../lib/og";
+import { TOOL_GROUPS } from "../lib/tools-nav";
 
 interface Crumb {
   name: string;
@@ -211,13 +213,89 @@ const graph = {
           <span class="wordmark" aria-hidden="true">Loonie<em>Logic</em></span>
         </a>
         <nav class="main-nav" aria-label="Primary">
-          {navItems.map((n) => (
-            <a href={n.href} aria-current={current(n.href)}>{n.label}</a>
-          ))}
+          {navItems.map((n) =>
+            n.href === "/calculators/" ? (
+              <div class="nav-tools" data-nav-tools>
+                <a href={n.href} aria-current={current(n.href)}>{n.label}</a>
+                <button
+                  type="button"
+                  class="nav-tools-toggle"
+                  aria-expanded="false"
+                  aria-haspopup="true"
+                  aria-controls="tools-menu"
+                  aria-label="Show all tools"
+                >
+                  <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                </button>
+                <div class="tools-menu" id="tools-menu" hidden>
+                  {TOOL_GROUPS.map((g) => (
+                    <div class="tools-group">
+                      <p class="tools-group-label" id={`tools-${g.label.replace(/\W+/g, "-").toLowerCase()}`}>{g.label}</p>
+                      <ul aria-labelledby={`tools-${g.label.replace(/\W+/g, "-").toLowerCase()}`}>
+                        {g.tools.map((t) => (
+                          <li>
+                            <a href={t.slug} aria-current={slug === t.slug ? "page" : undefined}>
+                              <span class="tools-name">{t.name}</span>
+                              <span class="tools-desc">{t.descriptor}</span>
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                  <a class="tools-all" href="/calculators/">All tools <span aria-hidden="true">→</span></a>
+                </div>
+              </div>
+            ) : (
+              <a href={n.href} aria-current={current(n.href)}>{n.label}</a>
+            ),
+          )}
         </nav>
       </div>
       {readingProgress && <div class="read-progress" aria-hidden="true"></div>}
     </header>
+
+    <script>
+      // Tools dropdown: opens on hover (fine pointers), keyboard focus, or a tap
+      // on the toggle; closes on Escape, focus leaving, a click outside, or the
+      // pointer leaving. The "Tools" label itself stays a plain link.
+      for (const root of document.querySelectorAll<HTMLElement>("[data-nav-tools]")) {
+        const toggle = root.querySelector<HTMLButtonElement>(".nav-tools-toggle");
+        const menu = root.querySelector<HTMLElement>(".tools-menu");
+        if (!toggle || !menu) continue;
+        const hover = window.matchMedia("(hover: hover) and (pointer: fine)");
+        const set = (open: boolean) => {
+          menu.hidden = !open;
+          toggle.setAttribute("aria-expanded", String(open));
+          root.toggleAttribute("data-open", open);
+        };
+        const isOpen = () => !menu.hidden;
+        // After Escape, focus returns to the toggle; that focus must not reopen it.
+        let suppressFocus = false;
+        toggle.addEventListener("click", () => set(!isOpen()));
+        root.addEventListener("mouseenter", () => { if (hover.matches) set(true); });
+        root.addEventListener("mouseleave", () => { if (hover.matches && !root.contains(document.activeElement)) set(false); });
+        root.addEventListener("focusin", (e) => {
+          if (suppressFocus) { suppressFocus = false; return; }
+          // Keyboard focus opens it; a tap or click focusing the toggle is left to the click handler.
+          if ((e.target as Element).matches(":focus-visible")) set(true);
+        });
+        root.addEventListener("focusout", (e) => {
+          const next = (e as FocusEvent).relatedTarget as Node | null;
+          if (!next || !root.contains(next)) set(false);
+        });
+        root.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && isOpen()) {
+            set(false);
+            if (document.activeElement !== toggle) {
+              suppressFocus = true;
+              toggle.focus({ preventScroll: true });
+            }
+          }
+        });
+        document.addEventListener("click", (e) => { if (isOpen() && !root.contains(e.target as Node)) set(false); });
+      }
+    </script>
 
     <main id="main" tabindex="-1">
       <slot />

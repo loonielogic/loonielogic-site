@@ -1,0 +1,38 @@
+---
+/**
+ * CalcSources: "Sources and dates" footer for a calculator, listing exactly
+ * the registry figures that calculator read (its own FigureLog). Anything
+ * that is not a verified figure is labelled: design defaults as
+ * "assumption", anything else as "Not yet verified".
+ */
+import type { FigureEntry } from "../../lib/calculators/figures";
+
+interface Props {
+  figures: FigureEntry[];
+  /** Human range for the intro line, e.g. "2026-09-27 to 2026-09-30". */
+  checked: string;
+  /** Extra items (e.g. rules from the spec that are not registry figures). */
+  extra?: string[];
+}
+
+const { figures, checked, extra = [] } = Astro.props;
+const label = (s: string) => s.replace(/\s*—\s*/g, ": ");
+---
+
+<section class="ck-sources" aria-label="Sources and dates">
+  <h2>Sources and dates</h2>
+  <p class="page-meta">Figures checked {checked} against CRA/canada.ca and the other sources listed below.</p>
+  <ul>
+    {figures.map((s) => (
+      <li>
+        {label(s.label)}:{" "}
+        {s.source.startsWith("http")
+          ? <a href={s.source} rel="noopener">{new URL(s.source).hostname}</a>
+          : <span>internal design default</span>}, checked <span class="nowrap">{s.verified_date}</span>
+        {s.status === "assumption" && <span class="ck-flag">assumption</span>}
+        {s.status !== "assumption" && s.status !== "verified" && <span class="ck-flag ck-flag-unverified">Not yet verified</span>}
+      </li>
+    ))}
+    {extra.map((e) => <li set:html={e} />)}
+  </ul>
+</section>

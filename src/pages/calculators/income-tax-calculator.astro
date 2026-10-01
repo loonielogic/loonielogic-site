@@ -1,0 +1,85 @@
+---
+/**
+ * /calculators/income-tax-calculator: the Canadian income tax calculator
+ * (annual and paycheque views on one engine). Page metadata comes from the
+ * calculator manifest (src/data/calculator-manifests.json). The manifest
+ * status is still "draft", so the page is built but marked noindex and stays
+ * off the calculators hub and sitemap.xml until it is published.
+ */
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import RelatedCards from "../../components/RelatedCards.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import IncomeTax from "../../components/calculators/IncomeTax.astro";
+import { getCollection } from "astro:content";
+import manifests from "../../data/calculator-manifests.json";
+import { canonicalUrl } from "../../lib/site";
+
+const SLUG = "/calculators/income-tax-calculator";
+const NAME = "Income Tax Calculator";
+const m = manifests.manifests.find((x) => x.slug === SLUG)!;
+
+const builtSlugs = new Set<string>(["/", "/learn/", "/calculators/", "/compare/"]);
+for (const coll of ["explainers", "comparisons", "legal"] as const) {
+  for (const e of await getCollection(coll)) builtSlugs.add(e.data.slug);
+}
+
+const webApp = {
+  "@type": "WebApplication",
+  name: "Canadian Income Tax Calculator 2026",
+  url: canonicalUrl(SLUG),
+  applicationCategory: "FinanceApplication",
+  operatingSystem: "Any",
+  inLanguage: "en-CA",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "CAD" },
+};
+---
+
+<BaseLayout
+  title={m.title}
+  metaDescription={m.meta_description}
+  slug={SLUG}
+  pageType="calculator"
+  dateModified={m.last_reviewed}
+  noindex={m.status !== "live"}
+  jsonLdExtra={webApp}
+  breadcrumbs={[{ name: "Tools", slug: "/calculators/" }, { name: NAME, slug: SLUG }]}
+>
+  <section class="page-hero checker-hero">
+    <div class="wrap">
+      <Breadcrumbs trail={[{ name: "Tools", slug: "/calculators/" }, { name: NAME, slug: SLUG }]} />
+      <div class="checker-tags">
+        <p class="eyebrow">Tools · Tax</p>
+        {m.status !== "live" && <span class="chip chip-draft">Draft</span>}
+      </div>
+      <h1>Income Tax Calculator 2026</h1>
+      <p class="lede">
+        Enter your income, province and deductions to estimate your 2026 federal and provincial tax,
+        CPP and EI, and take-home pay, for the year or for each paycheque. It also shows your marginal
+        rate (the tax on your next dollar) next to your average rate, which is usually much lower.
+      </p>
+      <p class="page-meta checker-meta">
+        <span>Last reviewed: <time datetime={m.last_reviewed}>{m.last_reviewed}</time></span>
+        <span>All 13 provinces and territories</span>
+        <span>An estimate for education, not tax advice.</span>
+      </p>
+    </div>
+  </section>
+
+  <div class="wrap checker-body">
+    <IncomeTax />
+
+    <RelatedCards slugs={m.related} builtSlugs={builtSlugs} />
+  </div>
+</BaseLayout>
+
+<style>
+  .checker-hero { padding-bottom: clamp(4.5rem, 9vw, 6.5rem); }
+  .checker-hero h1 { max-width: 18ch; font-size: clamp(2.4rem, 6vw, 4.2rem); line-height: 1; letter-spacing: -0.03em; }
+  .checker-hero .lede { max-width: 46rem; }
+  .checker-tags { display: flex; align-items: center; gap: 0.9rem; margin-bottom: 1rem; }
+  .checker-tags .eyebrow { margin: 0; }
+  .checker-meta { display: flex; flex-wrap: wrap; gap: 0.35rem 1.25rem; margin: 1.5rem 0 0; }
+  .checker-meta span + span::before { content: "·"; margin-right: 1.25rem; color: var(--gold-bright); }
+  @media (max-width: 40rem) { .checker-meta span + span::before { display: none; } .checker-meta { flex-direction: column; } }
+  .checker-body { position: relative; margin-top: clamp(-4rem, -6vw, -2.5rem); }
+</style>

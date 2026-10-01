@@ -1,0 +1,303 @@
+/*
+ * calc-kit.css: shared look for the wave 3 calculators (income tax, TFSA vs
+ * RRSP, RRSP room, house affordability, rent vs buy). Same visual system as
+ * the Goal Planner and Wealth Over Time islands: a numbered control panel on
+ * the left, a results statement on the right with a dark headline and
+ * lettered panels. Results HTML is built as strings in the *-render.ts files,
+ * so these classes are global (prefixed ck-) rather than component-scoped.
+ */
+
+.ck {
+  --ck-good: #1b7a43;
+  --ck-mid: #b8820f;
+  --ck-warn: #b25e09;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+}
+@media (min-width: 60rem) {
+  .ck { grid-template-columns: minmax(19rem, 25rem) minmax(0, 1fr); gap: 2rem; align-items: start; }
+  .ck-form { position: sticky; top: calc(var(--header-h) + 1rem); max-height: calc(100vh - var(--header-h) - 2rem); overflow-y: auto; }
+}
+
+/* ---------- control panel ---------- */
+.ck-form {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: var(--shadow-lg);
+  padding: 0.5rem 1.35rem 1rem;
+  counter-reset: ck-step;
+  accent-color: var(--pine-700);
+  min-width: 0;
+}
+.ck-form > fieldset {
+  counter-increment: ck-step;
+  border: 0;
+  border-top: 1px solid var(--line);
+  padding: 1.25rem 0 0.5rem;
+  margin: 0;
+  min-width: 0;
+}
+.ck-form > fieldset:first-of-type { border-top: 0; }
+.ck-form > fieldset > legend {
+  display: flex; align-items: center; gap: 0.6rem;
+  float: left; width: 100%;
+  font-family: var(--font-display); font-optical-sizing: auto;
+  font-weight: 600; font-size: 1.12rem; color: var(--lake-900);
+  padding: 0; margin: 0 0 0.35rem;
+}
+.ck-form > fieldset > legend::before {
+  content: counter(ck-step);
+  flex: none;
+  width: 1.6rem; height: 1.6rem; border-radius: 50%;
+  display: grid; place-items: center;
+  font-family: var(--font-body); font-size: 0.78rem; font-weight: 700;
+  background: var(--lake-900); color: var(--gold-bright);
+}
+.ck-form > fieldset > legend + * { clear: both; }
+.ck-form [hidden] { display: none !important; }
+
+.ck-form label { display: block; font-size: 0.92rem; font-weight: 600; margin: 0.85rem 0; color: var(--ink); clear: both; }
+.ck-form input[type="number"], .ck-form input[type="text"], .ck-form select {
+  display: block; width: 100%; margin-top: 0.35rem; padding: 0.65rem 0.8rem;
+  font: inherit; font-weight: 500; font-size: 1rem; font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  border: 1px solid var(--line-strong); border-radius: 10px;
+  background: var(--paper);
+  min-height: 2.9rem;
+  transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+}
+.ck-form input:hover, .ck-form select:hover { border-color: var(--pine-500); }
+.ck-form input[type="number"]:focus-visible, .ck-form input[type="text"]:focus-visible, .ck-form select:focus-visible {
+  outline: none;
+  background: var(--card);
+  border-color: var(--pine-700);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 55%, transparent);
+}
+.ck-form small, .ck-help { display: block; font-weight: 400; color: var(--ink-soft); font-size: 0.8rem; line-height: 1.45; margin: 0.35rem 0 0; }
+.ck-help { font-size: 0.86rem; margin: 0.5rem 0; }
+.ck-error { margin: 0.35rem 0; font-size: 0.86rem; font-weight: 600; color: var(--danger); }
+
+/* checkboxes and radio rows */
+.ck-form .ck-check { display: flex; gap: 0.55rem; align-items: flex-start; font-weight: 550; line-height: 1.4; }
+.ck-form .ck-check input { flex: none; width: 1.1rem; height: 1.1rem; margin: 0.15rem 0 0; }
+.ck-form fieldset.ck-inline { border: 0; padding: 0; margin: 0.85rem 0; min-width: 0; }
+.ck-form fieldset.ck-inline > legend { font-size: 0.92rem; font-weight: 600; padding: 0; margin-bottom: 0.4rem; color: var(--ink); }
+
+/* segmented choices: wrapping pills */
+.ck-pills { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.5rem 0 0; }
+.ck-form .ck-pill {
+  flex: 1 1 5.5rem;
+  display: flex; align-items: center; justify-content: center; gap: 0.35rem;
+  margin: 0; padding: 0.5rem 0.6rem;
+  border: 1px solid var(--line); border-radius: 999px; background: var(--paper);
+  font-weight: 550; font-variant-numeric: tabular-nums; cursor: pointer; text-align: center; line-height: 1.25;
+  transition: border-color 0.15s, background-color 0.15s, box-shadow 0.15s;
+}
+.ck-form .ck-pill:hover { border-color: var(--pine-500); }
+.ck-form .ck-pill:has(input:checked) {
+  border-color: var(--pine-700); background: var(--moss-100);
+  box-shadow: inset 0 0 0 1px var(--pine-700); font-weight: 650; color: var(--lake-900);
+}
+.ck-form .ck-pill:has(input:focus-visible) { outline: 3px solid color-mix(in srgb, var(--gold) 70%, transparent); outline-offset: 2px; }
+.ck-pill input { width: 1rem; height: 1rem; margin: 0; }
+
+.ck-form details { margin: 0.85rem 0 0.25rem; border: 1px dashed var(--line-strong); border-radius: 10px; padding: 0.35rem 0.85rem; }
+.ck-form details[open] { padding-bottom: 0.6rem; }
+.ck-form summary { cursor: pointer; font-weight: 600; font-size: 0.9rem; color: var(--lake-900); padding: 0.35rem 0; }
+
+/* ---------- results ---------- */
+.ck-results { counter-reset: ck-panel; font-variant-numeric: tabular-nums; min-width: 0; }
+.ck-blocked {
+  border: 2px solid var(--danger); background: var(--red-wash); border-radius: var(--radius);
+  padding: 1rem 1.25rem; font-size: 0.95rem;
+}
+.ck-blocked p { margin: 0 0 0.4rem; }
+.ck-blocked ul { margin: 0; padding-left: 1.1rem; }
+
+.ck-headline {
+  position: relative;
+  margin: 0 0 1.25rem;
+  padding: 1.5rem 1.75rem;
+  border-radius: 20px;
+  background: var(--grain), radial-gradient(130% 140% at 100% 0%, var(--pine-800), var(--lake-950) 70%);
+  color: var(--on-dark);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+.ck-headline::after {
+  content: ""; position: absolute; right: -5rem; top: -5rem; width: 14rem; height: 14rem; border-radius: 50%;
+  background: repeating-radial-gradient(circle, transparent 0 18px, rgba(228, 185, 78, 0.12) 18px 19px);
+  pointer-events: none;
+}
+.ck-headline a { color: var(--gold-bright); }
+.ck-kicker { margin: 0 0 0.35rem; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold-bright); position: relative; z-index: 1; }
+.ck-big {
+  margin: 0 0 0.5rem; font-family: var(--font-display); font-optical-sizing: auto;
+  font-size: clamp(2.2rem, 7vw, 3.4rem); font-weight: 650; line-height: 1.05; letter-spacing: -0.02em; color: var(--gold-bright);
+  position: relative; z-index: 1; overflow-wrap: anywhere;
+}
+.ck-big small { font-size: 0.45em; font-weight: 550; color: var(--on-dark-soft); letter-spacing: 0; }
+.ck-lead { margin: 0 0 1rem; font-size: 0.98rem; line-height: 1.55; position: relative; z-index: 1; overflow-wrap: anywhere; }
+.ck-lead:last-child { margin-bottom: 0; }
+.ck-verdict {
+  position: relative; z-index: 1;
+  display: flex; gap: 0.6rem; align-items: flex-start;
+  margin: 0; padding: 0.75rem 0.9rem; border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.16);
+  font-weight: 600; line-height: 1.45;
+}
+.ck-verdict-dot { flex: none; width: 0.8rem; height: 0.8rem; margin-top: 0.3rem; border-radius: 50%; border: 2px solid var(--on-dark); background: var(--gold-bright); }
+.ck-tone-good .ck-verdict-dot { background: #6fd39a; }
+.ck-tone-warn .ck-verdict-dot { background: #ffb4a8; }
+.ck-subline { position: relative; z-index: 1; margin: 0.75rem 0 0; font-size: 0.85rem; color: var(--on-dark-soft); }
+
+.ck-card {
+  counter-increment: ck-panel;
+  border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 1.35rem 1.5rem 1.25rem; background: var(--card);
+  margin-bottom: 1rem; box-shadow: var(--shadow-sm); min-width: 0;
+}
+@media (max-width: 30rem) {
+  .ck-card { padding: 1.1rem 1rem 1rem; }
+  .ck-headline { padding: 1.25rem 1.1rem; }
+}
+.ck-card h3 { display: flex; align-items: center; gap: 0.65rem; margin: 0 0 0.85rem; font-size: 1.3rem; }
+.ck-card h3::before {
+  content: counter(ck-panel, upper-alpha);
+  flex: none; width: 1.9rem; height: 1.9rem; border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 0.95rem; font-style: italic; font-weight: 600;
+  background: var(--gold-btn); color: var(--ink);
+}
+.ck-card p { margin: 0.6rem 0 0; line-height: 1.55; }
+.ck-card p:first-of-type { margin-top: 0; }
+.ck-card ul { margin: 0.5rem 0 0; padding-left: 1.15rem; line-height: 1.55; }
+.ck-card li + li { margin-top: 0.35rem; }
+.ck-note { font-size: 0.88rem; line-height: 1.55; color: var(--ink-soft); margin: 0.75rem 0 0; }
+.ck-card p.ck-note { margin-top: 0.75rem; }
+
+.ck-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); gap: 0.6rem 1rem; margin: 0; }
+.ck-facts div { min-width: 0; padding: 0.6rem 0.75rem; border-radius: 10px; background: var(--paper); border: 1px solid var(--line); }
+.ck-facts dt { font-size: 0.8rem; color: var(--ink-soft); }
+.ck-facts dd { margin: 0.15rem 0 0; font-weight: 650; color: var(--lake-900); overflow-wrap: anywhere; }
+.ck-facts .ck-binding { border-color: var(--pine-700); box-shadow: inset 0 0 0 1px var(--pine-700); background: var(--moss-100); }
+
+/* line-by-line tables (pay stub, reconciliation, breakdowns) */
+.ck-table-wrap { overflow-x: auto; margin: 0; }
+.ck-table { width: 100%; border-collapse: collapse; font-size: 0.93rem; }
+.ck-table caption { text-align: left; font-size: 0.85rem; color: var(--ink-soft); padding-bottom: 0.4rem; }
+.ck-table th, .ck-table td { padding: 0.5rem 0.4rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.ck-table td, .ck-table th.ck-num { text-align: right; white-space: nowrap; }
+.ck-table thead th { font-size: 0.8rem; color: var(--ink-soft); font-weight: 600; }
+.ck-table tbody th { font-weight: 500; }
+.ck-table .ck-sub th, .ck-table .ck-sub td { padding-left: 1.2rem; color: var(--ink-soft); font-size: 0.88rem; }
+.ck-table .ck-total th, .ck-table .ck-total td { font-weight: 700; color: var(--lake-900); border-top: 2px solid var(--line-strong); }
+.ck-table .ck-hl th, .ck-table .ck-hl td { background: var(--moss-100); font-weight: 650; }
+
+/* inline status chips */
+.ck-flag {
+  display: inline-block; margin-left: 0.35rem; padding: 0 0.5rem; border-radius: 0.85em; max-width: 100%;
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; vertical-align: 0.1em;
+  background: var(--gold-wash); color: var(--gold-deep); border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+  white-space: nowrap;
+}
+.ck-flag-unverified { background: var(--red-wash); color: var(--danger); border-color: color-mix(in srgb, var(--danger) 40%, transparent); }
+.ck-headline .ck-flag { background: rgba(255, 255, 255, 0.1); color: var(--gold-bright); border-color: rgba(228, 185, 78, 0.5); }
+
+/* warnings that fired */
+.ck-alerts { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.6rem; }
+.ck-alert {
+  margin: 0; padding: 0.75rem 0.9rem 0.75rem 2.4rem; position: relative;
+  border-radius: 10px; border: 1px solid var(--line); background: var(--paper);
+  font-size: 0.92rem; line-height: 1.5;
+}
+.ck-alert::before {
+  content: "i"; position: absolute; left: 0.75rem; top: 0.8rem;
+  width: 1.15rem; height: 1.15rem; border-radius: 50%; display: grid; place-items: center;
+  font-size: 0.72rem; font-weight: 700; font-style: italic; background: var(--lake-900); color: var(--gold-bright);
+}
+.ck-alert-warn { border-color: color-mix(in srgb, var(--danger) 45%, transparent); background: var(--red-wash); }
+.ck-alert-warn::before { content: "!"; font-style: normal; background: var(--danger); color: #fff; }
+.ck-alert strong { color: var(--lake-900); }
+.ck-alert-warn strong { color: var(--danger); }
+
+/* horizontal stacked bar (income tax breakdown) */
+.ck-bar { display: flex; width: 100%; height: 1.6rem; border-radius: 999px; overflow: hidden; border: 1px solid var(--line); background: var(--paper); margin: 0.25rem 0 0.75rem; }
+.ck-bar span { display: block; height: 100%; min-width: 2px; }
+.ck-legend { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: 0.35rem 1rem; font-size: 0.88rem; }
+.ck-legend li { display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
+.ck-legend li + li { margin-top: 0; }
+.ck-swatch { flex: none; width: 0.85rem; height: 0.85rem; border-radius: 3px; }
+.ck-legend b { margin-left: auto; font-weight: 650; color: var(--lake-900); }
+.ck-c1 { background: var(--lake-900); }
+.ck-c2 { background: var(--pine-500); }
+.ck-c3 { background: var(--gold); }
+.ck-c4 { background: #d9b779; }
+.ck-c5 { background: var(--moss-100); box-shadow: inset 0 0 0 1px var(--line-strong); }
+
+/* side-by-side compare (TFSA vs RRSP, qualifying vs actual) */
+.ck-duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: 0.75rem; }
+.ck-duo > div { padding: 0.9rem 1rem; border-radius: 12px; border: 1px solid var(--line); background: var(--paper); min-width: 0; }
+.ck-duo > div.ck-win { border-color: var(--pine-700); box-shadow: inset 0 0 0 1px var(--pine-700); background: var(--moss-100); }
+.ck-duo p { margin: 0; }
+.ck-duo .ck-duo-label { font-size: 0.82rem; color: var(--ink-soft); font-weight: 600; }
+.ck-duo .ck-duo-value { font-family: var(--font-display); font-size: 1.55rem; font-weight: 650; color: var(--lake-900); line-height: 1.2; margin-top: 0.2rem; }
+.ck-duo .ck-duo-foot { font-size: 0.82rem; color: var(--ink-soft); margin-top: 0.3rem; }
+
+/* 3x3 sensitivity grid */
+.ck-grid-table { border-collapse: separate; border-spacing: 0.3rem; width: 100%; font-size: 0.86rem; }
+.ck-grid-table th { font-weight: 600; color: var(--ink-soft); text-align: center; padding: 0.25rem; }
+.ck-grid-table td { text-align: center; padding: 0.55rem 0.25rem; border-radius: 8px; font-weight: 650; }
+.ck-grid-table td.ck-g-buy { background: var(--moss-100); color: var(--lake-900); }
+.ck-grid-table td.ck-g-rent { background: var(--gold-wash); color: var(--gold-deep); }
+.ck-grid-table td.ck-g-base { outline: 2px solid var(--lake-900); outline-offset: -2px; }
+
+/* simple line chart (rent vs buy net wealth) */
+.ck-chart { width: 100%; height: auto; display: block; margin: 0.25rem 0 0.5rem; overflow: visible; }
+.ck-chart .ck-axis { stroke: var(--line-strong); stroke-width: 1; }
+.ck-chart .ck-gridline { stroke: var(--line); stroke-width: 1; stroke-dasharray: 3 4; }
+.ck-chart text { font-size: 11px; fill: var(--ink-soft); font-family: var(--font-body); }
+.ck-chart .ck-line-buy { fill: none; stroke: var(--pine-700); stroke-width: 2.5; }
+.ck-chart .ck-line-rent { fill: none; stroke: var(--gold); stroke-width: 2.5; stroke-dasharray: 7 5; }
+.ck-chart .ck-marker { fill: var(--lake-900); }
+.ck-key { display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; font-size: 0.85rem; margin: 0; padding: 0; list-style: none; }
+.ck-key li { display: flex; align-items: center; gap: 0.45rem; }
+.ck-key li + li { margin-top: 0; }
+.ck-key i { display: inline-block; width: 1.5rem; height: 0; border-top: 3px solid var(--pine-700); }
+.ck-key i.ck-key-rent { border-top: 3px dashed var(--gold); }
+
+.ck-big-inline { font-family: var(--font-display); font-size: 1.2rem; font-weight: 650; color: var(--lake-900); }
+.ck-disclaimer { font-size: 0.84rem; color: var(--ink-soft); margin: 0.5rem 0 0; font-style: italic; line-height: 1.5; }
+.ck-links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; margin: 0.5rem 0 0; padding: 0; list-style: none; }
+.ck-links li + li { margin-top: 0; }
+.ck-example { border: 1px dashed var(--gold); background: var(--gold-wash); border-radius: var(--radius); padding: 0.9rem 1.1rem; margin: 0 0 1rem; font-size: 0.92rem; line-height: 1.55; }
+.ck-example p { margin: 0; }
+.ck-example p + p { margin-top: 0.5rem; }
+
+/* ---------- how this works + sources ---------- */
+.ck-assumptions, .ck-sources { max-width: 52rem; margin-top: 3.5rem; }
+.ck-sources { margin-top: 2.5rem; }
+.ck-assumptions h2, .ck-sources h2 { position: relative; padding-top: 1.25rem; margin: 0 0 1rem; font-size: clamp(1.5rem, 3vw, 1.9rem); }
+.ck-assumptions h2::before, .ck-sources h2::before { content: ""; position: absolute; left: 0; top: 0; width: 2.5rem; height: 3px; border-radius: 3px; background: var(--gold); }
+.ck-assumptions > ul {
+  list-style: none; padding: 0; margin: 0 0 1rem;
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm);
+}
+.ck-assumptions > ul > li {
+  position: relative; margin: 0; padding: 0.9rem 1.25rem 0.9rem 2.75rem;
+  font-size: 0.93rem; line-height: 1.6; border-top: 1px solid var(--line);
+}
+.ck-assumptions > ul > li:first-child { border-top: 0; }
+.ck-assumptions > ul > li::before {
+  content: ""; position: absolute; left: 1.2rem; top: 1.45rem;
+  width: 0.5rem; height: 0.5rem; border-radius: 50%; border: 2px solid var(--gold);
+}
+.ck-assumptions strong { color: var(--lake-900); }
+.ck-assumptions h3 { font-size: 1.15rem; margin: 1.75rem 0 0.6rem; }
+.ck-sources ul { padding-left: 1.1rem; font-size: 0.88rem; line-height: 1.6; color: var(--ink-soft); }
+.ck-sources li + li { margin-top: 0.3rem; }
+.nowrap { white-space: nowrap; }
+.ck-card .ck-h4 { font-size: 1.02rem; margin: 1.1rem 0 0.2rem; color: var(--lake-900); }
+.ck-inverse { font-size: 1.05rem; line-height: 1.5; }
