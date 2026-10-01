@@ -5,9 +5,20 @@
  */
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { checkContentText } from "../scripts/validate-content.ts";
 import { faqForSlug, faqPageNode, faqSlugs } from "./faq-schema.ts";
 import sitemap from "../data/sitemap.json";
+
+// House-style checks, inlined rather than imported: the checkContentText
+// export lives on the unmerged item-66 branch, so this branch carries its
+// own copy to stay independent. DASH is built from its code point so no
+// dash character sits in this file.
+const DASH = String.fromCharCode(0x2014);
+function houseStyleProblems(text: string): string[] {
+  const out: string[] = [];
+  if (text.includes(DASH)) out.push("contains an em dash (house rule: none, ever)");
+  if (/\byou should\b/i.test(text)) out.push('contains "you should" (house rule)');
+  return out;
+}
 
 // The 10 explainer pages whose manifest entries carry FAQ blocks
 // (items 34 + 40). If this set changes intentionally, update it here.
@@ -54,7 +65,7 @@ describe("faq-schema", () => {
       for (const e of faqForSlug(slug)) {
         assert.ok(e.q.length >= 20 && e.q.length <= 300, `q length ${e.q.length}`);
         assert.ok(e.a.length >= 40 && e.a.length <= 1200, `a length ${e.a.length}`);
-        const problems = checkContentText(`${e.q} ${e.a}`, "explainer");
+        const problems = houseStyleProblems(`${e.q} ${e.a}`);
         assert.deepEqual(problems, [], problems.join("; "));
       }
     });
