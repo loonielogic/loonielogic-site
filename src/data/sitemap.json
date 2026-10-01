@@ -1,6 +1,6 @@
 {
-  "_note": "Canonical sitemap data generated from hidden_files/site-ia-sitemap.md v1.2 (2026-09-29). Scaffold amendment 2026-09-29: the 3 hub pages (/learn/, /calculators/, /compare/) were added as explicit page_type=hub entries (titles/metas from hidden_files/hub-page-templates-spec.md §4) so content validation can resolve hub slugs and sitemap.xml can include them; home.related extended with the hubs to match the homepage funnel template. Regenerate if the sitemap is amended.",
-  "generated": "2026-09-29",
+  "_note": "Canonical sitemap data generated from hidden_files/site-ia-sitemap.md v1.2 (2026-09-29). This file is the slug allowlist for content validation (validate-content.ts) and the input for hub-page generation. Titles/metas carried verbatim from the sitemap table. Regenerate if the sitemap is amended.",
+  "generated": "2026-10-01",
   "hubs": [
     {
       "section": "explainers",
@@ -108,7 +108,7 @@
       "review_cadence": "annual",
       "slug": "/calculators/tfsa-vs-rrsp",
       "card_dek": "Six questions, one clear answer on which account to fund first.",
-      "title": "TFSA vs RRSP Calculator Canada 2026: Which Is Better for You?",
+      "title": "TFSA vs RRSP Calculator 2026: Which Is Better for You?",
       "wave": 1
     },
     {
@@ -140,7 +140,7 @@
       "review_cadence": "annual",
       "slug": "/calculators/rrsp-room",
       "card_dek": "Rebuild your RRSP room from scratch or from your latest NOA.",
-      "title": "RRSP Contribution Room Calculator 2026",
+      "title": "RRSP Contribution Room Calculator Canada 2026: Rebuild Yours",
       "wave": 2
     },
     {
@@ -556,7 +556,312 @@
       "slug": "/terms",
       "title": "Terms of Use: Educational Content, Not Financial Advice",
       "wave": 0
+    },
+    {
+      "slug": "/newsletter",
+      "title": "The LoonieLogic Newsletter: Canadian Money, Twice a Month",
+      "meta_description": "New plain-English guides, calculator updates, and Canadian money deadlines, about twice a month. Double opt-in, never sold or shared, unsubscribe anytime.",
+      "page_type": "utility",
+      "cluster": "utility",
+      "hub": null,
+      "wave": 0,
+      "status": "draft",
+      "related": [
+        "/",
+        "/learn/",
+        "/calculators/"
+      ],
+      "review_cadence": "annual"
+    },
+    {
+      "slug": "/newsletter/confirmed",
+      "title": "Subscription Confirmed: Your LoonieLogic Newsletter",
+      "meta_description": "Your LoonieLogic newsletter subscription is confirmed. Here is what arrives next, how often, and how to leave anytime with one click, processed same-day.",
+      "page_type": "utility",
+      "cluster": "utility",
+      "hub": null,
+      "wave": 0,
+      "status": "draft",
+      "related": [
+        "/newsletter"
+      ],
+      "review_cadence": "annual"
+    },
+    {
+      "slug": "/learn/self-employed-tax-filing",
+      "title": "Self-Employed Taxes Canada: File June 15, Pay April 30",
+      "meta_description": "Self-employed in Canada? File by June 15, 2027 but any tax owing is due April 30. CPP at 11.9%, instalment triggers, and the $30,000 GST/HST line, explained.",
+      "page_type": "explainer",
+      "cluster": "tax",
+      "hub": "/learn/",
+      "wave": 4,
+      "status": "draft",
+      "related": [
+        "/calculators/income-tax-calculator",
+        "/learn/federal-tax-brackets-2026",
+        "/learn/glossary"
+      ],
+      "review_cadence": "annual"
+    },
+    {
+      "slug": "/learn/instalment-requirements",
+      "title": "CRA Tax Instalments: The $3,000 Rule and Quarterly Payments",
+      "meta_description": "Owe more than $3,000 in tax? The CRA can require quarterly instalments on four dates: March 15, June 15, September 15, December 15. Here is how the rule works.",
+      "page_type": "explainer",
+      "cluster": "tax",
+      "hub": "/learn/",
+      "wave": 4,
+      "status": "draft",
+      "related": [
+        "/calculators/income-tax-calculator",
+        "/learn/self-employed-tax-filing",
+        "/learn/glossary"
+      ],
+      "review_cadence": "annual"
+    },
+    {
+      "slug": "/learn/home-office-employment-expenses",
+      "title": "Home Office Deductions Canada: Employees vs Self-Employed",
+      "meta_description": "Home office deductions run on two rulebooks: employees and the self-employed. Which applies to you, what each allows, and the CCA trap homeowners miss.",
+      "page_type": "explainer",
+      "cluster": "tax",
+      "hub": "/learn/",
+      "wave": 4,
+      "status": "draft",
+      "related": [
+        "/learn/self-employed-tax-filing",
+        "/learn/first-time-tax-filing",
+        "/learn/glossary"
+      ],
+      "review_cadence": "annual"
+    },
+    {
+      "slug": "/learn/rrsp-first-60-days",
+      "title": "RRSP First 60 Days Rule: Why March 1, 2027 Matters",
+      "meta_description": "Contributions in the first 60 days of 2027 still count for 2026. How the RRSP first-60-days rule works, the $2,000 buffer, and the three dates people mix up.",
+      "page_type": "explainer",
+      "cluster": "tax",
+      "hub": "/learn/",
+      "wave": 4,
+      "status": "draft",
+      "related": [
+        "/learn/rrsp",
+        "/calculators/rrsp-room",
+        "/learn/glossary"
+      ],
+      "review_cadence": "annual",
+      "note": "Publish window Feb 2027 (RRSP-season push)."
+    },
+    {
+      "slug": "/learn/first-time-home-buyer-incentives",
+      "title": "First-Time Home Buyer Incentives Canada 2026: The Full Stack",
+      "meta_description": "Every first-time buyer incentive, stacked: the FHSA, Home Buyers' Plan, GST rebate, and land transfer rebates. What combines and what does not.",
+      "page_type": "explainer",
+      "cluster": "housing",
+      "hub": "/learn/",
+      "wave": 5,
+      "status": "draft",
+      "related": [
+        "/learn/fhsa",
+        "/learn/home-buyers-plan",
+        "/compare/fhsa-vs-home-buyers-plan",
+        "/calculators/down-payment-planner"
+      ],
+      "review_cadence": "annual"
+    },
+    {
+      "slug": "/learn/land-transfer-tax",
+      "title": "Land Transfer Tax Ontario and BC 2026: Rates and Rebates",
+      "meta_description": "Land transfer tax in Ontario and BC with the 2026 schedules, first-time buyer rebates, and Toronto's luxury tiers. Worked examples on real prices.",
+      "page_type": "explainer",
+      "cluster": "housing",
+      "hub": "/learn/",
+      "wave": 5,
+      "status": "draft",
+      "related": [
+        "/learn/first-time-home-buyer-incentives",
+        "/learn/mortgage-pre-approval",
+        "/calculators/down-payment-planner"
+      ],
+      "review_cadence": "annual"
+    },
+    {
+      "slug": "/learn/mortgage-pre-approval",
+      "title": "Mortgage Pre-Approval Canada 2026: What It Guarantees",
+      "meta_description": "A mortgage pre-approval holds your rate 90 to 120 days and proves what you can borrow. What the letter guarantees, and the six mistakes that void it.",
+      "page_type": "explainer",
+      "cluster": "housing",
+      "hub": "/learn/",
+      "wave": 5,
+      "status": "draft",
+      "related": [
+        "/calculators/house-affordability",
+        "/learn/land-transfer-tax",
+        "/learn/first-time-home-buyer-incentives"
+      ],
+      "review_cadence": "annual"
+    },
+    {
+      "slug": "/learn/what-is-an-etf",
+      "title": "What Is an ETF? Inside Canada's $900 Billion Basket",
+      "meta_description": "ETFs hold over $900 billion in Canada. How they work, what a 0.09% fee really costs versus 2.19%, and the six traps that catch new investors before they start.",
+      "page_type": "explainer",
+      "cluster": "investing",
+      "hub": "/learn/",
+      "wave": 6,
+      "status": "draft",
+      "related": [
+        "/calculators/compound-growth",
+        "/learn/mer-and-fees",
+        "/compare/wealthsimple-vs-questrade"
+      ],
+      "review_cadence": "annual"
+    },
+    {
+      "slug": "/learn/mer-and-fees",
+      "title": "MERs and Investment Fees Canada: The 0.09% vs 2.19% Guide",
+      "meta_description": "A 2% annual fee can cost six figures over 30 years. How MERs, TERs, and trailer fees work in Canada, with the fee-drag math on real portfolios.",
+      "page_type": "explainer",
+      "cluster": "investing",
+      "hub": "/learn/",
+      "wave": 6,
+      "status": "draft",
+      "related": [
+        "/calculators/compound-growth",
+        "/learn/what-is-an-etf",
+        "/learn/rebalancing-portfolio"
+      ],
+      "review_cadence": "annual"
+    },
+    {
+      "slug": "/learn/rebalancing-portfolio",
+      "title": "Rebalancing Your Portfolio: Bands, Timing, and Taxes",
+      "meta_description": "Rebalancing keeps your portfolio on target: when to do it, the 5% bands that work, and how to rebalance inside registered accounts to skip the tax bill.",
+      "page_type": "explainer",
+      "cluster": "investing",
+      "hub": "/learn/",
+      "wave": 6,
+      "status": "draft",
+      "related": [
+        "/learn/what-is-an-etf",
+        "/learn/mer-and-fees",
+        "/calculators/compound-growth"
+      ],
+      "review_cadence": "annual"
+    },
+    {
+      "slug": "/learn/oas-clawback-recovery-tax",
+      "title": "OAS Clawback Canada 2026: The 15% Recovery Tax, Explained",
+      "meta_description": "Earn over $95,323 and the CRA claws back 15% of your OAS. How the recovery tax works, the two-year lag trap, and the real fixes that lower it.",
+      "page_type": "explainer",
+      "cluster": "retirement",
+      "hub": "/learn/",
+      "wave": 7,
+      "status": "draft",
+      "related": [
+        "/learn/cpp-oas",
+        "/learn/gis-guaranteed-income-supplement",
+        "/calculators/cpp-timing"
+      ],
+      "review_cadence": "annual"
+    },
+    {
+      "slug": "/learn/gis-guaranteed-income-supplement",
+      "title": "GIS Canada 2026: The Guaranteed Income Supplement, Explained",
+      "meta_description": "The Guaranteed Income Supplement pays up to $1,138.90 a month on top of OAS. Who qualifies, the 50-cent clawback rule, and the July recalculation lag.",
+      "page_type": "explainer",
+      "cluster": "retirement",
+      "hub": "/learn/",
+      "wave": 7,
+      "status": "draft",
+      "related": [
+        "/learn/cpp-oas",
+        "/learn/oas-clawback-recovery-tax",
+        "/learn/glossary"
+      ],
+      "review_cadence": "annual"
+    },
+    {
+      "slug": "/learn/year-end-tax-moves",
+      "title": "Year-End Tax Moves Canada: 3 Moves Before December 31",
+      "meta_description": "Three tax moves to make before December 31, 2026: the TFSA January room reset, the donation credit deadline, and tax-loss selling by December 29.",
+      "page_type": "explainer",
+      "cluster": "tax",
+      "hub": "/learn/",
+      "wave": 2,
+      "status": "draft",
+      "related": [
+        "/learn/tfsa",
+        "/learn/rrsp-first-60-days",
+        "/calculators/tfsa-room-checker"
+      ],
+      "review_cadence": "annual",
+      "note": "Publish window early December 2026."
+    },
+    {
+      "slug": "/learn/fhsa-open-before-dec-31",
+      "title": "Open your FHSA before Dec 31: why 2026 room is lost forever",
+      "meta_description": "FHSA room starts when you open the account. Open in December 2026 to bank $8,000 of room for 2027; wait until January and it is gone. Here is the checklist.",
+      "page_type": "explainer",
+      "cluster": "housing",
+      "hub": "/learn/",
+      "wave": 2,
+      "status": "draft",
+      "related": [
+        "/learn/fhsa",
+        "/compare/fhsa-vs-home-buyers-plan",
+        "/learn/first-time-home-buyer-incentives"
+      ],
+      "review_cadence": "annual",
+      "note": "Time-sensitive campaign: publish early-mid November 2026. Page build to schedule before the push."
+    },
+    {
+      "slug": "/learn/first-paycheque-playbook",
+      "title": "First paycheque, decoded: CPP, EI, tax, and the first $1,000",
+      "meta_description": "Your first paycheque is smaller than hours times rate. CPP at 5.95%, EI at 1.63%, and income tax decoded line by line, plus where the first $1,000 should go.",
+      "page_type": "explainer",
+      "cluster": "tax",
+      "hub": "/learn/",
+      "wave": 3,
+      "status": "draft",
+      "related": [
+        "/calculators/income-tax-calculator",
+        "/learn/first-time-tax-filing",
+        "/learn/federal-tax-brackets-2026"
+      ],
+      "review_cadence": "annual",
+      "note": "Segment B (15-22). Meta written at v1.3 amendment per item 46."
+    },
+    {
+      "slug": "/learn/kids/needs-vs-wants",
+      "title": "Needs vs Wants for Kids: The Loon's Grocery Test",
+      "meta_description": "A kids money lesson: needs keep you healthy and safe, wants are fun to have. The loon's 10-second grocery test, a try-it activity, and a 3-question quiz.",
+      "page_type": "kids-lesson",
+      "cluster": "kids",
+      "hub": "/learn/",
+      "wave": 3,
+      "status": "draft",
+      "related": [
+        "/learn/kids/growing-savings"
+      ],
+      "review_cadence": "annual",
+      "note": "Segment A (10-14). No real rates, no products, no advice (template boundary rule)."
+    },
+    {
+      "slug": "/learn/kids/growing-savings",
+      "title": "How Savings Grow for Kids: Watch the Loon's Loonies",
+      "meta_description": "A kids money lesson from LoonieLogic: how saved money grows over time, told through the loon's story. One big idea, a try-it activity, and a 3-question quiz.",
+      "page_type": "kids-lesson",
+      "cluster": "kids",
+      "hub": "/learn/",
+      "wave": 3,
+      "status": "draft",
+      "related": [
+        "/learn/kids/needs-vs-wants"
+      ],
+      "review_cadence": "annual",
+      "note": "Segment A (10-14). All examples illustrative, never real rates."
     }
   ],
-  "version": "1.2"
+  "version": "1.3"
 }
