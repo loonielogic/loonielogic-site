@@ -137,6 +137,18 @@
     "title": "Learn Canadian Money: Explainers 2026",
     "line": "Plain-English guides to Canadian money, starting with the TFSA: real 2026 numbers, the expensive mistakes…"
   },
+  "/learn/kids/growing-savings": {
+    "image": "/og/learn-kids-growing-savings.png",
+    "alt": "LoonieLogic kids money lesson: How Savings Grow for Kids: Watch the Loon's Loonies",
+    "title": "How Savings Grow for Kids: Watch the Loon's Loonies",
+    "line": "A kids money lesson from LoonieLogic: how saved money grows over time, told through the loon's story."
+  },
+  "/learn/kids/needs-vs-wants": {
+    "image": "/og/learn-kids-needs-vs-wants.png",
+    "alt": "LoonieLogic kids money lesson: Needs vs Wants for Kids: The Loon's Grocery Test",
+    "title": "Needs vs Wants for Kids: The Loon's Grocery Test",
+    "line": "A kids money lesson: needs keep you healthy and safe, wants are fun to have."
+  },
   "/learn/tfsa": {
     "image": "/og/learn-tfsa.png",
     "alt": "LoonieLogic explainer: TFSA Canada 2026: How It Works, Limits, and Rules",

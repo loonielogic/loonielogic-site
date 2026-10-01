@@ -1,0 +1,111 @@
+---
+/**
+ * Kids lesson renderer: /learn/kids/* (Segment A, ages 10-14). Same reading
+ * chrome as explainers (ArticleShell). Order: story body, Try it, the
+ * 3-question quiz (answers behind a no-JS <details> reveal), then the
+ * parent/teacher note. The illustration brief stays in front matter for the
+ * illustrator; it is not rendered. No newsletter forms, no affiliate links,
+ * no figures footer (every example is illustrative).
+ */
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import ArticleShell from "../../../components/ArticleShell.astro";
+import RelatedCards from "../../../components/RelatedCards.astro";
+import { getCollection, render } from "astro:content";
+import { answerLabel, choiceLetter } from "../../../lib/kids-lesson";
+
+export async function getStaticPaths() {
+  const explainers = await getCollection("explainers");
+  return explainers
+    .filter((e) => e.data.page_type === "kids-lesson")
+    .map((e) => ({
+      params: { slug: e.data.slug.replace("/learn/kids/", "") },
+      props: { entry: e },
+    }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+const d = entry.data;
+if (d.page_type !== "kids-lesson") throw new Error(`${d.slug} is not a kids lesson`);
+
+const builtSlugs = new Set<string>(["/", "/learn/", "/calculators/", "/compare/"]);
+for (const coll of ["explainers", "comparisons", "legal"] as const) {
+  for (const e of await getCollection(coll)) builtSlugs.add(e.data.slug);
+}
+
+const trail = [{ name: "Learn", slug: "/learn/" }, { name: d.title, slug: d.slug }];
+const sections = [
+  { depth: 2, slug: "try-it", text: "Try it" },
+  { depth: 2, slug: "quiz", text: "Quick quiz" },
+  { depth: 2, slug: "for-parents-and-teachers", text: "For parents and teachers" },
+];
+---
+
+<BaseLayout
+  title={d.title}
+  metaDescription={d.meta_description}
+  slug={d.slug}
+  pageType={d.page_type}
+  dateModified={d.last_reviewed}
+  noindex={d.status !== "live"}
+  breadcrumbs={trail}
+  readingProgress
+>
+  <ArticleShell
+    eyebrow="Learn · Kids money lesson"
+    title={d.title}
+    lastReviewed={String(d.last_reviewed)}
+    reviewCadence={d.review_cadence}
+    trail={trail}
+    headings={[...headings, ...sections]}
+    body={entry.body}
+    honestyFoot={false}
+    newsletter={d.newsletter_placement}
+  >
+    <Content />
+
+    <h2 id="try-it">Try it</h2>
+    <div class="callout callout-example">
+      <span class="tag">This week, with a parent</span>
+      <p>{d.try_it}</p>
+    </div>
+
+    <h2 id="quiz">Quick quiz</h2>
+    <ol class="kids-quiz">
+      {d.quiz.map((q) => (
+        <li class="kids-quiz-item">
+          <p class="kids-quiz-q">{q.question}</p>
+          {q.choices && (
+            <ul class="kids-quiz-choices">
+              {q.choices.map((c, i) => <li>{choiceLetter(i)} {c}</li>)}
+            </ul>
+          )}
+          <details class="kids-quiz-answer">
+            <summary>Show the answer</summary>
+            <p><strong>Answer: {answerLabel(q)}.</strong> Why: {q.why}</p>
+          </details>
+        </li>
+      ))}
+    </ol>
+
+    <h2 id="for-parents-and-teachers">For parents and teachers</h2>
+    <div class="callout">
+      <p>{d.parent_note}</p>
+    </div>
+
+    <p class="kids-foot">Education, not advice. The examples in this lesson are story scenes, not real rates or products.</p>
+
+    <RelatedCards slot="below" slugs={d.related} builtSlugs={builtSlugs} />
+  </ArticleShell>
+</BaseLayout>
+
+<style>
+  .kids-quiz { padding-left: 1.3rem; }
+  .kids-quiz-item { margin-bottom: 1.75rem; }
+  .kids-quiz-q { font-weight: 650; margin-bottom: 0.5rem; }
+  .kids-quiz-choices { list-style: none; padding-left: 0; margin-bottom: 0.5rem; }
+  .kids-quiz-choices li { padding-left: 0; }
+  .kids-quiz-answer summary { cursor: pointer; font-weight: 650; color: var(--lake-900); }
+  .kids-quiz-answer p { margin: 0.5rem 0 0; }
+  .kids-foot { margin-top: 2.5rem; font-size: 0.95rem; color: var(--ink-soft); }
+</style>

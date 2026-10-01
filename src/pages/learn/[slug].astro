@@ -10,7 +10,8 @@ import RelatedCards from "../../components/RelatedCards.astro";
 import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
-  const explainers = await getCollection("explainers");
+  // Kids lessons have nested slugs (/learn/kids/*) and their own renderer.
+  const explainers = (await getCollection("explainers")).filter((e) => e.data.page_type !== "kids-lesson");
   return explainers.map((e) => ({
     params: { slug: e.data.slug.replace("/learn/", "") },
     props: { entry: e },

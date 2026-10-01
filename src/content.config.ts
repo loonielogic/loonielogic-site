@@ -1,7 +1,7 @@
 /**
  * content.config.ts — Astro Content Layer collections for LoonieLogic.
  *
- * Collections: explainers (/learn/*), comparisons (/compare/*), legal
+ * Collections: explainers (/learn/*, incl. /learn/kids/*), comparisons (/compare/*), legal
  * (/about, /privacy, /affiliate-disclosure, /terms). Calculators are data
  * manifests in src/data/calculator-manifests.json (their pages are .astro
  * shells + islands per frontend-build-spec.md); hubs are generated from
@@ -17,6 +17,7 @@ import {
   comparisonSchema,
   legalSchema,
   glossarySchema,
+  kidsLessonSchema,
 } from "./schemas/page-manifest";
 
 export const collections = {
@@ -24,7 +25,8 @@ export const collections = {
     loader: glob({ pattern: "**/*.mdx", base: "./src/content/explainers" }),
     // The glossary lives in src/content/explainers/ with page_type: glossary —
     // the union keeps one directory while enforcing the stricter glossary rules.
-    schema: explainerSchema.or(glossarySchema),
+    // Kids lessons (page_type: kids-lesson) live in the kids/ subdirectory.
+    schema: explainerSchema.or(glossarySchema).or(kidsLessonSchema),
   }),
 
   comparisons: defineCollection({

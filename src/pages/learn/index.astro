@@ -8,7 +8,8 @@ const cards = sectionPages("/learn/");
 const ordered = [...cards.filter((c) => c.slug !== "/learn/glossary"), ...cards.filter((c) => c.slug === "/learn/glossary")];
 
 const explainers = await getCollection("explainers");
-const builtSlugs = new Set(explainers.map((e) => e.data.slug));
+// Draft lessons (e.g. /learn/kids/*) are built noindex but not listed or counted.
+const builtSlugs = new Set(explainers.filter((e) => e.data.status === "live").map((e) => e.data.slug));
 
 const groups = [
   { label: "Accounts", slugs: ["/learn/tfsa", "/learn/rrsp", "/learn/fhsa", "/learn/home-buyers-plan", "/learn/tfsa-overcontribution-fix", "/learn/resp"] },

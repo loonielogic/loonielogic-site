@@ -41,6 +41,7 @@ export const PageType = z.enum([
   "comparison",
   "legal",
   "glossary",
+  "kids-lesson",
 ]);
 
 export const Cluster = z.enum([
@@ -50,6 +51,7 @@ export const Cluster = z.enum([
   "banking",
   "investing",
   "utility",
+  "kids",
 ]);
 
 export const Status = z.enum(["draft", "review", "live"]);
@@ -149,6 +151,42 @@ export const glossarySchema = pageManifestBase.extend({
   terms_count: z.number().int().positive(),
 });
 
+/** Kids lesson quiz item: true/false questions omit `choices`. */
+export const kidsQuizItemSchema = z.object({
+  question: z.string().min(10).max(300),
+  choices: z.array(z.string().min(1)).min(2).max(4).optional(),
+  answer: z.string().min(1).max(100),
+  why: z.string().min(10).max(300),
+});
+
+/** Kids lessons: /learn/kids/* (Segment A, ages 10-14). One idea, one
+ *  illustration, one 3-question quiz, one try-it. Examples are illustrative,
+ *  so no registry figures; no affiliate links; no newsletter forms. */
+export const kidsLessonSchema = pageManifestBase.extend({
+  page_type: z.literal("kids-lesson"),
+  cluster: z.literal("kids"),
+  figures: z
+    .array(figureEntrySchema)
+    .max(0, "kids lessons carry no registry figures (examples are illustrative)")
+    .default([]),
+  affiliate_disclosure: z.literal(false).default(false),
+  affiliate_links: z
+    .array(affiliateLinkSchema)
+    .max(0, "kids lessons carry no affiliate links")
+    .default([]),
+  newsletter_placement: z.enum(["none", "soft-link"], {
+    message: "kids lessons may not carry newsletter forms",
+  }),
+  one_idea: z.string().min(20).max(300),
+  key_takeaway: z
+    .string()
+    .startsWith("After this lesson, a kid can", 'key_takeaway must start with "After this lesson, a kid can"'),
+  try_it: z.string().min(20).max(600),
+  quiz: z.array(kidsQuizItemSchema).length(3, "kids lessons ship exactly 3 quiz questions"),
+  parent_note: z.string().min(20).max(800),
+  illustration_brief: z.string().min(20).max(800),
+});
+
 /** Comparisons: /compare/* — affiliate disclosure mandatory, quiz required. */
 export const comparisonSchema = pageManifestBase.extend({
   page_type: z.literal("comparison"),
@@ -190,4 +228,5 @@ export const homeSchema = pageManifestBase.extend({
 });
 
 export type PageManifest = z.infer<typeof pageManifestBase>;
+export type KidsLesson = z.infer<typeof kidsLessonSchema>;
 export type CalculatorManifest = z.infer<typeof calculatorManifestSchema>;

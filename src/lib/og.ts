@@ -23,7 +23,7 @@ export const OG_TITLE_MAX = 60;
 /** Second line (verdict or meta description) cap, sized to fit two lines on the card. */
 export const OG_LINE_MAX = 110;
 
-export type OgKind = "home" | "hub" | "explainer" | "comparison" | "calculator" | "legal" | "glossary" | "wordmark";
+export type OgKind = "home" | "hub" | "explainer" | "comparison" | "calculator" | "legal" | "glossary" | "kids-lesson" | "wordmark";
 
 export interface OgEntry {
   slug: string;
