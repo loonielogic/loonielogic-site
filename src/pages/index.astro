@@ -15,6 +15,7 @@ import { getCollection } from "astro:content";
 import { pageBySlug } from "../lib/site";
 import { plan, defaultInput } from "../lib/calculators/down-payment-planner";
 import { $, pct } from "../lib/calculators/down-payment-planner-render";
+import manifests from "../data/calculator-manifests.json";
 
 const title = "LoonieLogic: Canadian Money, Explained in Plain English";
 const metaDescription =
@@ -28,6 +29,10 @@ const builtSlugs = new Set<string>(["/", "/learn/", "/calculators/", "/compare/"
 for (const coll of ["explainers", "comparisons", "legal"] as const) {
   for (const e of await getCollection(coll)) builtSlugs.add(e.data.slug);
 }
+// Calculator pages are built as routes from manifests.json, not as content
+// collections, so add their manifest slugs too. Without this, liveIn() never
+// sees a calculator and the Try card renders the stale draft branch.
+for (const x of manifests.manifests) builtSlugs.add(x.slug);
 
 function link(slug: string) {
   return builtSlugs.has(slug);
