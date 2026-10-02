@@ -14,6 +14,7 @@ import { $, $c, NOT_VERIFIED, alerts, card, pct, row, table, type Alert } from "
 import {
   BPA_PHASE_FROM,
   BPA_PHASE_TO,
+  CANADA_EMPLOYMENT_AMOUNT,
   FEDERAL_BPA_BASE,
   FEDERAL_BPA_MAX,
   FHSA_ANNUAL,
@@ -52,7 +53,7 @@ function warningCopy(w: TaxWarning, r: TaxResult): Alert {
     case "oas_recovery":
       return { tone: "info", html: `<strong>Age 65+: OAS recovery tax.</strong> On net income above ${$(OAS_THRESHOLD)}, 15% of the excess is clawed back from Old Age Security. At this income that is up to ${$(r.oasRecovery)}, limited to the OAS you receive. It is not included in the totals above.` };
     case "ontario_health_premium":
-      return { tone: "info", html: `<strong>Ontario Health Premium not included.</strong> Ontario charges up to $900 a year on taxable income above $20,000. The income-to-premium table is not yet in this tool, so Ontario totals run a little low.` };
+      return { tone: "info", html: `<strong>Ontario Health Premium above $25,000 not yet included.</strong> The premium's first tier (6% of income over $20,000 to $25,000) is in the totals; the higher tiers are not yet in this tool, so Ontario tax runs a little low at this income.` };
   }
 }
 
@@ -99,11 +100,20 @@ function lineByLine(r: TaxResult): string {
   rows.push(row("Taxable income", $(c.taxable), "ck-total"));
   rows.push(row("Federal tax on the brackets", $(f.basic)));
   rows.push(row(`Less basic personal amount credit (${$(f.bpa)} &times; 14%)`, `&minus;${$(Math.min(f.basic, f.credit))}`, "ck-sub"));
+  if (f.cppCredit > 0) rows.push(row(`Less ${pay.pensionLabel} contributions credit (14% of ${$(pay.creditEligiblePension)})`, `&minus;${$(f.cppCredit)}`, "ck-sub"));
+  if (f.eiCredit > 0) rows.push(row(`Less EI premiums credit (14% of ${$(pay.ei)})`, `&minus;${$(f.eiCredit)}`, "ck-sub"));
+  if (f.employmentCredit > 0) {
+    const employmentBase = Math.min(CANADA_EMPLOYMENT_AMOUNT, i.employment);
+    rows.push(row(`Less Canada employment amount credit (${$(employmentBase)} &times; 14%)`, `&minus;${$(f.employmentCredit)}`, "ck-sub"));
+  }
   if (f.abatement > 0) rows.push(row(`Less Quebec abatement (${pct(QC_ABATEMENT, 1)})`, `&minus;${$(f.abatement)}`, "ck-sub"));
   rows.push(row("Federal tax", $(f.net), "ck-hl"));
   rows.push(row(`${prov} tax on the brackets`, $(p.basic)));
   rows.push(row(`Less basic personal amount credit (${$(p.bpa)})`, `&minus;${$(Math.min(p.basic, p.credit))}`, "ck-sub"));
   if (p.surtax > 0) rows.push(row("Ontario surtax", $(p.surtax), "ck-sub"));
+  if (p.taxReduction > 0) rows.push(row("Less Ontario tax reduction", `&minus;${$(p.taxReduction)}`, "ck-sub"));
+  if (p.lift > 0) rows.push(row("Less Ontario LIFT credit", `&minus;${$(p.lift)}`, "ck-sub"));
+  if (p.ohp > 0) rows.push(row("Ontario Health Premium", $(p.ohp), "ck-sub"));
   rows.push(row(`${prov} tax`, $(p.net), "ck-hl"));
   rows.push(row("Total income tax", $(c.tax.total), "ck-total"));
   if (pay.pension > 0 || i.employment + i.selfEmployment > 0) rows.push(row(`${pay.pensionLabel} contributions`, $c(pay.pension)));
@@ -113,7 +123,7 @@ function lineByLine(r: TaxResult): string {
   rows.push(row("Take-home pay", $(c.takeHome), "ck-total"));
   return card(
     "From gross to take-home, line by line",
-    `${table(rows, `${TAX_YEAR} tax year, ${prov}`)}<p class="ck-note">Laid out the way a tax return reads: income, deductions, taxable income, tax, then payroll contributions. Credits other than the basic personal amount are left out in this version.</p>`,
+    `${table(rows, `${TAX_YEAR} tax year, ${prov}`)}<p class="ck-note">Laid out the way a tax return reads: income, deductions, taxable income, tax, then payroll contributions. Federal credits now included: CPP or QPP contributions, EI premiums, and the Canada employment amount, each at the 14% lowest federal rate. In Ontario the tax reduction, the LIFT credit, and the health premium up to $25,000 of taxable income are included; the health premium above $25,000 is not yet modelled. LIFT uses gross income minus union or professional dues as its net-income figure and assumes no spouse income.</p>`,
   );
 }
 
@@ -139,7 +149,7 @@ function provinces(r: TaxResult): string {
   const head = `<thead><tr><th scope="col">Province or territory</th><th scope="col" class="ck-num">Income tax</th><th scope="col" class="ck-num">Take-home</th></tr></thead>`;
   return card(
     "Same income, other provinces",
-    `${table(rows, "Same income and deductions, sorted by take-home", head)}<p class="ck-note">A curiosity, not a reason to move: housing and other costs matter far more. Quebec rows include the abatement and Quebec payroll rates; the Ontario row leaves out the health premium.</p>`,
+    `${table(rows, "Same income and deductions, sorted by take-home", head)}<p class="ck-note">A curiosity, not a reason to move: housing and other costs matter far more. Quebec rows include the abatement and Quebec payroll rates; the Ontario row includes the health premium only up to $25,000 of taxable income.</p>`,
   );
 }
 

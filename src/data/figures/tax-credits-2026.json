@@ -1,0 +1,114 @@
+{
+  "entries": [
+    {
+      "expires": "2027-01-01",
+      "key": "credits.canada_employment_amount.2026",
+      "label": "2026 Canada employment amount (line 31260 base)",
+      "notes": "Lesser of $1,501 and employment income. Federal credit value = $1,501 x 14% = $210.14. No provincial equivalent except Yukon.",
+      "source": "http://www.taxtips.ca/filing/canada-employment-amount-tax-credit.htm",
+      "source_note": "taxtips.ca ($1,501 for 2026, $1,471 for 2025) corroborated by TurboTax Canada; CRA line-31260 page not fetched verbatim. Verified 2026-10-01.",
+      "status": "verified",
+      "unit": "cad",
+      "value": 1501,
+      "verified_date": "2026-10-01"
+    },
+    {
+      "expires": "2027-01-01",
+      "key": "credits.ontario_tax_reduction_basic.2026",
+      "label": "2026 Ontario tax reduction basic amount (ON428 line 80)",
+      "notes": "Reduction = (2 x $300) - Ontario tax after surtax, floored at $0; cannot exceed Ontario tax payable. $554 per dependent child under 19 / dependant with impairment / spouse with disability (not modelled in playbook examples).",
+      "source": "http://www.taxtips.ca/ontax/personal-tax-credits.htm",
+      "source_note": "taxtips.ca citing Ontario Taxation Act, 2007 s.20 and CRA Form ON428 line 80. Verified 2026-10-01.",
+      "status": "verified",
+      "unit": "cad",
+      "value": 300,
+      "verified_date": "2026-10-01"
+    },
+    {
+      "expires": "2027-01-01",
+      "key": "credits.ontario_lift_max.2026",
+      "label": "2026 Ontario LIFT credit maximum",
+      "notes": "Non-refundable; reduces Ontario personal income tax (excluding health premium). Credit = min($875, 5.05% of employment income), reduced by 5% of individual adjusted net income over $32,500 (2022-onward rules).",
+      "source": "https://www.ontario.ca/page/low-income-workers-tax-credit",
+      "source_note": "Government of Ontario official page. Verified 2026-10-01.",
+      "status": "verified",
+      "unit": "cad",
+      "value": 875,
+      "verified_date": "2026-10-01"
+    },
+    {
+      "expires": "2027-01-01",
+      "key": "credits.ontario_lift_rate.2026",
+      "label": "2026 Ontario LIFT credit rate on employment income",
+      "notes": "Credit is the lower of the $875 maximum and 5.05% of employment income.",
+      "source": "https://www.ontario.ca/page/low-income-workers-tax-credit",
+      "source_note": "Government of Ontario official page. Verified 2026-10-01.",
+      "status": "verified",
+      "unit": "rate",
+      "value": 0.0505,
+      "verified_date": "2026-10-01"
+    },
+    {
+      "expires": "2027-01-01",
+      "key": "credits.ohp_threshold.2026",
+      "label": "2026 Ontario Health Premium income threshold",
+      "notes": "$0 premium at taxable income of $20,000 or less; premium scales to $900 above $200,600. Collected through the tax system; not reduced by provincial credits.",
+      "source": "https://www.ontario.ca/page/health-premium",
+      "source_note": "Government of Ontario official page, updated 2026-01-22. Verified 2026-10-01.",
+      "status": "verified",
+      "unit": "cad",
+      "value": 20000,
+      "verified_date": "2026-10-01"
+    },
+    {
+      "expires": "2027-01-01",
+      "key": "credits.ohp_tier1_rate.2026",
+      "label": "2026 Ontario Health Premium rate, $20,001-$25,000 tier",
+      "notes": "6% of taxable income over $20,000 in the first tier (e.g. $22,000 income -> $120).",
+      "source": "https://ebsource.com/employment/calculator/income-tax/ontario/",
+      "source_note": "Secondary citing CRA T4032-ON 2026 payroll deductions tables; threshold corroborated by ontario.ca. Verified 2026-10-01.",
+      "status": "verified",
+      "unit": "rate",
+      "value": 0.06,
+      "verified_date": "2026-10-01"
+    },
+    {
+      "key": "credits.ontario_lift_phaseout_threshold.2026",
+      "label": "2026 Ontario LIFT adjusted-net-income phase-out threshold",
+      "value": 32500,
+      "unit": "cad",
+      "status": "verified",
+      "source": "https://www.ontario.ca/page/low-income-workers-tax-credit",
+      "source_note": "Government of Ontario official page (2022-onward rules: LIFT reduced by 5% of individual adjusted net income over $32,500). Verified 2026-10-01.",
+      "verified_date": "2026-10-01",
+      "expires": "2027-01-01",
+      "notes": "For a single filer with no spouse income, adjusted net income is approximated as gross income minus union/professional dues (line 21200). Family income is not modelled in the calculator."
+    },
+    {
+      "key": "credits.ontario_lift_phaseout_rate.2026",
+      "label": "2026 Ontario LIFT phase-out rate on adjusted net income",
+      "value": 0.05,
+      "unit": "rate",
+      "status": "verified",
+      "source": "https://www.ontario.ca/page/low-income-workers-tax-credit",
+      "source_note": "Government of Ontario official page (2022-onward rules). Verified 2026-10-01.",
+      "verified_date": "2026-10-01",
+      "expires": "2027-01-01",
+      "notes": "LIFT = min($875, 5.05% of employment income), reduced by 5% of adjusted net income over $32,500, floored at $0."
+    },
+    {
+      "key": "credits.ohp_tier1_upper.2026",
+      "label": "2026 Ontario Health Premium tier-1 income upper bound",
+      "value": 25000,
+      "unit": "cad",
+      "status": "verified",
+      "source": "https://ebsource.com/employment/calculator/income-tax/ontario/",
+      "source_note": "Secondary citing CRA T4032-ON 2026 payroll deductions tables; first-tier range $20,001-$25,000 per the same table that sourced credits.ohp_tier1_rate.2026. Verified 2026-10-01.",
+      "verified_date": "2026-10-01",
+      "expires": "2027-01-01",
+      "notes": "Only the first tier ($20,001-$25,000 at 6%) is verified for this calculator. Tiers above $25,000 are not modelled; the tool discloses that Ontario estimates above $25,000 of taxable income leave out the health premium."
+    }
+  ],
+  "tax_year": 2026,
+  "topic": "2026 non-refundable tax credits (federal credits, Ontario tax reduction, LIFT, health premium)"
+}

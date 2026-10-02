@@ -20,6 +20,7 @@ import provincialBrackets from "../../data/figures/provincial-brackets-2026.json
 import qpp from "../../data/figures/qpp-2026.json";
 import rentHousing from "../../data/figures/rent-housing-2026.json";
 import rrsp from "../../data/figures/rrsp-2026.json";
+import taxCredits from "../../data/figures/tax-credits-2026.json";
 import tfsa from "../../data/figures/tfsa-2026.json";
 
 export interface FigureEntry {
@@ -50,6 +51,7 @@ const FILES: Record<string, { entries: FigureEntry[] }> = {
   "qpp-2026.json": qpp as { entries: FigureEntry[] },
   "rent-housing-2026.json": rentHousing as { entries: FigureEntry[] },
   "rrsp-2026.json": rrsp as { entries: FigureEntry[] },
+  "tax-credits-2026.json": taxCredits as { entries: FigureEntry[] },
   "tfsa-2026.json": tfsa as { entries: FigureEntry[] },
 };
 

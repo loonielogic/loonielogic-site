@@ -20,7 +20,10 @@ import {
   federalTax,
   incomeTax,
   marginalRate,
+  ontarioHealthPremium,
+  ontarioLift,
   ontarioSurtax,
+  ontarioTaxReduction,
   paycheque,
   payroll,
   provincialTax,
@@ -197,5 +200,76 @@ describe("results copy rules", () => {
 
   test("the BPA phase-down is labelled Not yet verified", () => {
     assert.ok(renderAnnual(estimate(input({ employment: 200_000 }))).includes("Not yet verified"));
+  });
+});
+
+describe("v2 credits", () => {
+  test("federal CPP, EI and Canada employment amount credits at 14%", () => {
+    const f = federalTax(75_000, "ON", undefined, { cppCreditBase: 4_230.45, eiPremiums: 1_123.07, employmentIncome: 75_000 });
+    close(f.cppCredit, 592.26);
+    close(f.eiCredit, 157.23);
+    close(f.employmentCredit, 210.14);
+    close(f.net, f.basic - 2_303.28 - 592.26 - 157.23 - 210.14, 0.02);
+  });
+
+  test("Canada employment amount is capped at employment income", () => {
+    const f = federalTax(30_000, "ON", undefined, { cppCreditBase: 0, eiPremiums: 0, employmentIncome: 1_000 });
+    close(f.employmentCredit, 140);
+  });
+
+  test("Ontario tax reduction: 2 x $300 less tax, floored, capped at tax", () => {
+    close(ontarioTaxReduction(500), 100);
+    assert.equal(ontarioTaxReduction(700), 0);
+    assert.equal(ontarioTaxReduction(0), 0);
+    close(ontarioTaxReduction(454.56), 145.44);
+  });
+
+  test("LIFT: $875 cap, 5% phase-out over $32,500, capped by remaining tax", () => {
+    close(ontarioLift(22_000, 22_000, 2_000), 875);
+    assert.equal(ontarioLift(60_000, 60_000, 5_000), 0);
+    close(ontarioLift(22_000, 22_000, 500), 500);
+  });
+
+  test("Ontario Health Premium: tier 1 only, null above $25,000", () => {
+    assert.equal(ontarioHealthPremium(18_000), 0);
+    close(ontarioHealthPremium(22_000)!, 120);
+    close(ontarioHealthPremium(25_000)!, 300);
+    assert.equal(ontarioHealthPremium(26_000), null);
+    assert.equal(ontarioHealthPremium(0), 0);
+  });
+
+  test("self-employed: only the employee half of base CPP is creditable", () => {
+    const pay = payroll(0, 50_000, "ON", 30);
+    close(pay.creditEligiblePension, 2_766.75);
+    close(pay.selfEmployedPension, 5_533.5);
+  });
+
+  test("default $75,000 Ontario estimate", () => {
+    const r = estimate(input());
+    close(r.core.tax.federal.net, 8_308.09);
+    close(r.core.tax.provincial.net, 3_997.02);
+    close(r.core.tax.total, 12_305.12);
+    close(r.core.takeHome, 57_325.36);
+    assert.equal(r.core.tax.provincial.ohpUnmodeled, true);
+    assert.ok(r.warnings.includes("ontario_health_premium"));
+  });
+
+  test("$22,000 Ontario: reduction, LIFT and tier-1 health premium", () => {
+    const r = estimate(input({ employment: 22_000, age: 30, province: "ON" }));
+    const p = r.core.tax.provincial;
+    close(r.core.tax.federal.net, 362.27);
+    close(p.taxReduction, 144.94);
+    close(p.lift, 310.11);
+    close(p.ohp, 120);
+    close(p.net, 120);
+    close(r.core.tax.total, 482.27);
+    close(r.core.takeHome, 20_058.38);
+    assert.ok(!r.warnings.includes("ontario_health_premium"));
+  });
+
+  test("line by line shows the new credits and drops the v1 note", () => {
+    const html = renderAnnual(estimate(DEFAULT_INPUT));
+    assert.ok(html.includes("Canada employment amount credit"));
+    assert.ok(!html.includes("are left out in this version"));
   });
 });

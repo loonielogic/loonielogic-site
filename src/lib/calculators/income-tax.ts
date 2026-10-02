@@ -4,18 +4,25 @@
  * the results renderer and the tests all call these functions. The TFSA vs
  * RRSP tool reuses incomeTax() for its marginal rates.
  *
- * Spec v1 (income-tax-estimator spec, figures verified 2026-09-27):
+ * Spec v2 (income-tax-estimator spec, figures verified 2026-09-27; credit
+ * figures verified 2026-10-01):
  *   taxable  = all income - RRSP - FHSA - union/professional dues
- *   federal  = 5-band walk - federal BPA x 14% (BPA phases down from
- *              $181,440 to $258,482); Quebec: x (1 - 16.5% abatement)
+ *   federal  = 5-band walk - 14% x (federal BPA + base CPP/QPP employee
+ *              contributions + EI premiums + Canada employment amount)
+ *              (BPA phases down from $181,440 to $258,482);
+ *              Quebec: x (1 - 16.5% abatement)
  *   province = band walk - provincial BPA x the province's lowest rate;
- *              Ontario adds its surtax as its own line
+ *              Ontario adds its surtax, then takes off the Ontario tax
+ *              reduction and the LIFT credit, then adds the tier-1 Ontario
+ *              Health Premium ($20,000 to $25,000 of taxable income)
  *   payroll  = CPP + CPP2 + EI outside Quebec; QPP + QPP2 + EI (QC rate) +
  *              QPIP in Quebec; self-employed pay both CPP halves and no EI
- * Credits other than the basic personal amount (CPP/EI, Canada employment,
- * age, pension) are not in v1, so the estimate runs a little high. Every
- * constant comes from the figure registry via figures.ts, and the tool keeps
- * its own figure log so its sources footer lists exactly the keys it reads.
+ * Still out of scope (and disclosed on the page): the employer-half CPP
+ * deduction for the self-employed, the CPP2/QPP2 income deduction, the
+ * dividend gross-up and capital gains inclusion rate, Ontario Health Premium
+ * tiers above $25,000, and family-income modelling for LIFT. Every constant
+ * comes from the figure registry via figures.ts, and the tool keeps its own
+ * figure log so its sources footer lists exactly the keys it reads.
  */
 
 import { figure, type FigureLog } from "./figures";
@@ -102,6 +109,16 @@ export const OAS_THRESHOLD = fig<number>("oas-gis-2026-q3.json", "oas.recovery_t
 export const OAS_RATE = fig<number>("oas-gis-2026-q3.json", "oas.recovery_tax.rate");
 export const RRSP_CAP = fig<number>("rrsp-2026.json", "rrsp.cap.2026");
 export const FHSA_ANNUAL = fig<number>("fhsa-hbp-2026.json", "fhsa.annual_limit");
+
+export const CANADA_EMPLOYMENT_AMOUNT = fig<number>("tax-credits-2026.json", "credits.canada_employment_amount.2026");
+export const ON_TAX_REDUCTION_BASIC = fig<number>("tax-credits-2026.json", "credits.ontario_tax_reduction_basic.2026");
+export const ON_LIFT_MAX = fig<number>("tax-credits-2026.json", "credits.ontario_lift_max.2026");
+export const ON_LIFT_RATE = fig<number>("tax-credits-2026.json", "credits.ontario_lift_rate.2026");
+export const ON_LIFT_PHASEOUT_FROM = fig<number>("tax-credits-2026.json", "credits.ontario_lift_phaseout_threshold.2026");
+export const ON_LIFT_PHASEOUT_RATE = fig<number>("tax-credits-2026.json", "credits.ontario_lift_phaseout_rate.2026");
+export const OHP_THRESHOLD = fig<number>("tax-credits-2026.json", "credits.ohp_threshold.2026");
+export const OHP_TIER1_RATE = fig<number>("tax-credits-2026.json", "credits.ohp_tier1_rate.2026");
+export const OHP_TIER1_UPPER = fig<number>("tax-credits-2026.json", "credits.ohp_tier1_upper.2026");
 
 /** The CPP/QPP basic exemption applies once a year; the QPP uses the same $3,500 (research file). */
 export const QPP_YBE = CPP_YBE;
@@ -192,23 +209,46 @@ export function federalBpa(netIncome: number): number {
 
 export const inBpaPhaseDown = (netIncome: number) => netIncome > BPA_PHASE_FROM && netIncome < BPA_PHASE_TO;
 
+export interface FederalCreditInputs {
+  /** Credit-eligible base-tier pension contributions (payroll().creditEligiblePension). */
+  cppCreditBase: number;
+  /** EI employee premiums (payroll().ei; QC uses the QC rate, also federally creditable). */
+  eiPremiums: number;
+  /** Employment income only (not self-employment), for the Canada employment amount. */
+  employmentIncome: number;
+}
+export const ZERO_CREDITS: FederalCreditInputs = { cppCreditBase: 0, eiPremiums: 0, employmentIncome: 0 };
+
 export interface FederalTax {
   basic: number;
   bpa: number;
+  /** Basic personal amount credit. */
   credit: number;
+  /** CPP/QPP base contributions credit. */
+  cppCredit: number;
+  eiCredit: number;
+  /** Canada employment amount credit. */
+  employmentCredit: number;
   /** Quebec abatement (0 elsewhere). */
   abatement: number;
   net: number;
 }
 
-/** `claim` overrides the BPA (paycheque mode uses the TD1 claim amount). */
-export function federalTax(taxable: number, prov: Prov, claim?: number): FederalTax {
+/**
+ * `claim` overrides the BPA (paycheque mode uses the TD1 claim amount).
+ * `credits` adds the CPP/QPP, EI and Canada employment amount credits, each
+ * at the lowest federal rate; omitted, they are 0.
+ */
+export function federalTax(taxable: number, prov: Prov, claim?: number, credits: FederalCreditInputs = ZERO_CREDITS): FederalTax {
   const basic = bracketTax(taxable, FEDERAL_BRACKETS);
   const bpa = claim ?? federalBpa(taxable);
   const credit = bpa * FEDERAL_CREDIT_RATE;
-  const afterCredits = Math.max(0, basic - credit);
+  const cppCredit = Math.max(0, credits.cppCreditBase) * FEDERAL_CREDIT_RATE;
+  const eiCredit = Math.max(0, credits.eiPremiums) * FEDERAL_CREDIT_RATE;
+  const employmentCredit = Math.min(CANADA_EMPLOYMENT_AMOUNT, Math.max(0, credits.employmentIncome)) * FEDERAL_CREDIT_RATE;
+  const afterCredits = Math.max(0, basic - credit - cppCredit - eiCredit - employmentCredit);
   const abatement = prov === "QC" ? afterCredits * QC_ABATEMENT : 0;
-  return { basic, bpa, credit, abatement, net: afterCredits - abatement };
+  return { basic, bpa, credit, cppCredit, eiCredit, employmentCredit, abatement, net: afterCredits - abatement };
 }
 
 /**
@@ -223,22 +263,75 @@ export function ontarioSurtax(basicOntarioTax: number): number {
   );
 }
 
+export interface OntarioCreditInputs {
+  employmentIncome: number;
+  /**
+   * Net-income proxy: gross income minus union/professional dues. LIFT phases
+   * out on the larger of individual adjusted net income and a family-income
+   * test that adds a spouse's income; the spouse side is not modelled, so
+   * this assumes no spouse income.
+   */
+  adjustedNetIncome: number;
+}
+
+/** ON428 tax reduction: min(taxAfterSurtax, max(0, 2 * 300 - taxAfterSurtax)). */
+export function ontarioTaxReduction(taxAfterSurtax: number): number {
+  const tax = Math.max(0, taxAfterSurtax);
+  return Math.min(tax, Math.max(0, 2 * ON_TAX_REDUCTION_BASIC - tax));
+}
+
+/** LIFT: min(ontarioTaxAfterReduction, max(0, min(875, 0.0505 * employmentIncome) - 0.05 * max(0, adjustedNetIncome - 32500))). */
+export function ontarioLift(employmentIncome: number, adjustedNetIncome: number, ontarioTaxAfterReduction: number): number {
+  const base = Math.min(ON_LIFT_MAX, ON_LIFT_RATE * Math.max(0, employmentIncome));
+  const phased = Math.max(0, base - ON_LIFT_PHASEOUT_RATE * Math.max(0, adjustedNetIncome - ON_LIFT_PHASEOUT_FROM));
+  return Math.min(Math.max(0, ontarioTaxAfterReduction), phased);
+}
+
+/**
+ * Ontario Health Premium, verified tier-1 only.
+ * Returns 0 at/below $20,000; 6% of (taxable - $20,000) for $20,001-$25,000;
+ * null above $25,000 (not modelled; the caller flags it as unmodelled).
+ */
+export function ontarioHealthPremium(taxable: number): number | null {
+  if (taxable <= OHP_THRESHOLD) return 0;
+  if (taxable <= OHP_TIER1_UPPER) return OHP_TIER1_RATE * (taxable - OHP_THRESHOLD);
+  return null;
+}
+
 export interface ProvincialTax {
   basic: number;
   bpa: number;
   credit: number;
   surtax: number;
+  /** Ontario tax reduction (0 elsewhere). */
+  taxReduction: number;
+  /** Ontario LIFT credit (0 elsewhere). */
+  lift: number;
+  /** Ontario Health Premium, tier 1 only (0 elsewhere or when unmodelled). */
+  ohp: number;
+  /** Ontario taxable income above the verified premium tier: premium not included. */
+  ohpUnmodeled: boolean;
   net: number;
 }
 
-export function provincialTax(taxable: number, prov: Prov, claim?: number): ProvincialTax {
+/** `on` turns on the Ontario reduction, LIFT and health premium; omitted, they are 0. */
+export function provincialTax(taxable: number, prov: Prov, claim?: number, on?: OntarioCreditInputs): ProvincialTax {
   const brackets = PROVINCIAL_BRACKETS[prov];
   const basic = bracketTax(taxable, brackets);
   const bpa = claim ?? PROVINCIAL_BPA[prov];
   const credit = bpa * brackets[0].rate;
   const afterCredits = Math.max(0, basic - credit);
   const surtax = prov === "ON" ? ontarioSurtax(afterCredits) : 0;
-  return { basic, bpa, credit, surtax, net: afterCredits + surtax };
+  const afterSurtax = afterCredits + surtax;
+  if (prov !== "ON" || !on) {
+    return { basic, bpa, credit, surtax, taxReduction: 0, lift: 0, ohp: 0, ohpUnmodeled: false, net: afterSurtax };
+  }
+  const taxReduction = ontarioTaxReduction(afterSurtax);
+  const afterReduction = afterSurtax - taxReduction;
+  const lift = ontarioLift(on.employmentIncome, on.adjustedNetIncome, afterReduction);
+  const premium = ontarioHealthPremium(taxable);
+  const ohp = premium ?? 0;
+  return { basic, bpa, credit, surtax, taxReduction, lift, ohp, ohpUnmodeled: premium === null, net: afterReduction - lift + ohp };
 }
 
 export interface IncomeTax {
@@ -247,9 +340,9 @@ export interface IncomeTax {
   total: number;
 }
 
-export function incomeTax(taxable: number, prov: Prov): IncomeTax {
-  const federal = federalTax(taxable, prov);
-  const provincial = provincialTax(taxable, prov);
+export function incomeTax(taxable: number, prov: Prov, fedCredits: FederalCreditInputs = ZERO_CREDITS, on?: OntarioCreditInputs): IncomeTax {
+  const federal = federalTax(taxable, prov, undefined, fedCredits);
+  const provincial = provincialTax(taxable, prov, undefined, on);
   return { federal, provincial, total: federal.net + provincial.net };
 }
 
@@ -276,6 +369,12 @@ export interface Payroll {
   total: number;
   /** Self-employed share of pension contributions (both halves). */
   selfEmployedPension: number;
+  /**
+   * Base-tier employee-share pension contributions, creditable at the lowest
+   * federal rate: employment base plus the employee half of self-employed
+   * base. The employer half is an income deduction, not in scope.
+   */
+  creditEligiblePension: number;
 }
 
 const clampBand = (v: number, lo: number, hi: number) => Math.max(0, Math.min(v, hi) - lo);
@@ -297,6 +396,7 @@ export function payroll(employment: number, selfEmployment: number, prov: Prov, 
   let pension = 0;
   let pension2 = 0;
   let selfEmployedPension = 0;
+  let creditEligiblePension = 0;
   if (age >= CPP_MIN_AGE) {
     const all = employment + selfEmployment;
     const empBase = clampBand(employment, ybe, ympe);
@@ -310,11 +410,12 @@ export function payroll(employment: number, selfEmployment: number, prov: Prov, 
     pension = empPension + sePension;
     pension2 = empPension2 + sePension2;
     selfEmployedPension = sePension + sePension2;
+    creditEligiblePension = empPension + rate * (allBase - empBase);
   }
 
   const ei = qc ? Math.min(employment, EI_MIE) * EI_QC_RATE : Math.min(employment, EI_MIE) * EI_RATE;
   const qpip = qc ? Math.min(employment, QPIP_MIE) * QPIP_RATE : 0;
-  return { pensionLabel, pension, pension2, ei, qpip, total: pension + pension2 + ei + qpip, selfEmployedPension };
+  return { pensionLabel, pension, pension2, ei, qpip, total: pension + pension2 + ei + qpip, selfEmployedPension, creditEligiblePension };
 }
 
 /* ------------------------------------------------------------------ */
@@ -364,8 +465,11 @@ export function core(r: ResolvedTaxInput): Core {
   const gross = r.employment + r.selfEmployment + r.otherIncome;
   const deductions = Math.min(gross, r.rrsp + r.fhsa + r.dues);
   const taxable = gross - deductions;
-  const tax = incomeTax(taxable, r.province);
   const pay = payroll(r.employment, r.selfEmployment, r.province, r.age);
+  const fedCredits: FederalCreditInputs = { cppCreditBase: pay.creditEligiblePension, eiPremiums: pay.ei, employmentIncome: r.employment };
+  const on: OntarioCreditInputs | undefined =
+    r.province === "ON" ? { employmentIncome: r.employment, adjustedNetIncome: gross - Math.min(gross, r.dues) } : undefined;
+  const tax = incomeTax(taxable, r.province, fedCredits, on);
   return { gross, deductions, taxable, tax, payroll: pay, takeHome: gross - tax.total - pay.total };
 }
 
@@ -429,7 +533,7 @@ export function estimate(i: TaxInput): TaxResult {
   if (r.selfEmployment > 0) warnings.push("self_employed");
   const oasRecovery = r.age >= SENIOR_AGE ? Math.max(0, c.taxable - OAS_THRESHOLD) * OAS_RATE : 0;
   if (oasRecovery > 0) warnings.push("oas_recovery");
-  if (r.province === "ON" && c.taxable > 0) warnings.push("ontario_health_premium");
+  if (c.tax.provincial.ohpUnmodeled) warnings.push("ontario_health_premium");
 
   const withRrsp = core({ ...r, rrsp: r.rrsp + RRSP_WHAT_IF });
   return {
@@ -496,7 +600,9 @@ export interface PaychequeResult {
  * yearly maximum; CPP2/QPP2 only on cumulative earnings between the two
  * ceilings; EI and QPIP at their rates up to the yearly maximum. Tax
  * withheld annualizes the first pay after CPP/EI/QPIP, runs it through the
- * bands, takes off the TD1 claims as credits, then divides by the periods.
+ * bands, takes off the TD1 claims and the yearly CPP/QPP, EI and Canada
+ * employment amount credits (plus the Ontario reduction, LIFT and tier-1
+ * health premium in Ontario), then divides by the periods.
  */
 export function paycheque(i: TaxInput): PaychequeResult {
   const r = resolve(i);
@@ -517,6 +623,9 @@ export function paycheque(i: TaxInput): PaychequeResult {
 
   const td1Federal = r.td1Federal ?? FEDERAL_BPA_MAX;
   const td1Provincial = r.td1Provincial ?? PROVINCIAL_BPA[prov];
+  const annualPay = payroll(r.employment, 0, prov, r.age);
+  const credits: FederalCreditInputs = { cppCreditBase: annualPay.creditEligiblePension, eiPremiums: annualPay.ei, employmentIncome: r.employment };
+  const on: OntarioCreditInputs | undefined = prov === "ON" ? { employmentIncome: r.employment, adjustedNetIncome: r.employment } : undefined;
 
   const lines: PayLine[] = [];
   let ytdP = 0;
@@ -548,8 +657,8 @@ export function paycheque(i: TaxInput): PaychequeResult {
     if (pension2StartsAt === null && pension2 > 0) pension2StartsAt = k;
     if (k === 1) {
       const annualized = Math.max(0, (gross - pension - pension2 - ei - qpip) * periods);
-      federalPerPay = federalTax(annualized, prov, td1Federal).net / periods;
-      provincialPerPay = provincialTax(annualized, prov, td1Provincial).net / periods;
+      federalPerPay = federalTax(annualized, prov, td1Federal, credits).net / periods;
+      provincialPerPay = provincialTax(annualized, prov, td1Provincial, on).net / periods;
     }
     const net = gross - pension - pension2 - ei - qpip - federalPerPay - provincialPerPay;
     lines.push({ pay: k, gross, pension, pension2, ei, qpip, federal: federalPerPay, provincial: provincialPerPay, net });

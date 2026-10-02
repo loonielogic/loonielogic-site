@@ -109,10 +109,10 @@ const initialHtml = renderAnnual(estimate(d));
   <ul>
     <li><strong>Taxable income</strong> is all your income minus RRSP and FHSA contributions and union or professional dues.</li>
     <li><strong>Tax is worked bracket by bracket.</strong> Each slice of income is taxed at its own federal and provincial rate, using the {TAX_YEAR} brackets for all 13 provinces and territories. Ontario's surtax shows as its own line.</li>
-    <li><strong>Credits: the basic personal amount only.</strong> Federal and provincial basic personal amounts are taken off at the lowest rate. Credits for CPP and EI contributions, the Canada employment amount, the age amount and the pension amount are not in this version, so the estimate runs a little high, often by several hundred dollars.</li>
+    <li><strong>Credits:</strong> federal and provincial basic personal amounts are taken off at the lowest rate. Federal credits for CPP or QPP contributions, EI premiums and the Canada employment amount are taken off at 14%. In Ontario, the Ontario tax reduction and the LIFT credit come off, and the Ontario Health Premium is added up to $25,000 of taxable income. LIFT uses gross income minus union or professional dues as net income and assumes no spouse income. The age amount and the pension amount are not in this version, so the estimate can run a little high for those who qualify.</li>
     <li><strong>The federal basic personal amount phases down</strong> between $181,440 and $258,482 of income. The tool uses a straight line between the two endpoints, which is not yet checked against CRA's worksheet.</li>
     <li><strong>Payroll:</strong> CPP (or QPP in Quebec), CPP2, EI and QPIP use the {TAX_YEAR} rates and yearly maximums. Self-employed income pays both halves of CPP and no EI.</li>
-    <li><strong>Left out on purpose:</strong> the dividend gross-up and credit, the capital gains inclusion rate, the Ontario Health Premium, pension income splitting, and part-year or multi-province residence. Quebec taxable income can differ slightly from the federal figure used here.</li>
+    <li><strong>Left out on purpose:</strong> the dividend gross-up and credit, the capital gains inclusion rate, the Ontario Health Premium above $25,000 of taxable income, the self-employed deduction for the employer half of CPP and the CPP2 or QPP2 deduction, pension income splitting, and part-year or multi-province residence. Quebec taxable income can differ slightly from the federal figure used here.</li>
     <li><strong>Paycheque mode</strong> assumes the same pay every period, no other income, and your TD1 claims. Your employer's payroll follows CRA's exact formulas.</li>
     <li><strong>Nothing is saved.</strong> Your numbers stay in this browser tab.</li>
   </ul>
@@ -121,7 +121,7 @@ const initialHtml = renderAnnual(estimate(d));
   </p>
 </section>
 
-<CalcSources figures={[...taxFigures.values()]} checked="2026-09-27 to 2026-09-28" />
+<CalcSources figures={[...taxFigures.values()]} checked="2026-09-27 to 2026-10-01" />
 
 <script>
   import { estimate, paycheque, validate, isProv, type Field, type PayFrequency, type TaxInput } from "../../lib/calculators/income-tax";
