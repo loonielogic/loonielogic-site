@@ -1,6 +1,6 @@
 {
   "_note": "Canonical sitemap data generated from hidden_files/site-ia-sitemap.md v1.2 (2026-09-29). This file is the slug allowlist for content validation (validate-content.ts) and the input for hub-page generation. Titles/metas carried verbatim from the sitemap table. Regenerate if the sitemap is amended.",
-  "generated": "2026-10-01",
+  "generated": "2026-10-02",
   "hubs": [
     {
       "section": "explainers",
@@ -1092,7 +1092,122 @@
       ],
       "review_cadence": "annual",
       "note": "Segment A (10-14). All examples illustrative, never real rates."
+    },
+    {
+      "slug": "/learn/newcomer-credit-cards",
+      "title": "Credit Cards for Newcomers to Canada: 2026 Guide",
+      "meta_description": "New to Canada with no credit history? Newcomer bank programs, secured cards, and a SIN can get you a first credit card that reports to Equifax and TransUnion.",
+      "page_type": "explainer",
+      "cluster": "banking",
+      "hub": "/learn/",
+      "wave": 2,
+      "status": "draft",
+      "related": [
+        "/learn/credit-score",
+        "/compare/best-bank-accounts-beginners",
+        "/learn/glossary"
+      ],
+      "review_cadence": "annual",
+      "note": "Reddit-gap draft (item 70). Publish early-mid Nov 2026 with wave 2.",
+      "faq": [
+        {
+          "q": "How long until I get my first score?",
+          "a": "Plan on 3 to 6 months of reported activity, with the first numeric score typically around month 6, usually landing in the fair range (560 to 659). Reaching \"good\" (660+) typically takes 1 to 2 years of steady payments and low utilization."
+        },
+        {
+          "q": "Do I need a job to get a newcomer card?",
+          "a": "Not always. Newcomer programs weigh identity documents and sometimes income or deposits rather than demanding a Canadian pay stub. International students with no income routinely get student and newcomer cards with modest limits. Showing income or savings still improves approval odds and the limit offered."
+        },
+        {
+          "q": "Can I transfer my home-country score?",
+          "a": "No. Canadian bureaus only track Canadian accounts. Scotiabank's StartRight can consider home-country history when setting a limit, but it does not import your score. Everyone starts fresh."
+        },
+        {
+          "q": "Will checking my own score hurt it?",
+          "a": "No. Self-checks are soft inquiries with zero effect. Banks, Borrowell, and Credit Karma show free scores in their apps. Check monthly while building; it is how you confirm your card is actually reporting."
+        }
+      ],
+      "faq_pages": [
+        "FAQPage"
+      ]
+    },
+    {
+      "slug": "/learn/fraud-scams-basics",
+      "title": "Fraud and Scam Basics Canada 2026: Spot and Stop Them",
+      "meta_description": "Fraud cost Canadians $638 million in 2024. The scams to watch for, the red flags that give them away, and exactly what to do in the first 24 hours after one.",
+      "page_type": "explainer",
+      "cluster": "banking",
+      "hub": "/learn/",
+      "wave": 2,
+      "status": "draft",
+      "related": [
+        "/learn/credit-score",
+        "/compare/best-bank-accounts-beginners",
+        "/learn/glossary"
+      ],
+      "review_cadence": "annual",
+      "note": "Reddit-gap draft (item 70). Publish early-mid Nov 2026 with wave 2.",
+      "faq": [
+        {
+          "q": "If my credit card is used fraudulently, am I on the hook?",
+          "a": "Under the Bank Act, your maximum liability for unauthorized credit card transactions is $50, and only if the bank can show gross negligence. In practice the card networks' zero-liability policies usually mean $0 if you report promptly. Report unknown charges the moment you spot them."
+        },
+        {
+          "q": "Will the real CRA ever call or text me?",
+          "a": "The CRA may call you about a legitimate tax matter, and may send a text only in narrow cases (like a two-factor login code you triggered). It will never start a conversation by text or messaging app, never ask you to click a link to claim a refund, never threaten arrest, and never demand gift cards or crypto. When in doubt, hang up and call 1-800-959-8281."
+        },
+        {
+          "q": "An e-transfer was intercepted. Can the money come back?",
+          "a": "Maybe. Contact both your bank and the recipient's bank immediately; the faster the report, the better the odds of a recall. There is no guarantee, because once the fraudster moves the money onward it may be gone. Prevention (auto-deposit, unique passwords, strong security questions) matters far more than recovery."
+        },
+        {
+          "q": "I got a scam text but lost nothing. Is it worth reporting?",
+          "a": "Yes. The CAFC explicitly asks Canadians to report all scams and attempts, not just successful ones; the data feeds police investigations and public warnings. Forwarding the text to 7726 takes seconds and helps carriers block the sender's infrastructure."
+        }
+      ],
+      "faq_pages": [
+        "FAQPage"
+      ]
+    },
+    {
+      "slug": "/learn/gifted-down-payment-tax-rules",
+      "title": "Gifted Down Payment Tax Rules Canada 2026: The Guide",
+      "meta_description": "Canada has no gift tax, so a gifted down payment is not income. But lenders want a paper trail, and selling investments to fund it can bill the giver.",
+      "page_type": "explainer",
+      "cluster": "housing",
+      "hub": "/learn/",
+      "wave": 5,
+      "status": "draft",
+      "related": [
+        "/learn/mortgage-pre-approval",
+        "/compare/fhsa-vs-home-buyers-plan",
+        "/learn/first-time-home-buyer-incentives",
+        "/learn/fhsa"
+      ],
+      "review_cadence": "annual",
+      "note": "Reddit-gap draft (item 70). Spring 2027 housing wave (wave 5).",
+      "faq": [
+        {
+          "q": "Does my parent have to pay tax on money they gift me for a down payment?",
+          "a": "Giving cash has no tax consequence for the donor. The exception is selling appreciated investments to raise the cash: the resulting capital gain is the donor's taxable income at the 50% inclusion rate. Gifting appreciated property directly is deemed to happen at fair market value, with the same result."
+        },
+        {
+          "q": "Do I need to report a gifted down payment on my tax return?",
+          "a": "No. A personal cash gift is not taxable income and does not go on the T1. Income the gift earns after receipt, such as interest or investment returns, is taxable and reported normally."
+        },
+        {
+          "q": "Can the entire down payment be a gift?",
+          "a": "Yes. There is no cap, and no rule requires the buyer to save a portion themselves, though individual lenders may set their own policies for specific borrower types. The donor needs to be an acceptable source, typically immediate family, with a compliant gift letter and full paper trail."
+        },
+        {
+          "q": "What happens if the lender finds out a gift is really a loan?",
+          "a": "The application is re-underwritten with the loan payments included in the debt service ratios, which often means the mortgage no longer qualifies. Misrepresenting the source on signed documents is mortgage fraud. Legitimate borrowed-down-payment programs require full disclosure from the start."
+        }
+      ],
+      "faq_pages": [
+        "FAQPage"
+      ]
     }
   ],
-  "version": "1.3"
+  "version": "1.4"
 }

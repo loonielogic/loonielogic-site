@@ -95,7 +95,7 @@ export const pageManifestBase = z.object({
   meta_description: z.string().min(140).max(160),
 
   /* publishing */
-  wave: z.number().int().min(0).max(4), // 0 = foundation/home; 1-3 = sitemap waves
+  wave: z.number().int().min(0).max(7), // 0 = foundation/home; 1-7 = sitemap waves
   status: Status,
   publish_date: dateString.nullable(),
   last_reviewed: dateString,

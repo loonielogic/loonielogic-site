@@ -137,12 +137,6 @@
     "title": "Learn Canadian Money: Explainers 2026",
     "line": "Plain-English guides to Canadian money, starting with the TFSA: real 2026 numbers, the expensive mistakes…"
   },
-  "/learn/glossary": {
-    "image": "/og/learn-glossary.png",
-    "alt": "LoonieLogic glossary: Canadian Finance Glossary: 49 Terms in Plain English",
-    "title": "Canadian Finance Glossary: 49 Terms in Plain English",
-    "line": "Every Canadian money term, decoded: TFSA, RRSP, FHSA, marginal rates, CMHC, OAS clawback and 43 more."
-  },
   "/learn/fhsa-open-before-dec-31": {
     "image": "/og/learn-fhsa-open-before-dec-31.png",
     "alt": "LoonieLogic explainer: Open your FHSA before Dec 31: why 2026 room is lost forever",
@@ -155,6 +149,24 @@
     "title": "First paycheque, decoded: CPP, EI, tax, and the first $1,000",
     "line": "Your first paycheque is smaller than hours times rate. CPP at 5.95%, EI at 1.63%…"
   },
+  "/learn/fraud-scams-basics": {
+    "image": "/og/learn-fraud-scams-basics.png",
+    "alt": "LoonieLogic explainer: Fraud and Scam Basics Canada 2026: Spot and Stop Them",
+    "title": "Fraud and Scam Basics Canada 2026: Spot and Stop Them",
+    "line": "Fraud cost Canadians $638 million in 2024. The scams to watch for, the red flags that give them away…"
+  },
+  "/learn/gifted-down-payment-tax-rules": {
+    "image": "/og/learn-gifted-down-payment-tax-rules.png",
+    "alt": "LoonieLogic explainer: Gifted Down Payment Tax Rules Canada 2026: The Guide",
+    "title": "Gifted Down Payment Tax Rules Canada 2026: The Guide",
+    "line": "Canada has no gift tax, so a gifted down payment is not income."
+  },
+  "/learn/glossary": {
+    "image": "/og/learn-glossary.png",
+    "alt": "LoonieLogic glossary: Canadian Finance Glossary: 49 Terms in Plain English",
+    "title": "Canadian Finance Glossary: 49 Terms in Plain English",
+    "line": "Every Canadian money term, decoded: TFSA, RRSP, FHSA, marginal rates, CMHC, OAS clawback and 43 more."
+  },
   "/learn/kids/growing-savings": {
     "image": "/og/learn-kids-growing-savings.png",
     "alt": "LoonieLogic kids money lesson: How Savings Grow for Kids: Watch the Loon's Loonies",
@@ -166,6 +178,12 @@
     "alt": "LoonieLogic kids money lesson: Needs vs Wants for Kids: The Loon's Grocery Test",
     "title": "Needs vs Wants for Kids: The Loon's Grocery Test",
     "line": "A kids money lesson: needs keep you healthy and safe, wants are fun to have."
+  },
+  "/learn/newcomer-credit-cards": {
+    "image": "/og/learn-newcomer-credit-cards.png",
+    "alt": "LoonieLogic explainer: Credit Cards for Newcomers to Canada: 2026 Guide",
+    "title": "Credit Cards for Newcomers to Canada: 2026 Guide",
+    "line": "New to Canada with no credit history? Newcomer bank programs, secured cards…"
   },
   "/learn/tfsa": {
     "image": "/og/learn-tfsa.png",
