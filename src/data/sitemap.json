@@ -1040,7 +1040,28 @@
         "/learn/federal-tax-brackets-2026"
       ],
       "review_cadence": "annual",
-      "note": "Segment B (15-22). Meta written at v1.3 amendment per item 46."
+      "note": "Segment B (15-22). Meta written at v1.3 amendment per item 46.",
+      "faq_pages": [
+        "FAQPage"
+      ],
+      "faq": [
+        {
+          "q": "I have two part-time jobs. Do I fill out the TD1 the same way at both?",
+          "a": "No. The basic personal amount can be claimed at only one job at a time; the back of the TD1 says so. The second job's form gets $0 in the claim box. Claiming the full amount at both means each employer withholds as if it were the only income, too little tax comes off, and the first tax return shows a balance owing."
+        },
+        {
+          "q": "Why does my paycheque show deductions if I earn too little to owe income tax?",
+          "a": "Most of what comes off a part-time paycheque is not income tax. CPP takes 5.95% of pay above the $3,500 basic exemption and EI takes 1.63% of insurable earnings in 2026, at any income level. Federal income tax only starts above the $16,452 basic personal amount. At $15,000 a year, CPP and EI come to $928.75 while federal income tax is $0."
+        },
+        {
+          "q": "Where does the first $1,000 from a first job usually go?",
+          "a": "A common first step is a starter emergency buffer, often $500 to $1,000, kept in a savings account and touched only for real surprises. The point is that one bad week does not turn into credit-card debt at 20% interest. Once the buffer exists, a split decided on payday (a savings goal, a fixed slice for spending, and topping the buffer back up when used) tends to hold better than deciding after spending."
+        },
+        {
+          "q": "Do I need to file a tax return if no tax was owed on my first job?",
+          "a": "Filing is not always required when no tax is owed, but it is usually worth doing. Filing records the income, starts RRSP contribution room accumulating, returns any over-withheld tax as a refund, and unlocks benefit and credit eligibility later. Keep every T4 when tax slips arrive in February."
+        }
+      ]
     },
     {
       "slug": "/learn/kids/needs-vs-wants",

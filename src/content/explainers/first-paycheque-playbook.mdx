@@ -1,0 +1,216 @@
+---
+# identity
+slug: /learn/first-paycheque-playbook
+page_type: explainer
+title: "First paycheque, decoded: CPP, EI, tax, and the first $1,000"
+meta_description: "Your first paycheque is smaller than hours times rate. CPP at 5.95%, EI at 1.63%, and income tax decoded line by line, plus where the first $1,000 should go."
+
+# publishing
+wave: 3
+status: draft
+publish_date: null
+last_reviewed: 2026-10-01
+
+# figure provenance (feeds the Q4 rollover watch)
+figures:
+  - key: credits.canada_employment_amount.2026
+    source: "http://www.taxtips.ca/filing/canada-employment-amount-tax-credit.htm"
+    verified: 2026-10-01
+    expires: 2027-01-01
+  - key: credits.ohp_threshold.2026
+    source: "https://www.ontario.ca/page/health-premium"
+    verified: 2026-10-01
+    expires: 2027-01-01
+  - key: credits.ohp_tier1_rate.2026
+    source: "https://ebsource.com/employment/calculator/income-tax/ontario/"
+    verified: 2026-10-01
+    expires: 2027-01-01
+  - key: credits.ontario_lift_max.2026
+    source: "https://www.ontario.ca/page/low-income-workers-tax-credit"
+    verified: 2026-10-01
+    expires: 2027-01-01
+  - key: credits.ontario_lift_rate.2026
+    source: "https://www.ontario.ca/page/low-income-workers-tax-credit"
+    verified: 2026-10-01
+    expires: 2027-01-01
+  - key: credits.ontario_tax_reduction_basic.2026
+    source: "http://www.taxtips.ca/ontax/personal-tax-credits.htm"
+    verified: 2026-10-01
+    expires: 2027-01-01
+  - key: cpp.ympe.2026
+    source: "https://www.canada.ca/en/services/benefits/publicpensions/cpp/contributions.html"
+    verified: 2026-09-30
+    expires: 2027-01-01
+  - key: cpp.ybe.2026
+    source: "https://www.canada.ca/en/services/benefits/publicpensions/cpp/contributions.html"
+    verified: 2026-09-30
+    expires: 2027-01-01
+  - key: cpp.employee_rate.2026
+    source: "https://www.canada.ca/en/services/benefits/publicpensions/cpp/contributions.html"
+    verified: 2026-09-30
+    expires: 2027-01-01
+  - key: cpp.employee_max.2026
+    source: "https://www.canada.ca/en/services/benefits/publicpensions/cpp/contributions.html"
+    verified: 2026-09-30
+    expires: 2027-01-01
+  - key: cpp.yampe.2026
+    source: "https://www.canada.ca/en/services/benefits/publicpensions/cpp/contributions.html"
+    verified: 2026-09-30
+    expires: 2027-01-01
+  - key: cpp.cpp2_rate.2026
+    source: "https://www.canada.ca/en/services/benefits/publicpensions/cpp/contributions.html"
+    verified: 2026-09-30
+    expires: 2027-01-01
+  - key: cpp.cpp2_employee_max.2026
+    source: "https://www.canada.ca/en/services/benefits/publicpensions/cpp/contributions.html"
+    verified: 2026-09-30
+    expires: 2027-01-01
+  - key: ei.mie.2026
+    source: "https://www.canada.ca/en/employment-social-development/news/2025/08/employment-insurance-premium-rates-for-2026.html"
+    verified: 2026-09-30
+    expires: 2027-01-01
+  - key: ei.employee_rate.2026
+    source: "https://www.canada.ca/en/employment-social-development/news/2025/08/employment-insurance-premium-rates-for-2026.html"
+    verified: 2026-09-30
+    expires: 2027-01-01
+  - key: ei.employee_max.2026
+    source: "https://www.canada.ca/en/employment-social-development/news/2025/08/employment-insurance-premium-rates-for-2026.html"
+    verified: 2026-09-30
+    expires: 2027-01-01
+  - key: ei.qc_employee_rate.2026
+    source: "https://www.canada.ca/en/employment-social-development/news/2025/08/employment-insurance-premium-rates-for-2026.html"
+    verified: 2026-09-30
+    expires: 2027-01-01
+  - key: ei.qc_employee_max.2026
+    source: "https://www.canada.ca/en/employment-social-development/news/2025/08/employment-insurance-premium-rates-for-2026.html"
+    verified: 2026-09-30
+    expires: 2027-01-01
+  - key: bpa.federal.max.2026
+    source: "https://www.canada.ca/en/revenue-agency/services/tax/rates.html"
+    verified: 2026-09-30
+    expires: 2027-01-01
+  - key: bpa.provincial.2026
+    source: "https://assets.kpmg.com/content/dam/kpmgsites/ca/pdf/services/tax/personal-tables/ca-federal-and-provincial-territorial-income-tax-rates-and-brackets-for-2026.pdf.coredownload.inline.pdf"
+    verified: 2026-09-30
+    expires: 2027-01-01
+  - key: federal.brackets.2026
+    source: "https://www.canada.ca/en/revenue-agency/services/tax/rates.html"
+    verified: 2026-09-30
+    expires: 2027-01-01
+  - key: provincial.brackets.2026
+    source: "https://assets.kpmg.com/content/dam/kpmgsites/ca/pdf/services/tax/personal-tables/ca-federal-and-provincial-territorial-income-tax-rates-and-brackets-for-2026.pdf.coredownload.inline.pdf"
+    verified: 2026-09-27
+    expires: 2027-01-01
+
+# navigation (hub-and-spoke, sitemap v1.3)
+hub: /learn/
+cluster: tax
+related: [/calculators/income-tax-calculator, /learn/first-time-tax-filing, /learn/federal-tax-brackets-2026]
+
+# page-type extras
+schema_primary: Article
+affiliate_disclosure: false
+
+# newsletter
+newsletter_placement: inline
+
+# freshness contract
+review_cadence: annual
+next_review_due: 2027-01-01
+---
+
+## The 30-second version
+
+A first paycheque is smaller than the hourly rate times the hours, and that is normal. Three things come off before the money reaches the bank account: **CPP** (pension contributions), **EI** (employment insurance premiums), and **income tax** (withheld by the employer and settled up at filing time). At part-time earnings the income-tax slice is often small or zero, which surprises people who expected the biggest bite there. Once the money lands, the move that matters most is splitting it on purpose: a starter emergency buffer first, then goals. Everything below is the mechanics behind that sentence.
+
+## The paystub, decoded
+
+A typical stub has five lines that matter. Gross pay is the starting number: hours worked times the hourly rate, plus any overtime or tips the employer reports.
+
+**1. CPP: Canada Pension Plan.** The employer deducts 5.95% of pensionable pay in 2026, on earnings between $3,500 (the basic exemption) and $74,600 (the year's maximum). The maximum any employee pays in 2026 is $4,230.45, and the employer matches it dollar for dollar. Earnings between $74,600 and $85,000 attract a second, smaller CPP2 contribution of 4% (maximum $416). For a part-time teen paycheque, only the 5.95% tier matters, but the caps explain why a paycheque gets slightly bigger late in the year for high earners: once the maximums are hit, the deductions stop.
+
+**2. EI: Employment Insurance.** The employer deducts 1.63% of insurable earnings in 2026, up to $68,900 of earnings, for a maximum of $1,123.07 per employee per year. Quebec workers pay a lower 1.30% (maximum $895.70) because Quebec runs its own parental-insurance plan alongside EI. The employer pays 1.4 times the employee amount. EI is the premium that funds job-loss, sickness, maternity, and parental benefits later.
+
+**3. Income tax.** The employer withholds an estimate and sends it to the CRA; the real bill is settled on the tax return. The estimate is based on the TD1 forms filled out on hire (more on those below). Here is the part most first-time earners get wrong: if annual earnings stay under the federal basic personal amount of **$16,452** in 2026, no federal income tax is owed at all. Provinces have their own basic personal amounts (Ontario's is $12,989 in 2026), and they differ everywhere. Either way, the tax return then subtracts credits the paystub never shows: CPP and EI contributions come back as tax credits, every employee gets the Canada employment amount ($1,501 in 2026), and Ontario adds its tax reduction plus the LIFT credit for low-income workers. That is why the worked examples below show smaller income-tax lines than the raw bracket math. Above the thresholds, the first federal bracket is 14% in 2026.
+
+**4. Other deductions.** Union dues, pension-plan contributions, or group RRSP amounts appear here when they apply. Not every first job has them; when they do, they reduce take-home but are not taxes.
+
+**5. Net pay.** Gross minus all of the above. This is the number that hits the bank account, and the only number that matters for budgeting.
+
+## The worked math: two part-time paycheques
+
+Take a student in Ontario earning **$15,000** in a year:
+
+| Deduction | Math | Cost |
+|---|---|---|
+| CPP | ($15,000 - $3,500) x 5.95% | $684.25 |
+| EI | $15,000 x 1.63% | $244.50 |
+| Federal income tax | $15,000 is under the $16,452 basic personal amount | $0.00 |
+| Ontario income tax | $101.56 gross tax, wiped out by CPP/EI credits and the Ontario tax reduction; no health premium under $20,000 of income | $0.00 |
+| **Total off the cheques** | | **$928.75** |
+| **Take-home** | | **$14,071.25** |
+
+Now the same student working more hours, earning **$22,000**:
+
+| Deduction | Math | Cost |
+|---|---|---|
+| CPP | ($22,000 - $3,500) x 5.95% | $1,100.75 |
+| EI | $22,000 x 1.63% | $358.60 |
+| Federal income tax | $3,080.00 gross tax - $2,717.73 credits (basic personal amount + CPP/EI + $1,501 Canada employment amount) | $362.27 |
+| Ontario tax + health premium | $0.00 income tax after credits, tax reduction and LIFT + $120.00 health premium (6% of income over $20,000) | $120.00 |
+| **Total off the cheques** | | **$1,941.62** |
+| **Take-home** | | **$20,058.38** |
+
+Two things to notice. First, at $15,000 the income-tax lines are both zero while CPP and EI still take about $929: the "taxes" on a first paycheque are mostly pension and insurance contributions, not income tax. Second, the income-tax lines are smaller than the raw bracket math suggests, because the tax return adds credits the paystub never shows. CPP and EI contributions come back as tax credits, every employee gets the $1,501 Canada employment amount, and Ontario's tax reduction plus the LIFT credit for low-income workers wipe out the remaining provincial tax at these incomes. At $22,000 the only Ontario charge left is the $120 health premium, which starts above $20,000 of income. (All math Python-verified; figures in the Sources section.)
+
+## The TD1: the most skipped form in the building
+
+On the first day of work there is a form called the TD1 (federal) and a matching provincial one (TD1ON in Ontario, and equivalents elsewhere). It tells the employer how much of the basic personal amount to apply when estimating income-tax withholding. Fill it out and the employer withholds roughly the right tax each pay. Skip it, or write $0 in the claim box, and the employer withholds as if the basic personal amount does not exist: too much tax comes off every cheque, and the overpayment sits with the CRA until the tax return brings it back as a refund months later. A refund in April is not free money; it is an interest-free loan that could have been in the bank account all year.
+
+One more TD1 rule, from the back of the form itself: if two jobs are held at the same time, the basic personal amount can be claimed at **only one** of them. Claim the full amount at both and too little tax is withheld, which means a balance owing at filing time. Two part-time jobs are common at this age, and this is the trap that turns a first tax return into an unpleasant surprise.
+
+## Where the first $1,000 goes
+
+With the mechanics understood, the first $1,000 of earnings has a job: become a buffer. An emergency fund at this stage is not six months of expenses; it is a starter cushion, commonly $500 to $1,000, sitting in a savings account and touched only for real surprises: a phone screen, a transit pass bought a week early, a shift cut without warning. The point of the buffer is that one bad week does not become credit-card debt, because debt at 20% interest erases weeks of part-time wages in a month.
+
+After the buffer exists, the next split is personal, but the structure that survives contact with real life is boring on purpose: decide the split when the paycheque lands, not after spending. A common starting pattern for someone living at home is most of each cheque to a savings goal (a car, school, travel, a future move), a fixed slice to guilt-free spending, and the buffer topped back up whenever it gets used. Automation helps: a recurring transfer on payday removes the decision from willpower entirely.
+
+Two account notes. First, at 18 (19 in British Columbia, New Brunswick, Newfoundland and Labrador, Nova Scotia, and Yukon) a TFSA becomes available, and it is the natural home for savings that might be needed in a few years, because withdrawals do not trigger tax. Second, student bank accounts exist precisely so small balances are not eaten by monthly fees; the bank-accounts-for-beginners comparison covers the current options.
+
+## The expensive mistakes
+
+**1. Treating the refund as a bonus.** Over-withheld tax returned in April feels like a gift, but it was always the earner's money. The TD1 exists to keep it in the paycheque. Check the first stub of the year: if income tax is being withheld on earnings clearly headed under the basic personal amount, the TD1 needs fixing.
+
+**2. The double-TD1 at two jobs.** Both employers apply the full basic personal amount, withholding comes up short, and the first tax return shows a balance owing. The back of the TD1 says it plainly: claim the amount once. The second job's form gets $0 in the claim box.
+
+**3. Ignoring the paystub entirely.** Hours get miscounted, overtime rates get missed, and a wrong pay rate can run for months. The stub is the receipt for the work; reading it takes two minutes and catches errors no one else will flag.
+
+**4. Cash work with no paper trail.** Under-the-table pay skips CPP contributions, which means no pensionable earnings recorded for those years, no EI coverage, and no T4 to prove income later (landlords and lenders ask). Reported income also builds the RRSP contribution room that matters in the twenties.
+
+**5. Letting the buffer stay at zero.** Without even a few hundred dollars set aside, every surprise becomes either a parental bailout or a credit-card balance. The buffer is the cheapest insurance a first job buys.
+
+**6. Assuming deductions are all "taxes".** CPP and EI have annual maximums ($4,230.45 and $1,123.07 in 2026). Once earnings pass the caps, those deductions stop and net pay rises. It is not a raise; it is the ceiling doing its job. Knowing the caps also explains why comparing gross pay across jobs is misleading: two jobs at the same wage can produce different net pay if one has pension or union deductions.
+
+## How to act
+
+**This week:** pull up the most recent paystub and find the five lines: gross, CPP, EI, income tax, net. Check that the CPP math roughly matches 5.95% of pay above the $3,500 exemption and EI matches 1.63%.
+
+**This month:** confirm the TD1 claim is filed at work (and at only one job if there are two). Open a savings account or sub-account labelled for the buffer if one does not exist, and set a payday transfer, even a small one.
+
+**This year:** keep every T4 when tax slips arrive in February. File a return even if no tax is owed: filing is what records the income, starts RRSP room accumulating, and unlocks benefit and credit eligibility down the road. The first-time tax filing checklist walks through it step by step.
+
+## Sources
+
+- CPP 2026: YMPE $74,600, basic exemption $3,500, employee rate 5.95%, employee maximum $4,230.45; CPP2: YAMPE $85,000, rate 4%, maximum $416. Canada.ca CPP contributions page, re-corroborated via CFIB 2026 payroll deduction tables: https://www.canada.ca/en/services/benefits/publicpensions/cpp/contributions.html
+- EI 2026: maximum insurable earnings $68,900, employee rate 1.63% ($1.63 per $100), employee maximum $1,123.07; Quebec 1.30% / $895.70. ESDC 2026 premium-rate announcement, re-corroborated via CFIB 2026 payroll tables and the 2027 actuarial report summary: https://www.canada.ca/en/employment-social-development/news/2025/08/employment-insurance-premium-rates-for-2026.html
+- Federal basic personal amount 2026: $16,452; first federal bracket 14% to $58,523. CRA rates page, cross-checked against 2026 payroll tables: https://www.canada.ca/en/revenue-agency/services/tax/rates.html
+- Ontario basic personal amount 2026: $12,989; first Ontario bracket 5.05% to $53,891. KPMG 2026 federal and provincial tax tables: https://assets.kpmg.com/content/dam/kpmgsites/ca/pdf/services/tax/personal-tables/ca-federal-and-provincial-territorial-income-tax-rates-and-brackets-for-2026.pdf.coredownload.inline.pdf
+- Canada employment amount 2026: $1,501 (line 31260; lesser of $1,501 and employment income). taxtips.ca, corroborated by TurboTax Canada: http://www.taxtips.ca/filing/canada-employment-amount-tax-credit.htm
+- Ontario tax reduction 2026: $300 basic amount, doubled, minus Ontario tax after surtax (floored at zero); claimed on Form ON428 line 80. taxtips.ca citing Ontario Taxation Act, 2007 s.20: http://www.taxtips.ca/ontax/personal-tax-credits.htm
+- Ontario LIFT (Low-Income Workers Tax Credit) 2026: up to $875 or 5.05% of employment income, whichever is lower; non-refundable, excludes the health premium. Government of Ontario: https://www.ontario.ca/page/low-income-workers-tax-credit
+- Ontario Health Premium 2026: $0 at taxable income of $20,000 or less; 6% of income over $20,000 up to $25,000 (so $120 at $22,000); collected through the tax system and not reduced by provincial credits. Government of Ontario page (updated 2026-01-22) plus CRA T4032-ON 2026 payroll tables: https://www.ontario.ca/page/health-premium
+- TFSA eligibility age 18 (19 in age-of-majority provinces): verified 2026-09-30.
+- TD1 multiple-employer rule: CRA TD1 form instructions (back of the form), long-standing.
+- Payroll figures re-verified on 2026-09-30. Tax-credit figures (employment amount, Ontario tax reduction, LIFT, health premium) verified on 2026-10-01. Worked paystub math Python-verified against the figures above, including all credits.
+
+*Not financial advice, general information only. Rates and thresholds reset every January (2027 EI moves to $1.64 per $100 with maximum insurable earnings of $70,800); individual situations differ and the CRA's figures are the final word.*

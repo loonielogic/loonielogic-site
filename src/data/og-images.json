@@ -137,6 +137,7 @@
     "title": "Learn Canadian Money: Explainers 2026",
     "line": "Plain-English guides to Canadian money, starting with the TFSA: real 2026 numbers, the expensive mistakes…"
   },
+<<<<<<< HEAD
   "/learn/glossary": {
     "image": "/og/learn-glossary.png",
     "alt": "LoonieLogic glossary: Canadian Finance Glossary: 49 Terms in Plain English",
@@ -148,6 +149,12 @@
     "alt": "LoonieLogic explainer: Open your FHSA before Dec 31: why 2026 room is lost forever",
     "title": "Open your FHSA before Dec 31: why 2026 room is lost forever",
     "line": "FHSA room starts when you open the account. Open in December 2026 to bank $8,000 of room for 2027…"
+  },
+  "/learn/first-paycheque-playbook": {
+    "image": "/og/learn-first-paycheque-playbook.png",
+    "alt": "LoonieLogic explainer: First paycheque, decoded: CPP, EI, tax, and the first $1,000",
+    "title": "First paycheque, decoded: CPP, EI, tax, and the first $1,000",
+    "line": "Your first paycheque is smaller than hours times rate. CPP at 5.95%, EI at 1.63%…"
   },
   "/learn/tfsa": {
     "image": "/og/learn-tfsa.png",
