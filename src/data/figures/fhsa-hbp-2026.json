@@ -1,201 +1,221 @@
 {
- "entries": [
-  {
-   "expires": "2027-01-01",
-   "key": "fhsa.annual_limit",
-   "label": "FHSA annual contribution limit",
-   "notes": "Room starts only when the account is opened (unlike TFSA back-dating to 18). One account per person at a time.",
-   "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/first-home-savings-account.html",
-   "source_note": "CRA FHSA page (fhsa-basics-research, verified 2026-09-29).",
-   "status": "verified",
-   "unit": "cad",
-   "value": 8000,
-   "verified_date": "2026-09-29"
-  },
-  {
-   "expires": "2027-01-01",
-   "key": "fhsa.lifetime_limit",
-   "label": "FHSA lifetime limit",
-   "notes": "",
-   "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/first-home-savings-account.html",
-   "source_note": "CRA FHSA page (verified 2026-09-29).",
-   "status": "verified",
-   "unit": "cad",
-   "value": 40000,
-   "verified_date": "2026-09-29"
-  },
-  {
-   "expires": "2027-01-01",
-   "key": "fhsa.carry_forward",
-   "label": "FHSA unused-room carry-forward",
-   "notes": "Annual cap is $8,000 of new room, but unused room carries forward; max deductible in one year = $8,000 (new) + $8,000 (carried) = $16,000.",
-   "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/first-home-savings-account.html",
-   "source_note": "CRA FHSA page (verified 2026-09-29).",
-   "status": "verified",
-   "unit": "table",
-   "value": {
-    "carry_forward_max": 8000,
-    "max_single_year": 16000
-   },
-   "verified_date": "2026-09-29"
-  },
-  {
-   "expires": "2027-01-01",
-   "key": "fhsa.lifespan",
-   "label": "FHSA maximum lifespan",
-   "notes": "Close by Dec 31 of the 15th year after opening, or of the year you turn 71, whichever is earlier.",
-   "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/first-home-savings-account.html",
-   "source_note": "CRA FHSA page (verified 2026-09-29).",
-   "status": "verified",
-   "unit": "text",
-   "value": "Closes 15 years after opening or at age 71 (whichever first); unused amounts roll to RRSP tax-free",
-   "verified_date": "2026-09-29"
-  },
-  {
-   "expires": "2027-01-01",
-   "key": "fhsa.excess_tax",
-   "label": "FHSA excess-contribution tax",
-   "notes": "No $2,000 buffer (unlike RRSP). RC728 filing for excess FHSA amounts.",
-   "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/first-home-savings-account/excess-contributions-fhsa.html",
-   "source_note": "CRA FHSA excess page (fhsa-basics-research, verified 2026-09-29).",
-   "status": "verified",
-   "unit": "table",
-   "value": {
-    "rate_per_month": 0.01
-   },
-   "verified_date": "2026-09-29"
-  },
-  {
-   "expires": "2027-01-01",
-   "key": "fhsa.qualifying_withdrawal",
-   "label": "FHSA qualifying withdrawal conditions",
-   "notes": "90-day rule: you must not have lived in an owner-occupied home in the current year or the previous 4 years (same first-time-buyer test as HBP).",
-   "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/first-home-savings-account/qualifying-withdrawal-fhsa.html",
-   "source_note": "CRA qualifying-withdrawal page (fhsa-basics-research, verified 2026-09-29).",
-   "status": "verified",
-   "unit": "text",
-   "value": "Tax-free for a qualifying first home purchase; must be Canadian resident, first-time buyer, written agreement to buy/build within 30 days of withdrawal, and occupy within 1 year",
-   "verified_date": "2026-09-29"
-  },
-  {
-   "expires": "2027-01-01",
-   "key": "hbp.limit.2026",
-   "label": "Home Buyers' Plan withdrawal limit per person",
-   "notes": "Raised from $35,000 (Apr 16, 2024 federal budget). Couples stack two plans.",
-   "rejected": [
+  "entries": [
     {
-     "claim": "$35,000 HBP limit",
-     "reason": "Stale - raised to $60,000 April 16, 2024. Seen on mortgagecapitalinvestment.com (Feb 2026 page).",
-     "reported_by": "hbp-research.md, 2026-09-26"
+      "expires": "2027-01-01",
+      "key": "fhsa.annual_limit",
+      "label": "FHSA annual contribution limit",
+      "notes": "Room starts only when the account is opened (unlike TFSA back-dating to 18). One account per person at a time.",
+      "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/first-home-savings-account.html",
+      "source_note": "CRA FHSA page (fhsa-basics-research, verified 2026-09-29).",
+      "status": "verified",
+      "unit": "cad",
+      "value": 8000,
+      "verified_date": "2026-09-29"
+    },
+    {
+      "expires": "2027-01-01",
+      "key": "fhsa.lifetime_limit",
+      "label": "FHSA lifetime limit",
+      "notes": "",
+      "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/first-home-savings-account.html",
+      "source_note": "CRA FHSA page (verified 2026-09-29).",
+      "status": "verified",
+      "unit": "cad",
+      "value": 40000,
+      "verified_date": "2026-09-29"
+    },
+    {
+      "expires": "2027-01-01",
+      "key": "fhsa.carry_forward",
+      "label": "FHSA unused-room carry-forward",
+      "notes": "Annual cap is $8,000 of new room, but unused room carries forward; max deductible in one year = $8,000 (new) + $8,000 (carried) = $16,000.",
+      "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/first-home-savings-account.html",
+      "source_note": "CRA FHSA page (verified 2026-09-29).",
+      "status": "verified",
+      "unit": "table",
+      "value": {
+        "carry_forward_max": 8000,
+        "max_single_year": 16000
+      },
+      "verified_date": "2026-09-29"
+    },
+    {
+      "expires": "2027-01-01",
+      "key": "fhsa.lifespan",
+      "label": "FHSA maximum lifespan",
+      "notes": "Close by Dec 31 of the 15th year after opening, or of the year you turn 71, whichever is earlier.",
+      "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/first-home-savings-account.html",
+      "source_note": "CRA FHSA page (verified 2026-09-29).",
+      "status": "verified",
+      "unit": "text",
+      "value": "Closes 15 years after opening or at age 71 (whichever first); unused amounts roll to RRSP tax-free",
+      "verified_date": "2026-09-29"
+    },
+    {
+      "expires": "2027-01-01",
+      "key": "fhsa.excess_tax",
+      "label": "FHSA excess-contribution tax",
+      "notes": "No $2,000 buffer (unlike RRSP). RC728 filing for excess FHSA amounts.",
+      "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/first-home-savings-account/excess-contributions-fhsa.html",
+      "source_note": "CRA FHSA excess page (fhsa-basics-research, verified 2026-09-29).",
+      "status": "verified",
+      "unit": "table",
+      "value": {
+        "rate_per_month": 0.01
+      },
+      "verified_date": "2026-09-29"
+    },
+    {
+      "expires": "2027-01-01",
+      "key": "fhsa.qualifying_withdrawal",
+      "label": "FHSA qualifying withdrawal conditions",
+      "notes": "90-day rule: you must not have lived in an owner-occupied home in the current year or the previous 4 years (same first-time-buyer test as HBP).",
+      "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/first-home-savings-account/qualifying-withdrawal-fhsa.html",
+      "source_note": "CRA qualifying-withdrawal page (fhsa-basics-research, verified 2026-09-29).",
+      "status": "verified",
+      "unit": "text",
+      "value": "Tax-free for a qualifying first home purchase; must be Canadian resident, first-time buyer, written agreement to buy/build within 30 days of withdrawal, and occupy within 1 year",
+      "verified_date": "2026-09-29"
+    },
+    {
+      "expires": "2027-01-01",
+      "key": "hbp.limit.2026",
+      "label": "Home Buyers' Plan withdrawal limit per person",
+      "notes": "Raised from $35,000 (Apr 16, 2024 federal budget). Couples stack two plans.",
+      "rejected": [
+        {
+          "claim": "$35,000 HBP limit",
+          "reason": "Stale - raised to $60,000 April 16, 2024. Seen on mortgagecapitalinvestment.com (Feb 2026 page).",
+          "reported_by": "hbp-research.md, 2026-09-26"
+        }
+      ],
+      "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/rrsps-related-plans/what-a-home-buyers-plan.html",
+      "source_note": "CRA HBP page (hbp-research, verified 2026-09-26).",
+      "status": "verified",
+      "unit": "cad",
+      "value": 60000,
+      "verified_date": "2026-09-26"
+    },
+    {
+      "expires": "2027-01-01",
+      "key": "hbp.couple_limit",
+      "label": "HBP couple stacking",
+      "notes": "Each spouse must have $60,000 of RRSP room available.",
+      "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/rrsps-related-plans/what-a-home-buyers-plan.html",
+      "source_note": "CRA HBP page (hbp-research, verified 2026-09-26).",
+      "status": "verified",
+      "unit": "cad",
+      "value": 120000,
+      "verified_date": "2026-09-26"
+    },
+    {
+      "expires": "2027-01-01",
+      "key": "hbp.repayment_period",
+      "label": "HBP standard repayment period",
+      "notes": "Example: $60,000 withdrawn -> $4,000/yr minimum ($60,000 / 15). Minimum annual repayment = balance / years remaining.",
+      "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/rrsps-related-plans/what-a-home-buyers-plan.html",
+      "source_note": "CRA HBP page (hbp-research, verified 2026-09-26).",
+      "status": "verified",
+      "unit": "table",
+      "value": {
+        "minimum_annual_fraction": "1/15 of original withdrawal",
+        "years": 15
+      },
+      "verified_date": "2026-09-26"
+    },
+    {
+      "expires": "2027-01-01",
+      "key": "hbp.repayment_start",
+      "label": "HBP repayment start",
+      "notes": "RESOLVED 2026-09-30: the 5-year grace is REAL and legislated (Budget 2024) but applies ONLY to first withdrawals made Jan 1, 2022-Dec 31, 2025. Claims of a 2026-2028 extension window are unconfirmed and NOT encoded. Shortfall gets added to taxable income for the year.",
+      "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/rrsps-related-plans/what-a-home-buyers-plan.html",
+      "source_note": "CRA HBP page (hbp-research, verified 2026-09-26).",
+      "status": "verified",
+      "unit": "text",
+      "value": "Repayments start the 2nd calendar year after withdrawal; designate repayments on Schedule 7",
+      "verified_date": "2026-09-30"
+    },
+    {
+      "expires": "2027-01-01",
+      "key": "hbp.rules",
+      "label": "HBP key rules",
+      "notes": "Buy/build by Oct 1 of the year after withdrawal (e.g. 2026 withdrawal -> by Oct 1, 2027, from promo-expiry calendar). Flowchart deliberately excluded the disputed 2026-2028 grace period (see notes).",
+      "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/rrsps-related-plans/what-a-home-buyers-plan.html",
+      "source_note": "CRA HBP page (hbp-research, verified 2026-09-26).",
+      "status": "verified",
+      "unit": "text",
+      "value": "First-time buyer test (no owner-occupied home in current + previous 4 years); buy/build by Oct 1 of the year after withdrawal; 90-day RRSP holding rule; T1036 filed within 1 year of withdrawal",
+      "verified_date": "2026-09-26"
+    },
+    {
+      "expires": "2027-01-01",
+      "key": "hbp.fhsa_stack",
+      "label": "FHSA + HBP stacking for couples",
+      "notes": "Two people: $40,000 x 2 FHSA + $60,000 x 2 HBP = $200,000 of tax-assisted down payment. A person can use both plans if FHSA funds cannot cover everything.",
+      "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/first-home-savings-account.html",
+      "source_note": "CRA FHSA page + fhsa-vs-hbp flowchart build note (2026-09-29).",
+      "status": "verified",
+      "unit": "cad",
+      "value": 200000,
+      "verified_date": "2026-09-29"
+    },
+    {
+      "expires": "2027-01-01",
+      "key": "home_buyers_amount.credit",
+      "label": "Home Buyers' Amount federal credit",
+      "notes": "Bill C-4 cut the lowest federal bracket to 14.5% for 2025 and 14% from 2026: $10,000 x 14% = $1,400 for 2026. The widely repeated $1,500 is the old 15% calculation. CRA publishes the $10,000 claim amount; the credit figure is arithmetic, not a quoted CRA number.",
+      "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/about-your-tax-return/tax-return/completing-a-tax-return/deductions-credits-expenses/line-31270-home-buyers-amount.html",
+      "source_note": "CRA line 31270 page for the $10,000 amount; 14% lowest-bracket rate for 2026 corroborated by TurboTax and ghumans.ca (verified 2026-09-30).",
+      "status": "verified",
+      "unit": "table",
+      "value": {
+        "amount": 10000,
+        "approximate_tax_value": 1400
+      },
+      "verified_date": "2026-09-30"
+    },
+    {
+      "key": "hbp.repayment_grace_2022_2025",
+      "label": "HBP 5-year repayment grace (2022-2025 withdrawals)",
+      "value": {
+        "grace_years": 5,
+        "withdrawal_window": "2022-01-01 to 2025-12-31",
+        "first_repayment_year": {
+          "2022": 2027,
+          "2023": 2028,
+          "2024": 2029,
+          "2025": 2030
+        }
+      },
+      "unit": "table",
+      "status": "verified",
+      "source": "https://www.investmentexecutive.com/news/feds-boost-home-buyers-plan-withdrawal-limit-to-60000/",
+      "source_note": "Budget 2024 announcement coverage (Apr 2024): 2022-2025 withdrawals get 5-year grace; mechanics corroborated by MoneySense and thefinancialcollective.ca (verified 2026-09-30).",
+      "notes": "Temporary relief: 15-year repayment period starts in the 5th year after the withdrawal year (instead of the 2nd) for first withdrawals in 2022-2025. Repayment period stays 15 years; only the start moves. See hbp.repayment_grace_2026_2028 for the extension window.",
+      "verified_date": "2026-09-30",
+      "expires": "2027-01-01"
+    },
+    {
+      "key": "hbp.repayment_grace_2026_2028",
+      "label": "HBP 5-year repayment grace extension (2026-2028 withdrawals)",
+      "value": {
+        "grace_years": 5,
+        "withdrawal_window": "2026-01-01 to 2028-12-31",
+        "first_repayment_year": {
+          "2026": 2031,
+          "2027": 2032,
+          "2028": 2033
+        }
+      },
+      "unit": "table",
+      "status": "verified",
+      "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/rrsps-related-plans/what-home-buyers-plan.html",
+      "source_note": "CRA main HBP page (modified 2026-02-17), read 2026-10-02: 'The Home Buyers\\' Plan (HBP) temporary repayment relief has been extended for individuals making a first HBP withdrawal between January 1, 2026, and December 31, 2028.' Note: CRA's repayment detail sub-page (modified 2026-01-20) still shows only the 2022-2025 window.",
+      "notes": "Extension of the Budget 2024 relief: 15-year repayment period starts in the 5th year after the withdrawal year for first withdrawals in 2026-2028. Withdrawals after Dec 31, 2028: CRA pages do not state the rule explicitly; standard 2nd-year schedule presumably resumes.",
+      "verified_date": "2026-10-02",
+      "expires": "2027-01-01"
     }
-   ],
-   "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/rrsps-related-plans/what-a-home-buyers-plan.html",
-   "source_note": "CRA HBP page (hbp-research, verified 2026-09-26).",
-   "status": "verified",
-   "unit": "cad",
-   "value": 60000,
-   "verified_date": "2026-09-26"
-  },
-  {
-   "expires": "2027-01-01",
-   "key": "hbp.couple_limit",
-   "label": "HBP couple stacking",
-   "notes": "Each spouse must have $60,000 of RRSP room available.",
-   "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/rrsps-related-plans/what-a-home-buyers-plan.html",
-   "source_note": "CRA HBP page (hbp-research, verified 2026-09-26).",
-   "status": "verified",
-   "unit": "cad",
-   "value": 120000,
-   "verified_date": "2026-09-26"
-  },
-  {
-   "expires": "2027-01-01",
-   "key": "hbp.repayment_period",
-   "label": "HBP standard repayment period",
-   "notes": "Example: $60,000 withdrawn -> $4,000/yr minimum ($60,000 / 15). Minimum annual repayment = balance / years remaining.",
-   "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/rrsps-related-plans/what-a-home-buyers-plan.html",
-   "source_note": "CRA HBP page (hbp-research, verified 2026-09-26).",
-   "status": "verified",
-   "unit": "table",
-   "value": {
-    "minimum_annual_fraction": "1/15 of original withdrawal",
-    "years": 15
-   },
-   "verified_date": "2026-09-26"
-  },
-  {
-   "expires": "2027-01-01",
-   "key": "hbp.repayment_start",
-   "label": "HBP repayment start",
-   "notes": "RESOLVED 2026-09-30: the 5-year grace is REAL and legislated (Budget 2024) but applies ONLY to first withdrawals made Jan 1, 2022-Dec 31, 2025. Claims of a 2026-2028 extension window are unconfirmed and NOT encoded. Shortfall gets added to taxable income for the year.",
-   "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/rrsps-related-plans/what-a-home-buyers-plan.html",
-   "source_note": "CRA HBP page (hbp-research, verified 2026-09-26).",
-   "status": "verified",
-   "unit": "text",
-   "value": "Repayments start the 2nd calendar year after withdrawal; designate repayments on Schedule 7",
-   "verified_date": "2026-09-30"
-  },
-  {
-   "expires": "2027-01-01",
-   "key": "hbp.rules",
-   "label": "HBP key rules",
-   "notes": "Buy/build by Oct 1 of the year after withdrawal (e.g. 2026 withdrawal -> by Oct 1, 2027, from promo-expiry calendar). Flowchart deliberately excluded the disputed 2026-2028 grace period (see notes).",
-   "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/rrsps-related-plans/what-a-home-buyers-plan.html",
-   "source_note": "CRA HBP page (hbp-research, verified 2026-09-26).",
-   "status": "verified",
-   "unit": "text",
-   "value": "First-time buyer test (no owner-occupied home in current + previous 4 years); buy/build by Oct 1 of the year after withdrawal; 90-day RRSP holding rule; T1036 filed within 1 year of withdrawal",
-   "verified_date": "2026-09-26"
-  },
-  {
-   "expires": "2027-01-01",
-   "key": "hbp.fhsa_stack",
-   "label": "FHSA + HBP stacking for couples",
-   "notes": "Two people: $40,000 x 2 FHSA + $60,000 x 2 HBP = $200,000 of tax-assisted down payment. A person can use both plans if FHSA funds cannot cover everything.",
-   "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/first-home-savings-account.html",
-   "source_note": "CRA FHSA page + fhsa-vs-hbp flowchart build note (2026-09-29).",
-   "status": "verified",
-   "unit": "cad",
-   "value": 200000,
-   "verified_date": "2026-09-29"
-  },
-  {
-   "expires": "2027-01-01",
-   "key": "home_buyers_amount.credit",
-   "label": "Home Buyers' Amount federal credit",
-   "notes": "Bill C-4 cut the lowest federal bracket to 14.5% for 2025 and 14% from 2026: $10,000 x 14% = $1,400 for 2026. The widely repeated $1,500 is the old 15% calculation. CRA publishes the $10,000 claim amount; the credit figure is arithmetic, not a quoted CRA number.",
-   "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/about-your-tax-return/tax-return/completing-a-tax-return/deductions-credits-expenses/line-31270-home-buyers-amount.html",
-   "source_note": "CRA line 31270 page for the $10,000 amount; 14% lowest-bracket rate for 2026 corroborated by TurboTax and ghumans.ca (verified 2026-09-30).",
-   "status": "verified",
-   "unit": "table",
-   "value": {
-    "amount": 10000,
-    "approximate_tax_value": 1400
-   },
-   "verified_date": "2026-09-30"
-  },
-  {
-   "key": "hbp.repayment_grace_2022_2025",
-   "label": "HBP 5-year repayment grace (2022-2025 withdrawals)",
-   "value": {
-    "grace_years": 5,
-    "withdrawal_window": "2022-01-01 to 2025-12-31",
-    "first_repayment_year": {
-     "2022": 2027,
-     "2023": 2028,
-     "2024": 2029,
-     "2025": 2030
-    }
-   },
-   "unit": "table",
-   "status": "verified",
-   "source": "https://www.investmentexecutive.com/news/feds-boost-home-buyers-plan-withdrawal-limit-to-60000/",
-   "source_note": "Budget 2024 announcement coverage (Apr 2024): 2022-2025 withdrawals get 5-year grace; mechanics corroborated by MoneySense and thefinancialcollective.ca (verified 2026-09-30).",
-   "notes": "Temporary relief: 15-year repayment period starts in the 5th year after the withdrawal year (instead of the 2nd) for first withdrawals in 2022-2025. Repayment period stays 15 years; only the start moves. Withdrawals before 2022 or after 2025 use the standard 2nd-year rule.",
-   "verified_date": "2026-09-30",
-   "expires": "2027-01-01"
-  }
- ],
- "tax_year": 2026,
- "topic": "2026 First Home Savings Account (FHSA) and Home Buyers' Plan (HBP) - first-home rules"
+  ],
+  "tax_year": 2026,
+  "topic": "2026 First Home Savings Account (FHSA) and Home Buyers' Plan (HBP) - first-home rules"
 }

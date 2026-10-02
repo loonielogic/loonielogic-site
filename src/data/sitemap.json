@@ -369,7 +369,7 @@
     {
       "cluster": "housing",
       "hub": "/learn/",
-      "meta_description": "The plain-English HBP guide: borrow up to $60,000 from your RRSP, 15-year repayment, the 90-day rule, and who gets the 2022-2025 repayment grace.",
+      "meta_description": "The plain-English HBP guide: borrow up to $60,000 from your RRSP, 15-year repayment, the 90-day rule, and the 5-year grace for 2022-2028 withdrawals.",
       "page_type": "explainer",
       "related": [
         "/learn/fhsa",
@@ -389,7 +389,7 @@
         },
         {
           "q": "When do Home Buyers' Plan repayments start?",
-          "a": "The standard rule is that repayments begin in the second year after the withdrawal year, with a minimum of one-fifteenth of the withdrawal each year for 15 years. Budget 2024 added a five-year grace period, but it applies only to people who made their first withdrawal between January 1, 2022 and December 31, 2025. For first withdrawals in 2026, the standard second-year schedule applies unless new legislation extends the relief."
+          "a": "The standard rule is that repayments begin in the second year after the withdrawal year, with a minimum of one-fifteenth of the withdrawal each year for 15 years. Temporary relief pushes the start to the fifth year for first withdrawals made between January 1, 2022 and December 31, 2028: the 2022-2025 window from Budget 2024, plus an extension to 2026-2028 announced on CRA's main HBP page. Withdrawals outside these windows follow the standard second-year schedule."
         },
         {
           "q": "What happens if I miss an HBP repayment?",
@@ -680,7 +680,7 @@
         },
         {
           "q": "When do Home Buyers' Plan repayments start?",
-          "a": "Repayments start in the second year after the withdrawal year, with a minimum of one-fifteenth of the withdrawal repaid each year for 15 years. A temporary five-year grace period applied only to first withdrawals made between January 1, 2022 and December 31, 2025. For first withdrawals in 2026, the standard second-year schedule applies."
+          "a": "Repayments start in the second year after the withdrawal year, with a minimum of one-fifteenth of the withdrawal repaid each year for 15 years. Temporary relief defers the start to the fifth year for first withdrawals made between January 1, 2022 and December 31, 2028 (the 2022-2025 window from Budget 2024, extended to 2026-2028). Withdrawals outside these windows use the standard second-year schedule."
         },
         {
           "q": "Can I use both an FHSA and the Home Buyers' Plan for the same home?",
