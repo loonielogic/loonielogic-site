@@ -20,13 +20,16 @@ function houseStyleProblems(text: string): string[] {
   return out;
 }
 
-// The 10 explainer pages whose manifest entries carry FAQ blocks
-// (items 34 + 40). If this set changes intentionally, update it here.
+// The 12 explainer pages whose manifest entries carry FAQ blocks
+// (items 34 + 40 + 64 + 65: the two draft pages from the item-80 merge
+// batch carry FAQ blocks too). If this set changes intentionally, update it here.
 const EXPECTED_FAQ_SLUGS = [
   "/learn/cpp-oas",
   "/learn/credit-score",
   "/learn/federal-tax-brackets-2026",
   "/learn/fhsa",
+  "/learn/fhsa-open-before-dec-31",
+  "/learn/first-paycheque-playbook",
   "/learn/first-time-tax-filing",
   "/learn/home-buyers-plan",
   "/learn/resp",
@@ -39,7 +42,7 @@ const manifestPages = (sitemap as { pages: { slug: string; faq?: { q: string; a:
 const manifestBySlug = new Map(manifestPages.map((p) => [p.slug, p.faq ?? []]));
 
 describe("faq-schema", () => {
-  it("FAQ-carrying slug set is exactly the 10 FAQ explainers", () => {
+  it("FAQ-carrying slug set is exactly the 12 FAQ explainers", () => {
     assert.deepEqual(faqSlugs(), EXPECTED_FAQ_SLUGS);
   });
 
