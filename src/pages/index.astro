@@ -27,6 +27,7 @@ const PLANNER = "/calculators/down-payment-planner";
 // Learn/Try/Do cards link only to these. Draft content pages are built
 // (reachable by direct URL, noindex) but stay off the homepage until live.
 const builtSlugs = new Set<string>(["/", "/learn/", "/calculators/", "/compare/"]);
+// Draft/review content pages are built (noindex) but never promoted here.
 for (const coll of ["explainers", "comparisons", "legal"] as const) {
   for (const e of await getCollection(coll)) if (e.data.status === "live") builtSlugs.add(e.data.slug);
 }

@@ -137,7 +137,6 @@
     "title": "Learn Canadian Money: Explainers 2026",
     "line": "Plain-English guides to Canadian money, starting with the TFSA: real 2026 numbers, the expensive mistakes…"
   },
-<<<<<<< HEAD
   "/learn/glossary": {
     "image": "/og/learn-glossary.png",
     "alt": "LoonieLogic glossary: Canadian Finance Glossary: 49 Terms in Plain English",
@@ -155,6 +154,18 @@
     "alt": "LoonieLogic explainer: First paycheque, decoded: CPP, EI, tax, and the first $1,000",
     "title": "First paycheque, decoded: CPP, EI, tax, and the first $1,000",
     "line": "Your first paycheque is smaller than hours times rate. CPP at 5.95%, EI at 1.63%…"
+  },
+  "/learn/kids/growing-savings": {
+    "image": "/og/learn-kids-growing-savings.png",
+    "alt": "LoonieLogic kids money lesson: How Savings Grow for Kids: Watch the Loon's Loonies",
+    "title": "How Savings Grow for Kids: Watch the Loon's Loonies",
+    "line": "A kids money lesson from LoonieLogic: how saved money grows over time, told through the loon's story."
+  },
+  "/learn/kids/needs-vs-wants": {
+    "image": "/og/learn-kids-needs-vs-wants.png",
+    "alt": "LoonieLogic kids money lesson: Needs vs Wants for Kids: The Loon's Grocery Test",
+    "title": "Needs vs Wants for Kids: The Loon's Grocery Test",
+    "line": "A kids money lesson: needs keep you healthy and safe, wants are fun to have."
   },
   "/learn/tfsa": {
     "image": "/og/learn-tfsa.png",

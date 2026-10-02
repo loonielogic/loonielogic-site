@@ -3,7 +3,7 @@
  * each page renders its <title> and meta description from:
  *   - home + hubs: src/data/sitemap.json (og-images.test.ts checks the
  *     .astro shells still carry those titles)
- *   - /learn/*, /compare/*, legal pages: content front matter
+ *   - /learn/* (incl. /learn/kids/*), /compare/*, legal pages: content front matter
  *   - calculators: src/data/calculator-manifests.json, for tools that have a page
  *   - noindex utility pages (404, /go/*): the plain wordmark card
  *
@@ -11,7 +11,7 @@
  * card uses the meta description, truncated.
  */
 
-import { readFileSync, readdirSync, existsSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
 import { join } from "node:path";
 import yaml from "js-yaml";
 import { ogName, ogTitle, truncate, OG_LINE_MAX, type OgEntry, type OgKind } from "../../lib/og";
@@ -27,6 +27,7 @@ const HUB_EYEBROW: Record<string, string> = {
 const TYPE_EYEBROW: Record<string, string> = {
   explainer: "Learn",
   glossary: "Learn",
+  "kids-lesson": "Kids money lesson",
   comparison: "Compare",
   calculator: "Tools",
   legal: "The fine print",
@@ -38,6 +39,7 @@ const TYPE_NOUN: Record<string, string> = {
   hub: "section page",
   explainer: "explainer",
   glossary: "glossary",
+  "kids-lesson": "kids money lesson",
   comparison: "comparison",
   calculator: "tool",
   legal: "page",
@@ -83,6 +85,17 @@ function frontMatter(file: string): Record<string, unknown> {
   return (m ? yaml.load(m[1]) : {}) as Record<string, unknown>;
 }
 
+/** .mdx files under `dir`, subdirectories included (e.g. explainers/kids/). */
+function mdxFiles(dir: string): string[] {
+  const out: string[] = [];
+  for (const f of readdirSync(dir).sort()) {
+    const full = join(dir, f);
+    if (statSync(full).isDirectory()) out.push(...mdxFiles(full));
+    else if (f.endsWith(".mdx")) out.push(full);
+  }
+  return out;
+}
+
 export function collectOgEntries(): OgEntry[] {
   const out: OgEntry[] = [];
 
@@ -98,8 +111,8 @@ export function collectOgEntries(): OgEntry[] {
   for (const coll of ["explainers", "comparisons", "legal"]) {
     const dir = join(SRC, "content", coll);
     if (!existsSync(dir)) continue;
-    for (const f of readdirSync(dir).filter((f) => f.endsWith(".mdx")).sort()) {
-      const fm = frontMatter(join(dir, f));
+    for (const f of mdxFiles(dir)) {
+      const fm = frontMatter(f);
       out.push(
         card({
           slug: String(fm.slug),

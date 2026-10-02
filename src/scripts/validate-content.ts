@@ -23,12 +23,16 @@
  *   9. newsletter capture gates (src/lib/newsletter-gates.ts): provider URL
  *      (placeholder WARNS, malformed FAILS), no hard-coded newsletter copy
  *      outside the registry, no popup/timer machinery
+ *  10. house-style gates on every content MDX: no em dashes, no "you should"
+ *  11. kids lessons (/learn/kids/*): sitemap entry must be page_type
+ *      kids-lesson, exactly 3 quiz questions, newsletter none/soft-link,
+ *      no affiliate links anywhere in the file (/go/ or "sponsored")
  *
  * Post-build:  npm run validate-content -- --dist   (last step of npm run build)
  *   Checks the rendered HTML in dist/: every newsletter form carries the
  *   purpose line + privacy-policy link, registry copy renders verbatim,
  *   no forms on banned page types, honest unconfigured state, draft
- *   newsletter pages noindex and off sitemap.xml.
+ *   newsletter pages and draft kids lessons noindex and off sitemap.xml.
  *
  * Deps (dev): astro, zod, js-yaml, typescript. package.json below.
  */
@@ -43,6 +47,7 @@ import {
   glossarySchema,
   homeSchema,
   calculatorManifestSchema,
+  kidsLessonSchema,
 } from "../schemas/page-manifest.js";
 import { ESP_FORM_ACTION_URL, isNewsletterConfigured } from "../config/newsletter.js";
 import {
@@ -52,6 +57,7 @@ import {
   checkSourceFile,
   routeOf,
 } from "../lib/newsletter-gates.js";
+import { checkDraftKidsPage } from "../lib/kids-lesson.js";
 
 /* ------------------------------------------------------------------ */
 /* Paths — repo root is two levels up from src/scripts/                */
@@ -180,6 +186,7 @@ const SCHEMAS: Record<string, ZodLike> = {
   glossary: glossarySchema,
   home: homeSchema,
   calculator: calculatorManifestSchema,
+  "kids-lesson": kidsLessonSchema,
 };
 
 function validatePage(
@@ -226,7 +233,9 @@ function validatePage(
     fail(where, `slug "${m.slug}" is not on the canonical sitemap`);
     return;
   }
-  if (sitemapPage.page_type !== m.page_type && sitemapPage.page_type !== "glossary") {
+  if ((m.page_type === "kids-lesson") !== (sitemapPage.page_type === "kids-lesson")) {
+    fail(where, `page_type "${m.page_type}" must match sitemap "${sitemapPage.page_type}" for kids lessons`);
+  } else if (sitemapPage.page_type !== m.page_type && sitemapPage.page_type !== "glossary") {
     warn(where, `page_type "${m.page_type}" differs from sitemap "${sitemapPage.page_type}"`);
   }
 
@@ -296,6 +305,32 @@ function validatePage(
   if (m.page_type === "glossary" && m.newsletter_placement === "inline") {
     fail(where, "glossary may not carry a newsletter form (soft link only)");
   }
+  if (m.page_type === "kids-lesson" && m.newsletter_placement === "inline") {
+    fail(where, "kids lessons may not carry a newsletter form (none or soft link only)");
+  }
+
+  /* 11. kids lessons: exactly 3 quiz questions (Segment A template) */
+  if (m.page_type === "kids-lesson") {
+    const quiz = (parsed.data as { quiz?: unknown[] }).quiz ?? [];
+    if (quiz.length !== 3) fail(where, `kids lessons ship exactly 3 quiz questions, found ${quiz.length}`);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* House-style text gates (whole file: front matter + body)            */
+/* ------------------------------------------------------------------ */
+
+const EM_DASH = String.fromCharCode(0x2014);
+
+export function checkContentText(raw: string, pageType: string | undefined): string[] {
+  const out: string[] = [];
+  if (raw.includes(EM_DASH)) out.push("contains an em dash (house rule: none, ever)");
+  if (/\byou should\b/i.test(raw)) out.push('contains "you should" (house rule)');
+  if (pageType === "kids-lesson") {
+    if (raw.includes("/go/")) out.push("kids lessons may not link to /go/ affiliate redirects");
+    if (/sponsored/i.test(raw)) out.push('kids lessons may not carry "sponsored" links or copy');
+  }
+  return out;
 }
 
 /* ------------------------------------------------------------------ */
@@ -344,8 +379,18 @@ function validateDist() {
     for (const e of checkRenderedPage({ route, html, configured, legalRoutes })) fail("dist", e);
   }
   const sitemap = join(DIST_DIR, "sitemap.xml");
-  if (existsSync(sitemap)) {
-    for (const e of checkSitemapXml(readFileSync(sitemap, "utf8"), configured)) fail("dist", e);
+  const sitemapXml = existsSync(sitemap) ? readFileSync(sitemap, "utf8") : null;
+  if (sitemapXml !== null) {
+    for (const e of checkSitemapXml(sitemapXml, configured)) fail("dist", e);
+  }
+  // Draft kids lessons: built noindex, off sitemap.xml.
+  for (const file of listMdxFiles(join(CONTENT_BASE, "explainers"))) {
+    const fm = readFrontMatter(file);
+    if (fm.page_type !== "kids-lesson" || fm.status === "live") continue;
+    const slug = String(fm.slug);
+    const page = join(DIST_DIR, slug.replace(/^\//, ""), "index.html");
+    const html = existsSync(page) ? readFileSync(page, "utf8") : null;
+    for (const e of checkDraftKidsPage(slug, html, sitemapXml)) fail("dist", e);
   }
   console.log(`Checked ${pages.length} built pages, ${forms} newsletter forms (provider ${configured ? "configured" : "not configured"}).`);
 }
@@ -382,6 +427,7 @@ function main() {
     try {
       const fm = readFrontMatter(file);
       validatePage(where, fm, ctx);
+      for (const e of checkContentText(readFileSync(file, "utf8"), fm.page_type as string | undefined)) fail(where, e);
     } catch (e) {
       fail(where, `could not parse front matter: ${(e as Error).message}`);
     }
@@ -444,4 +490,5 @@ function main() {
   if (errors > 0) process.exit(1);
 }
 
-main();
+// Run only as a script, so tests can import checkContentText.
+if (process.argv[1] && resolve(process.argv[1]) === resolve(import.meta.filename)) main();
