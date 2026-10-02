@@ -45,7 +45,24 @@ import {
   validate,
   type CppInput,
 } from "./cpp-timing";
-import { ACCURACY_BANNER, AS_OF, CRIC_URL, DISCLAIMER, MSCA_URL, renderBlocked, renderResults, type RenderOptions } from "./cpp-timing-render";
+import {
+  $,
+  $c,
+  ACCURACY_BANNER,
+  AS_OF,
+  CRIC_URL,
+  DISCLAIMER,
+  EXAMPLE_INPUT,
+  HELP,
+  MSCA_URL,
+  renderBlocked,
+  renderExample,
+  renderNextSteps,
+  renderResults,
+  type RenderOptions,
+} from "./cpp-timing-render";
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 
 const OPTS: RenderOptions = { basicsHref: null, taxToolHref: null };
 const input = (o: Partial<CppInput> = {}): CppInput => ({ ...defaultInput(), ...o });
@@ -396,5 +413,60 @@ describe("analytics tokens", () => {
       "cpp_timing",
     ];
     for (const t of tokens) assert.equal(isSafeValue(t), true, t);
+  });
+});
+
+describe("below the tool: field help, next steps, worked example", () => {
+  const SRC = join(import.meta.dirname, "..", "..");
+  const DASHES = [String.fromCharCode(0x2014), String.fromCharCode(0x2013)];
+  const houseRules = (html: string, where: string) => {
+    const text = html.replace(/<[^>]+>/g, " ");
+    for (const d of DASHES) assert.ok(!html.includes(d), `${where}: em or en dash`);
+    assert.ok(!/you should/i.test(text), `${where}: "you should"`);
+    assert.ok(!/\b(we|our|us)\b/i.test(text) && !/\bI\b/.test(text), `${where}: first-person voice`);
+  };
+  const internalLinksExist = (html: string) => {
+    for (const [, href] of html.matchAll(/href="(\/[^"]*)"/g)) {
+      const [, section, slug] = href.split("/");
+      const file = { calculators: `pages/calculators/${slug}.astro`, learn: `content/explainers/${slug}.mdx`, compare: `content/comparisons/${slug}.mdx` }[section];
+      assert.ok(file && existsSync(join(SRC, file)), `internal link ${href} has no page`);
+    }
+  };
+
+  test("every form field has one helper line, 140 characters or fewer (radio groups once)", () => {
+    const form = readFileSync(join(SRC, "components/calculators/CppTiming.astro"), "utf8").split("\n<script>")[0];
+    const fields = new Set([...form.matchAll(/<(?:input|select)\b[^>]*\bname="([A-Za-z0-9]+)"/g)].map((m) => m[1]));
+    assert.deepEqual([...fields].sort(), Object.keys(HELP).sort());
+    for (const [field, line] of Object.entries(HELP)) {
+      assert.ok(line.length > 0 && line.length <= 140, `${field}: ${line.length} characters`);
+      houseRules(line, `help for ${field}`);
+    }
+  });
+
+  test("next steps: Service Canada estimate and the OAS clawback check", () => {
+    for (const o of [{ basicsHref: null, taxToolHref: null }, { basicsHref: null, taxToolHref: "/calculators/income-tax-calculator" }]) {
+      const html = renderNextSteps(o);
+      assert.match(html, /^<section class="ck-next[^"]*" aria-labelledby="cpt-h-next-steps"><h2 id="cpt-h-next-steps">What to do with this number<\/h2>/);
+      const steps = html.match(/<li>/g)?.length ?? 0;
+      assert.ok(steps >= 3 && steps <= 4, `${steps} steps`);
+      assert.ok(html.includes(MSCA_URL));
+      assert.ok(html.includes($(OAS_THRESHOLD)));
+      assert.equal(html.includes("/calculators/income-tax-calculator"), o.taxToolHref !== null);
+      houseRules(html, "next steps");
+      internalLinksExist(html);
+    }
+  });
+
+  test("worked example: every figure straight from compute()", () => {
+    const html = renderExample();
+    const r = compute({ ...EXAMPLE_INPUT });
+    assert.match(html, /^<section class="ck-example[^"]*" aria-labelledby="cpt-h-example"><h2 id="cpt-h-example">A worked example<\/h2>/);
+    for (const c of r.columns) {
+      assert.ok(html.includes(`${$c(c.monthly)} a month, ${$(c.lifetime)} to ${r.horizon}`), `start at ${c.startAge}`);
+    }
+    assert.ok(html.includes(`Start at ${r.winner}`));
+    const outputs = html.match(/<dd>/g)?.length ?? 0;
+    assert.ok(outputs >= 3 && outputs <= 6, `${outputs} outputs`);
+    houseRules(html, "worked example");
   });
 });

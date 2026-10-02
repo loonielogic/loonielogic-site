@@ -7,6 +7,7 @@
  * screen and the results render from the user's answers with the same
  * functions.
  */
+import "../../styles/calc-kit.css";
 import {
   ANNUAL_LIMIT,
   CURRENT_YEAR,
@@ -19,7 +20,7 @@ import {
   josieExample,
   tfsaFigures,
 } from "../../lib/calculators/tfsa-room-checker";
-import { renderResults, sourceTag, longDate, pct, $, RESTORE_DATE, MY_ACCOUNT_URL } from "../../lib/calculators/tfsa-room-checker-render";
+import { HELP, renderExample, renderNextSteps, renderResults, sourceTag, longDate, pct, $, RESTORE_DATE, MY_ACCOUNT_URL, trcNextFigures } from "../../lib/calculators/tfsa-room-checker-render";
 
 interface Props {
   /** Target for "fixing an over-contribution" links. */
@@ -30,7 +31,7 @@ const { fixGuideHref } = Astro.props;
 const asOf = longDate(new Date().toISOString().slice(0, 10));
 const initialHtml = renderResults(check(josieExample()), { fixGuideHref, asOf, example: true });
 const years = Array.from({ length: CURRENT_YEAR - FIRST_TFSA_YEAR + 1 }, (_, k) => FIRST_TFSA_YEAR + k);
-const sources = [...tfsaFigures.values()];
+const sources = [...tfsaFigures.values(), ...trcNextFigures.values()];
 const src = (key: string) => sourceTag(key);
 const TOTAL = 6;
 ---
@@ -46,6 +47,7 @@ const TOTAL = 6;
     <fieldset class="trc-step" data-step="1">
       <legend>What year were you born?</legend>
       <label>Birth year
+        <small class="ck-help">{HELP.birthYear}</small>
         <input type="number" name="birthYear" inputmode="numeric" min="1900" max={CURRENT_YEAR} step="1" placeholder="e.g. 1990" />
       </label>
       <p class="trc-derived" data-derived="age18" aria-live="polite"></p>
@@ -55,9 +57,11 @@ const TOTAL = 6;
 
     <fieldset class="trc-step" data-step="2">
       <legend>Did you become a Canadian tax resident after turning 18?</legend>
+      <small class="ck-help">{HELP.residentLater}</small>
       <label class="trc-radio"><input type="radio" name="residentLater" value="no" checked /> No, I was a resident when I turned 18 (or since 2009)</label>
       <label class="trc-radio"><input type="radio" name="residentLater" value="yes" /> Yes, I became a resident later</label>
       <label data-show="residency" hidden>Year you became a Canadian tax resident
+        <small class="ck-help">{HELP.residencyYear}</small>
         <input type="number" name="residencyYear" inputmode="numeric" min="1900" max={CURRENT_YEAR} step="1" placeholder={`e.g. ${CURRENT_YEAR - 2}`} />
       </label>
       <p class="trc-error" data-error-for="residencyYear" hidden></p>
@@ -67,6 +71,7 @@ const TOTAL = 6;
     <fieldset class="trc-step" data-step="3">
       <legend>Any full years as a non-resident since then?</legend>
       <p class="trc-help">Tick each calendar year you were a non-resident of Canada for the <strong>whole</strong> year. No room builds for those years, so the checker takes out that year's limit. Leave them all blank if none.</p>
+      <small class="ck-help">{HELP.nonResidentYears}</small>
       <div class="trc-years-grid">
         {years.map((y) => (
           <label class="trc-check" data-year={y}><input type="checkbox" name="nonResidentYears" value={y} /> {y}</label>
@@ -78,18 +83,21 @@ const TOTAL = 6;
     <fieldset class="trc-step" data-step="4">
       <legend>How much have you deposited into TFSAs, ever?</legend>
       <label>Total lifetime contributions ($)
+        <small class="ck-help">{HELP.lifetimeContributions}</small>
         <input type="number" name="lifetimeContributions" inputmode="numeric" min="0" step="100" placeholder="0" />
       </label>
       <p class="trc-error" data-error-for="lifetimeContributions" hidden></p>
       <p class="trc-warning" data-warning-for="lifetimeContributions" hidden></p>
       <small><strong>Contributions means every dollar you ever deposited, even if you later withdrew it.</strong> Include all banks and brokerages, all years. Do not include direct institution-to-institution transfers; they don't affect room <Fragment set:html={src("tfsa.formal_transfer")} />. Enter Canadian dollars; deposits made in another currency count at that day's exchange rate.</small>
       <label class="trc-check"><input type="checkbox" name="bestGuess" /> I'm not sure of my totals. Use my best guess.</label>
+      <small class="ck-help">{HELP.bestGuess}</small>
       <p class="trc-help" data-show="guess" hidden>CRA My Account has the official record of your TFSA deposits and withdrawals, but it can be months behind: banks report last year's transactions by the end of February. Enter your best estimate here and the result will be labelled a guess.</p>
     </fieldset>
 
     <fieldset class="trc-step" data-step="5">
       <legend>How much did you withdraw before {CURRENT_YEAR}?</legend>
       <label>Total withdrawals up to December 31, {CURRENT_YEAR - 1} ($)
+        <small class="ck-help">{HELP.priorWithdrawals}</small>
         <input type="number" name="priorWithdrawals" inputmode="numeric" min="0" step="100" placeholder="0" />
       </label>
       <p class="trc-error" data-error-for="priorWithdrawals" hidden></p>
@@ -100,12 +108,14 @@ const TOTAL = 6;
     <fieldset class="trc-step" data-step="6">
       <legend>Have you withdrawn anything in {CURRENT_YEAR}?</legend>
       <label>Withdrawals so far in {CURRENT_YEAR} ($)
+        <small class="ck-help">{HELP.thisYearWithdrawals}</small>
         <input type="number" name="thisYearWithdrawals" inputmode="numeric" min="0" step="100" placeholder="0" />
       </label>
       <p class="trc-error" data-error-for="thisYearWithdrawals" hidden></p>
       <p class="trc-warning" data-warning-for="thisYearWithdrawals" hidden></p>
       <small>These are not room yet. They come back on {RESTORE_DATE} <Fragment set:html={src("tfsa.withdrawal_restore")} />.</small>
       <label>Optional: a deposit you're thinking about making this year ($)
+        <small class="ck-help">{HELP.plannedDeposit}</small>
         <input type="number" name="plannedDeposit" inputmode="numeric" min="0" step="100" placeholder="Leave blank to skip" />
       </label>
       <p class="trc-error" data-error-for="plannedDeposit" hidden></p>
@@ -126,8 +136,11 @@ const TOTAL = 6;
   <div class="trc-results" id="trc-results" aria-live="polite" tabindex="-1" set:html={initialHtml} />
 </div>
 
+<Fragment set:html={renderNextSteps(fixGuideHref)} />
+<Fragment set:html={renderExample()} />
+
 <section class="trc-assumptions" aria-labelledby="trc-h-assumptions">
-  <h2 id="trc-h-assumptions">Assumptions behind this estimate</h2>
+  <h2 id="trc-h-assumptions">How this calculator works</h2>
   <ul>
     <li><strong>Your lifetime totals are taken as entered <span class="trc-flag">estimate</span>.</strong> The result is only as accurate as those totals. It is never CRA's figure; CRA My Account has the official number, and it can lag by months <Fragment set:html={src("tfsa.my_account_lag")} />.</li>
     <li><strong>Room builds a full year's limit for each year you were 18 or older and a resident.</strong> The {CURRENT_YEAR} limit is {$(ANNUAL_LIMIT)}; someone eligible since {FIRST_TFSA_YEAR} who never contributed has {$(CUMULATIVE_MAX)} <Fragment set:html={src("tfsa.cumulative_max.2026")} />. Year-by-year limits: <Fragment set:html={src("tfsa.bands.history")} />.</li>

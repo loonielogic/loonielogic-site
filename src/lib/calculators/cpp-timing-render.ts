@@ -42,12 +42,16 @@ import {
   chartCsv,
   chartSeries,
   columnLabel,
+  compute,
   cppFigures,
+  defaultInput,
   timingFactor,
   type Column,
+  type CppInput,
   type CppResult,
   type WorkedExample,
 } from "./cpp-timing";
+import { nextSteps as nextStepsStrip, workedExample } from "./calc-kit";
 
 const whole = new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD", maximumFractionDigits: 0 });
 const cents = new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD", minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -401,7 +405,7 @@ function workedExamples(): string {
 function nextSteps(o: RenderOptions): string {
   const basics = o.basicsHref
     ? `<li><a href="${o.basicsHref}">Learn: CPP + OAS basics</a>: how both pensions work and fit together.</li>`
-    : `<li>Learn: CPP + OAS basics. Until our guide is published, <a href="${CPP_OVERVIEW_URL}" rel="noopener">the CPP overview on canada.ca</a> covers the rules.</li>`;
+    : `<li>Learn: CPP + OAS basics. Until that guide is published, <a href="${CPP_OVERVIEW_URL}" rel="noopener">the CPP overview on canada.ca</a> covers the rules.</li>`;
   const tax = o.taxToolHref
     ? `<li><a href="${o.taxToolHref}">After-tax view</a>: CPP is taxed at your marginal rate; the income tax estimator shows the after-tax picture.</li>`
     : `<li>After-tax view: CPP is taxed at your marginal rate.</li>`;
@@ -427,6 +431,58 @@ ${card("cpt-h-rules", "Canadian rules that change the picture", rules(r))}
 ${card("cpt-h-worked", "Worked examples", workedExamples())}
 ${card("cpt-h-next", "Next steps", nextSteps(o))}
 ${disclaimer}`;
+}
+
+/* ------------------------------------------------------------------ */
+/* Below the tool: field help, next steps, worked example              */
+/* ------------------------------------------------------------------ */
+
+/** One line per form field: why the tool needs it (140 characters max). */
+export const HELP = {
+  currentAge: `Your age sets which start ages are still open; from ${EARLIEST_AGE} on, the earliest choice is starting now.`,
+  est65: "Every start age is a percentage of your age-65 estimate, so this one number drives the whole comparison.",
+  horizonPreset: "Quick picks for how long the totals run, to see how the order of start ages changes.",
+  horizon: "Lifetime totals run to this age, and a later age favours a later start.",
+  stillWorking: "Working after CPP starts means more contributions and a post-retirement benefit, so the tool adds a note.",
+  childRearingYears: "Low-earning years raising children under 7 can be left out of the CPP calculation, so the tool flags them.",
+  otherIncome: `Other income plus CPP is checked against the ${$(OAS_THRESHOLD)} OAS recovery-tax threshold.`,
+  quebec: "QPP follows its own start-age rules, so the tool adds a note for Quebec work.",
+  survivor: "A survivor's pension combined with your own is capped, which can change the timing math.",
+  separation: "Pension credits can be split after a separation, which can change your estimate.",
+  disability: "CPP disability benefits change how the retirement pension starts, so the tool adds a note.",
+  invest: "Shows what investing every early cheque until 65 would add up to.",
+  investReturn: "The return sizes the invested pot; higher guesses make an early start look better.",
+} as const;
+
+export function renderNextSteps(o: RenderOptions): string {
+  const tax = o.taxToolHref
+    ? ` The <a href="${o.taxToolHref}">income tax calculator</a> shows what a pension leaves after tax.`
+    : "";
+  return nextStepsStrip("cpt-h-next-steps", [
+    `<strong>Compare with your Service Canada estimate.</strong> <a href="${MSCA_URL}" rel="noopener">My Service Canada Account</a> (Statement of Contributions) has your own figure at 65; rerun the comparison with it.`,
+    `<strong>Check the OAS clawback.</strong> In ${FIGURE_YEAR}, ${pct(OAS_RATE)} of net income above ${$(OAS_THRESHOLD)} is clawed back from Old Age Security. A later CPP start means a bigger pension later, which can push retirement income over that line.${tax}`,
+    `<strong>Look at OAS timing too.</strong> OAS can be deferred up to ${OAS_DEFERRAL.max_months} months for up to ${pct(OAS_DEFERRAL.max_boost)} more, so the two start dates can be planned together.`,
+    `<strong>Run it again before applying.</strong> A change in health, work plans or other income can move the planning age and flip the order of start ages.`,
+  ]);
+}
+
+/** The worked example's inputs: a 55-year-old with a $1,000 estimate at 65, planning to 88. */
+export const EXAMPLE_INPUT: Readonly<CppInput> = { ...defaultInput(), currentAge: 55, est65: 1_000, horizon: 88, otherIncome: 30_000 };
+
+export function renderExample(): string {
+  const r = compute({ ...EXAMPLE_INPUT });
+  const rows = r.columns.map((c): [string, string] => [columnLabel(c), `${$c(c.monthly)} a month, ${$(c.lifetime)} to ${r.horizon}`]);
+  const late = r.crossings.find((x) => x.early === STANDARD_AGE && x.late === LATEST_AGE);
+  return workedExample(
+    "cpt-h-example",
+    `A ${r.currentAge}-year-old with an estimate of <strong>${$c(r.est65)}</strong> a month at 65, ${$(r.otherIncome)} a year of other retirement income, and a planning age of ${r.horizon}. Run through this calculator, that gives:`,
+    [
+      ...rows,
+      [`Adds up to the most by ${r.horizon}`, `Start at ${r.winner}`],
+      ...(late ? [[`${LATEST_AGE} catches up with ${STANDARD_AGE} at about`, `age ${Math.round(late.age)}`] as [string, string]] : []),
+    ],
+    "Computed by the same engine as the calculator above when this page was built. Amounts are gross, nominal estimates, not an official CPP figure.",
+  );
 }
 
 /** Shown in place of the comparison while an input blocks the math. */

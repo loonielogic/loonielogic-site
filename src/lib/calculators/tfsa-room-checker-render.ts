@@ -9,6 +9,8 @@
  * and the disclaimer appear on every results screen.
  */
 
+import { nextSteps, workedExample } from "./calc-kit";
+import { figure, type FigureLog } from "./figures";
 import {
   ABSURD_AMOUNT,
   ANNUAL_LIMIT,
@@ -17,9 +19,12 @@ import {
   RC243_DEADLINE,
   RESTORE_YEAR,
   annualLimit,
+  check,
   excessTax,
   tfsaFigures,
   type CheckResult,
+  type CheckerInput,
+  type Outcome,
 } from "./tfsa-room-checker";
 
 const money = new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD", maximumFractionDigits: 0 });
@@ -221,4 +226,70 @@ ${card("trc-h-reset", `The January 1 reset`, januaryReset(r))}
 ${card("trc-h-math", "How the estimate adds up", breakdown(r))}
 ${card("trc-h-flags", "Things that changed the result", flags(r))}
 ${cra}${disclaimer}`;
+}
+
+/* ------------------------------------------------------------------ */
+/* Below the tool: field help, next steps, worked example              */
+/* ------------------------------------------------------------------ */
+
+/** Registry figures the next steps cite beyond the checker's own. */
+export const trcNextFigures: FigureLog = new Map();
+const ROOM_RESET = figure<string>("tax-deadlines-2026.json", "tfsa.room_reset", trcNextFigures);
+
+/** One line per form field: why the tool needs it (140 characters max). */
+export const HELP = {
+  birthYear: "Room starts the year you turn 18, so your birth year sets how many yearly limits you have.",
+  residentLater: "Newcomers build room only from the year they became residents, not from age 18.",
+  residencyYear: "Your room starts in this year or the year you turned 18, whichever is later.",
+  nonResidentYears: "No room builds in a full year spent as a non-resident, so each ticked year's limit comes off.",
+  lifetimeContributions: "Every deposit uses room, even money later withdrawn, so lifetime deposits are what comes off.",
+  bestGuess: "Guesses still give a useful estimate; this labels the result so it is never mistaken for CRA's figure.",
+  priorWithdrawals: "Past withdrawals came back as room on January 1 of the next year, so they are added back.",
+  thisYearWithdrawals: `This year's withdrawals are not room until ${RESTORE_DATE}, so they are kept apart.`,
+  plannedDeposit: "A planned deposit is tested against your room before it goes in, not after.",
+} as const;
+
+export function renderNextSteps(fixGuideHref: string): string {
+  return nextSteps("trc-h-next", [
+    `<strong>Check the number against <a href="${MY_ACCOUNT_URL}" rel="noopener">CRA My Account</a> before a large deposit.</strong> Banks report last year's transactions by the end of February, so CRA's figure can lag; your own records are the real-time view.`,
+    `<strong>Mind the January 1 reset.</strong> The ${RESTORE_YEAR} limit and anything withdrawn in ${CURRENT_YEAR} come back on ${longDate(ROOM_RESET)}. Putting a withdrawal back before then uses this year's room; waiting until January avoids that.`,
+    `<strong>Over the limit? Act this month.</strong> The tax is ${pct(EXCESS_TAX_RATE)} of the highest excess in each month it stays in. The <a href="${fixGuideHref}">over-contribution fix guide</a> covers the steps, and Form RC243 is due ${longDate(RC243_DEADLINE)}.`,
+    `<strong>Keep a running log</strong> of every deposit and withdrawal at every bank and brokerage. It is the only way to check CRA's figure, and it makes the next check take a minute.`,
+  ]);
+}
+
+/** The worked example's inputs: eligible since 2009, with withdrawals before and during this year. */
+export const EXAMPLE_INPUT: Readonly<CheckerInput> = {
+  birthYear: 1990,
+  residentLater: false,
+  residencyYear: null,
+  nonResidentYears: [],
+  lifetimeContributions: 95_000,
+  priorWithdrawals: 10_000,
+  thisYearWithdrawals: 3_000,
+  plannedDeposit: null,
+  bestGuess: false,
+};
+
+const OUTCOME_LABEL: Record<Outcome, string> = {
+  not_eligible: "Not eligible yet",
+  room_available: "Room available",
+  no_room: "No room left",
+  over_contributed: "Over the limit",
+};
+
+export function renderExample(): string {
+  const r = check(EXAMPLE_INPUT);
+  return workedExample(
+    "trc-h-example",
+    `Someone born in ${EXAMPLE_INPUT.birthYear}, a Canadian resident since turning 18, has deposited <strong>${$(r.contributions)}</strong> into TFSAs in total, withdrew ${$(r.priorWithdrawals)} before ${CURRENT_YEAR}, and withdrew ${$(r.returningJan1)} so far in ${CURRENT_YEAR}. Run through this checker, that gives:`,
+    [
+      ["Room starts in", String(r.startYear)],
+      [`Total room built up to ${CURRENT_YEAR}`, $(r.cumulative)],
+      ["Room now", $(r.roomNow)],
+      [`Coming back on ${RESTORE_DATE}`, $(r.returningJan1)],
+      ["Result", OUTCOME_LABEL[r.outcome]],
+    ],
+    `Computed by the same engine as the checker above when this page was built. Room now = ${$(r.cumulative)} built up, minus ${$(r.contributions)} deposited, plus ${$(r.priorWithdrawals)} withdrawn before ${CURRENT_YEAR}.`,
+  );
 }

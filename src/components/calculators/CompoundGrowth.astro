@@ -6,6 +6,7 @@
  * script recomputes on every input change with the same functions (no
  * calculate button).
  */
+import "../../styles/calc-kit.css";
 import {
   DEFAULT_INPUT,
   DELAY_YEARS,
@@ -15,11 +16,14 @@ import {
   YEARS_MIN,
   calculate,
 } from "../../lib/calculators/compound-growth";
-import { renderResults, RETURN_NOTE } from "../../lib/calculators/compound-growth-render";
+import { HELP, RETURN_NOTE, cgFigures, renderExample, renderNextSteps, renderResults } from "../../lib/calculators/compound-growth-render";
+import CalcSources from "./CalcSources.astro";
 
 const d = DEFAULT_INPUT;
 const initialHtml = renderResults(calculate(d));
 const pctNum = (r: number) => Number((r * 100).toFixed(2));
+const checkedDates = [...cgFigures.values()].map((f) => f.verified_date).sort();
+const checked = checkedDates[0] === checkedDates[checkedDates.length - 1] ? checkedDates[0] : `${checkedDates[0]} to ${checkedDates[checkedDates.length - 1]}`;
 ---
 
 <div class="cg" id="cg">
@@ -27,6 +31,7 @@ const pctNum = (r: number) => Number((r * 100).toFixed(2));
     <fieldset>
       <legend>What you start with</legend>
       <label>Starting amount ($)
+        <small class="ck-help">{HELP.startingAmount}</small>
         <input type="number" name="startingAmount" inputmode="decimal" min="0" step="100" value={d.startingAmount} />
       </label>
       <p class="cg-error" data-error-for="startingAmount" hidden></p>
@@ -36,6 +41,7 @@ const pctNum = (r: number) => Number((r * 100).toFixed(2));
     <fieldset>
       <legend>What you add</legend>
       <label>Monthly contribution ($)
+        <small class="ck-help">{HELP.monthlyContribution}</small>
         <input type="number" name="monthlyContribution" inputmode="decimal" min="0" step="25" value={d.monthlyContribution} />
       </label>
       <p class="cg-error" data-error-for="monthlyContribution" hidden></p>
@@ -45,6 +51,7 @@ const pctNum = (r: number) => Number((r * 100).toFixed(2));
     <fieldset>
       <legend>How long</legend>
       <label for="cg-years" class="cg-range-label">Number of years <output id="cg-years-out" for="cg-years">{d.years} years</output></label>
+      <small class="ck-help">{HELP.years}</small>
       <input id="cg-years" class="cg-range" type="range" name="years" min={YEARS_MIN} max={YEARS_MAX} step="1" value={d.years} />
       <div class="cg-range-ends" aria-hidden="true"><span>{YEARS_MIN}</span><span>{YEARS_MAX}</span></div>
       <p class="cg-error" data-error-for="years" hidden></p>
@@ -52,12 +59,14 @@ const pctNum = (r: number) => Number((r * 100).toFixed(2));
 
     <fieldset>
       <legend>Expected yearly return</legend>
+      <small class="ck-help">{HELP.returnPreset}</small>
       <div class="cg-presets" role="group" aria-label="Return presets">
         {RETURN_PRESETS.map((r) => (
           <label class="cg-chip"><input type="radio" name="returnPreset" value={pctNum(r)} checked={r === d.annualReturn} /> {pctNum(r)}%</label>
         ))}
       </div>
       <label>Or type your own (%)
+        <small class="ck-help">{HELP.annualReturn}</small>
         <input type="number" name="annualReturn" inputmode="decimal" min="0" max={pctNum(RETURN_MAX)} step="0.1" value={pctNum(d.annualReturn!)} />
       </label>
       <p class="cg-error" data-error-for="annualReturn" hidden></p>
@@ -70,19 +79,25 @@ const pctNum = (r: number) => Number((r * 100).toFixed(2));
   <div class="cg-results" id="cg-results" aria-live="polite" set:html={initialHtml} />
 </div>
 
+<Fragment set:html={renderNextSteps()} />
+<Fragment set:html={renderExample()} />
+
 <section class="cg-assumptions" aria-labelledby="cg-h-assumptions">
-  <h2 id="cg-h-assumptions">How this works</h2>
+  <h2 id="cg-h-assumptions">How this calculator works</h2>
   <ul>
     <li><strong>Compounding means growth on your growth.</strong> Each month your balance earns a little, and next month that little bit earns too. Over decades, that snowball does more of the work than your deposits.</li>
     <li><strong>The return is your assumption.</strong> The yearly rate you pick is split into 12 equal monthly steps (7% a year becomes about 0.58% a month). The same rate applies every month. Real markets never move in a straight line; some years drop.</li>
     <li><strong>Deposits go in at the end of each month.</strong> The starting amount is invested on day one.</li>
     <li><strong>The start-later comparison keeps everything the same</strong> except the clock: same amounts and return, {DELAY_YEARS} fewer years, ending on the same date.</li>
     <li><strong>Left out on purpose:</strong> fees, taxes and inflation. Fees and taxes shrink real results. A TFSA lets investment growth stay tax-free, which is why it pairs well with long-term saving.</li>
+    <li><strong>Where the numbers come from:</strong> the compounding math uses only what you enter. The return presets and the long-run note are illustrations, not sourced figures. The account limit quoted in the next steps comes from the figure registry and is listed under Sources and dates.</li>
   </ul>
   <p class="page-meta">
     This calculator is education, not advice. It illustrates how compounding works and does not predict what any investment will earn.
   </p>
 </section>
+
+<CalcSources figures={[...cgFigures.values()]} checked={checked} extra={["Compounding math: arithmetic on your own inputs; no registry figures go into it", `Return presets (${RETURN_PRESETS.map(pctNum).join("%, ")}%) and the long-run return note: illustrations for this tool, not registry figures <span class="ck-flag">assumption</span>`]} />
 
 <script>
   import { calculate, validate, type Field, type GrowthInput } from "../../lib/calculators/compound-growth";

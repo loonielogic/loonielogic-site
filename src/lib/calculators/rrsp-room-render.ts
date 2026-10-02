@@ -11,9 +11,14 @@
  * "Not yet verified".
  */
 
-import { $, NOT_VERIFIED, alerts, card, flag, longDate, row, table, type Alert } from "./calc-kit";
+import { $, NOT_VERIFIED, alerts, card, flag, longDate, nextSteps, row, table, workedExample, type Alert } from "./calc-kit";
 import {
   BUFFER,
+  EXCESS_TAX_PER_MONTH,
+  NADIA,
+  check,
+  type Outcome,
+  type RoomInput,
   CAP_BINDS_AT,
   CLOSED_AGE,
   DEADLINE,
@@ -170,3 +175,78 @@ export function renderResults(r: RoomResult, o: RenderOptions): string {
 
 /** Plain-language rate line for the form, e.g. "18% of earned income, up to $33,810". */
 export const RATE_LINE = `${RATE * 100}% of earned income, up to ${$(DOLLAR_LIMIT)}`;
+
+/* ------------------------------------------------------------------ */
+/* Below the tool: field help, next steps, worked example              */
+/* ------------------------------------------------------------------ */
+
+/** One line per form field: why the tool needs it (140 characters max). */
+export const HELP = {
+  mode: "Start from CRA's number if you have it; if not, the tool rebuilds the limit from its parts.",
+  age: `Age decides whether the ${$(BUFFER)} over-contribution cushion applies (18 and over) and whether the RRSP has to close (${CLOSED_AGE}).`,
+  nonResident: "Income earned while a non-resident creates no new RRSP room, so the tool adds a note.",
+  bestGuess: "Labels the result as built on guesses, so it is never mistaken for CRA's figure.",
+  deductionLimit: "CRA's deduction limit is the opening balance that every contribution comes off.",
+  unusedRoom: "Room left unused in past years carries forward and adds to this year's limit.",
+  earnedIncome: `New room is ${RATE_LINE}, so last year's earned income sets it.`,
+  pensionAdjustment: "A workplace pension uses up RRSP room, so the pension adjustment comes off.",
+  par: "A pension adjustment reversal gives room back after leaving a pension plan early.",
+  pspa: "A past service pension adjustment uses room for pension credits bought for earlier years.",
+  unusedContributions: "Money already in an RRSP but never deducted has used room, so it comes off.",
+  contribSince: "Contributions made after CRA's statement have used room CRA has not counted yet.",
+  contribFirst60: "First-60-days contributions can count for either year, so the tool keeps them separate.",
+  first60ClaimYear: "The tool takes first-60-days contributions off only the year you pick.",
+  contribUndated: "Undated contributions are counted against this year, the cautious choice.",
+  withdrawals: "Withdrawals never give room back; the tool notes them so they are not mistaken for room.",
+  earnedThisYear: `This year's earned income sets the new room that arrives for ${NEXT_YEAR}.`,
+} as const;
+
+export function renderNextSteps(): string {
+  return nextSteps("rrr-h-next", [
+    `<strong>Check the official limit</strong> in <a href="${MY_ACCOUNT_URL}" rel="noopener">CRA My Account</a> or in the "RRSP deduction limit statement" on your latest Notice of Assessment, then subtract what has gone in since.`,
+    `<strong>Deadline:</strong> contributions made by ${longDate(DEADLINE)} can be deducted on your ${TAX_YEAR} return. Pick which year first-60-days contributions count for before filing.`,
+    `<strong>Over the limit?</strong> The lifetime cushion is ${$(BUFFER)}; past it, the excess is taxed at ${EXCESS_TAX_PER_MONTH * 100}% a month until it is withdrawn or new room absorbs it.`,
+    `<strong>Check where the next dollar fits.</strong> <a href="/calculators/tfsa-vs-rrsp">TFSA or RRSP</a> compares your tax rate now and later, and the <a href="/calculators/income-tax-calculator">income tax calculator</a> shows what the deduction saves.`,
+  ]);
+}
+
+/** The worked example's inputs: rebuilding the limit from $82,000 of earned income. */
+export const EXAMPLE_INPUT: Readonly<RoomInput> = {
+  ...NADIA,
+  mode: "rebuild",
+  age: 40,
+  deductionLimit: null,
+  unusedRoom: 5_000,
+  earnedIncome: 82_000,
+  pensionAdjustment: 0,
+  par: 0,
+  pspa: 0,
+  unusedContributions: 0,
+  contribSince: 3_000,
+  contribFirst60: 2_000,
+  first60ClaimYear: "this",
+};
+
+const OUTCOME_LABEL: Record<Outcome, string> = {
+  closed: "Contribution room is closed",
+  room: "Room available",
+  full: "Room used up",
+  over: "Over the limit",
+};
+
+export function renderExample(): string {
+  const r = check(EXAMPLE_INPUT);
+  const i = r.input;
+  return workedExample(
+    "rrr-h-example",
+    `A 40-year-old with no workplace pension earned <strong>${$(i.earnedIncome)}</strong> in ${TAX_YEAR - 1} and has ${$(i.unusedRoom)} of unused room carried forward. Since the last statement they contributed ${$(i.contribSince)}, plus ${$(i.contribFirst60)} in the first 60 days of ${NEXT_YEAR}, claimed for ${TAX_YEAR}. Run through this calculator, that gives:`,
+    [
+      ["New room from earnings", $(r.breakdown!.newRoomBeforePa)],
+      [`${TAX_YEAR} deduction limit`, $(r.limit)],
+      [`Contributions counted against ${TAX_YEAR}`, $(r.countedThisYear)],
+      ["Room left now", $(r.roomNow)],
+      ["Result", OUTCOME_LABEL[r.outcome]],
+    ],
+    `Computed by the same engine as the calculator above when this page was built. The limit is ${$(i.unusedRoom)} carried forward plus ${RATE_LINE.split(",")[0]}.`,
+  );
+}

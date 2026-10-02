@@ -32,6 +32,9 @@ import {
   transferTax,
   type PlannerInput,
 } from "./down-payment-planner";
+import { $, EXAMPLE_INPUT, HELP, renderExample, renderNextSteps } from "./down-payment-planner-render";
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 
 const near = (actual: number, expected: number, tol: number, msg?: string) =>
   assert.ok(Math.abs(actual - expected) <= tol, `${msg ?? ""} expected ${expected} +/- ${tol}, got ${actual}`);
@@ -329,5 +332,58 @@ describe("Assumption flags stay visible", () => {
     );
     assert.equal(Math.round(8_000 * r.min_rate), r.min);
     assert.equal(Math.round(8_000 * r.max_rate), r.max);
+  });
+});
+
+describe("below the tool: field help, next steps, worked example", () => {
+  const SRC = join(import.meta.dirname, "..", "..");
+  const DASHES = [String.fromCharCode(0x2014), String.fromCharCode(0x2013)];
+  const houseRules = (html: string, where: string) => {
+    const text = html.replace(/<[^>]+>/g, " ");
+    for (const d of DASHES) assert.ok(!html.includes(d), `${where}: em or en dash`);
+    assert.ok(!/you should/i.test(text), `${where}: "you should"`);
+    assert.ok(!/\b(we|our|us)\b/i.test(text) && !/\bI\b/.test(text), `${where}: first-person voice`);
+  };
+  const internalLinksExist = (html: string) => {
+    for (const [, href] of html.matchAll(/href="(\/[^"]*)"/g)) {
+      const [, section, slug] = href.split("/");
+      const file = { calculators: `pages/calculators/${slug}.astro`, learn: `content/explainers/${slug}.mdx`, compare: `content/comparisons/${slug}.mdx` }[section];
+      assert.ok(file && existsSync(join(SRC, file)), `internal link ${href} has no page`);
+    }
+  };
+
+  test("every form field has one helper line, 140 characters or fewer (radio groups once)", () => {
+    const form = readFileSync(join(SRC, "components/calculators/DownPaymentPlanner.astro"), "utf8").split("\n<script>")[0];
+    const fields = new Set([...form.matchAll(/<(?:input|select)\b[^>]*\bname="([A-Za-z0-9]+)"/g)].map((m) => m[1]));
+    assert.deepEqual([...fields].sort(), Object.keys(HELP).sort());
+    for (const [field, line] of Object.entries(HELP)) {
+      assert.ok(line.length > 0 && line.length <= 140, `${field}: ${line.length} characters`);
+      houseRules(line, `help for ${field}`);
+    }
+  });
+
+  test("next steps: pre-approval, rate hold, closing-cost buffer; no sales links", () => {
+    const html = renderNextSteps();
+    assert.match(html, /^<section class="ck-next[^"]*" aria-labelledby="dpp-h-next"><h2 id="dpp-h-next">What to do with this number<\/h2>/);
+    const steps = html.match(/<li>/g)?.length ?? 0;
+    assert.ok(steps >= 3 && steps <= 4, `${steps} steps`);
+    for (const s of ["pre-approval", "rate hold", "closing-cost buffer", $(FHSA_LIFETIME)]) assert.ok(html.includes(s), s);
+    assert.ok(!/href="https?:/.test(html), "no outbound links");
+    houseRules(html, "next steps");
+    internalLinksExist(html);
+  });
+
+  test("worked example: every figure straight from plan()", () => {
+    const html = renderExample();
+    const p = plan({ ...EXAMPLE_INPUT });
+    const s = p.chosen;
+    assert.match(html, /^<section class="ck-example[^"]*" aria-labelledby="dpp-h-example"><h2 id="dpp-h-example">A worked example<\/h2>/);
+    assert.ok(Number.isFinite(s.months));
+    for (const v of [$(s.stack.downPayment), $(s.stack.cashTarget), `${s.monthsWhole} months`, $(s.stack.premium), $(s.payment), $(p.budget.total)]) {
+      assert.ok(html.includes(v), `missing engine value ${v}`);
+    }
+    const outputs = html.match(/<dd>/g)?.length ?? 0;
+    assert.ok(outputs >= 3 && outputs <= 6, `${outputs} outputs`);
+    houseRules(html, "worked example");
   });
 });

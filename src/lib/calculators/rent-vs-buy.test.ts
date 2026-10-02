@@ -22,7 +22,10 @@ import {
   validate,
   type RvbInput,
 } from "./rent-vs-buy";
-import { DISCLAIMER, renderResults } from "./rent-vs-buy-render";
+import { DISCLAIMER, EXAMPLE_INPUT, HELP, renderExample, renderNextSteps, renderResults } from "./rent-vs-buy-render";
+import { $ } from "./calc-kit";
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 
 const close = (actual: number, expected: number, tol = 0.01) =>
   assert.ok(Math.abs(actual - expected) <= tol, `expected ${expected}, got ${actual}`);
@@ -144,5 +147,57 @@ describe("results copy rules", () => {
 
   test("'never' is stated plainly", () => {
     assert.ok(renderResults(compare(input())).includes("never catches up"));
+  });
+});
+
+describe("below the tool: field help, next steps, worked example", () => {
+  const SRC = join(import.meta.dirname, "..", "..");
+  const DASHES = [String.fromCharCode(0x2014), String.fromCharCode(0x2013)];
+  const houseRules = (html: string, where: string) => {
+    const text = html.replace(/<[^>]+>/g, " ");
+    for (const d of DASHES) assert.ok(!html.includes(d), `${where}: em or en dash`);
+    assert.ok(!/you should/i.test(text), `${where}: "you should"`);
+    assert.ok(!/\b(we|our|us)\b/i.test(text) && !/\bI\b/.test(text), `${where}: first-person voice`);
+  };
+  const internalLinksExist = (html: string) => {
+    for (const [, href] of html.matchAll(/href="(\/[^"]*)"/g)) {
+      const [, section, slug] = href.split("/");
+      const file = { calculators: `pages/calculators/${slug}.astro`, learn: `content/explainers/${slug}.mdx`, compare: `content/comparisons/${slug}.mdx` }[section];
+      assert.ok(file && existsSync(join(SRC, file)), `internal link ${href} has no page`);
+    }
+  };
+
+  test("every form field has one helper line, 140 characters or fewer", () => {
+    const form = readFileSync(join(SRC, "components/calculators/RentVsBuy.astro"), "utf8").split("\n<script>")[0];
+    const fields = new Set([...form.matchAll(/<(?:input|select)\b[^>]*\bname="([A-Za-z0-9]+)"/g)].map((m) => m[1]));
+    assert.deepEqual([...fields].sort(), Object.keys(HELP).sort());
+    for (const [field, line] of Object.entries(HELP)) {
+      assert.ok(line.length > 0 && line.length <= 140, `${field}: ${line.length} characters`);
+      houseRules(line, `help for ${field}`);
+    }
+  });
+
+  test("next steps: pre-approval, rate hold, closing-cost buffer; no sales links", () => {
+    const html = renderNextSteps();
+    assert.match(html, /^<section class="ck-next[^"]*" aria-labelledby="rvb-h-next"><h2 id="rvb-h-next">What to do with this number<\/h2>/);
+    const steps = html.match(/<li>/g)?.length ?? 0;
+    assert.ok(steps >= 3 && steps <= 4, `${steps} steps`);
+    for (const s of ["pre-approval", "rate hold", "closing-cost buffer"]) assert.ok(html.includes(s), s);
+    assert.ok(!/href="https?:/.test(html), "no outbound links");
+    houseRules(html, "next steps");
+    internalLinksExist(html);
+  });
+
+  test("worked example: every figure straight from compare()", () => {
+    const html = renderExample();
+    const x = compare(EXAMPLE_INPUT);
+    assert.match(html, /^<section class="ck-example[^"]*" aria-labelledby="rvb-h-example"><h2 id="rvb-h-example">A worked example<\/h2>/);
+    const be = x.sim.breakeven === null ? "Never within 30 years" : `Year ${x.sim.breakeven}`;
+    for (const v of [x.verdict === "buy" ? "Buying" : "Renting", $(Math.abs(x.gapAtTenure)), be, $(x.sim.upfront), $(x.sim.ownMonth1), $(x.roundTrip)]) {
+      assert.ok(html.includes(v), `missing engine value ${v}`);
+    }
+    const outputs = html.match(/<dd>/g)?.length ?? 0;
+    assert.ok(outputs >= 3 && outputs <= 6, `${outputs} outputs`);
+    houseRules(html, "worked example");
   });
 });

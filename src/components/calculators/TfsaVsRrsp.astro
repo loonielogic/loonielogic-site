@@ -17,12 +17,12 @@ import {
   decisionFigures,
 } from "../../lib/calculators/tfsa-vs-rrsp";
 import { taxFigures } from "../../lib/calculators/income-tax";
-import { renderResults } from "../../lib/calculators/tfsa-vs-rrsp-render";
+import { HELP, renderExample, renderNextSteps, renderResults, tvrNextFigures } from "../../lib/calculators/tfsa-vs-rrsp-render";
 import CalcSources from "./CalcSources.astro";
 
 const d = DEFAULT_INPUT;
 const initialHtml = renderResults(decide(d));
-const sources = new Map([...taxFigures, ...decisionFigures]);
+const sources = new Map([...taxFigures, ...decisionFigures, ...tvrNextFigures]);
 ---
 
 <div class="ck" id="tvr">
@@ -31,6 +31,7 @@ const sources = new Map([...taxFigures, ...decisionFigures]);
       <legend>Three quick questions</legend>
       <fieldset class="ck-inline">
         <legend>1. Does your employer match RRSP contributions?</legend>
+        <small class="ck-help">{HELP.employerMatch}</small>
         <div class="ck-pills">
           <label class="ck-pill"><input type="radio" name="employerMatch" value="yes" /> Yes</label>
           <label class="ck-pill"><input type="radio" name="employerMatch" value="no" checked /> No</label>
@@ -38,6 +39,7 @@ const sources = new Map([...taxFigures, ...decisionFigures]);
       </fieldset>
       <fieldset class="ck-inline">
         <legend>2. Is this money for a first home within ~15 years?</legend>
+        <small class="ck-help">{HELP.homeSoon}</small>
         <div class="ck-pills">
           <label class="ck-pill"><input type="radio" name="homeSoon" value="yes" /> Yes</label>
           <label class="ck-pill"><input type="radio" name="homeSoon" value="no" checked /> No</label>
@@ -45,6 +47,7 @@ const sources = new Map([...taxFigures, ...decisionFigures]);
       </fieldset>
       <fieldset class="ck-inline">
         <legend>3. Might you need this money before retirement?</legend>
+        <small class="ck-help">{HELP.mayNeedEarly}</small>
         <div class="ck-pills">
           <label class="ck-pill"><input type="radio" name="mayNeedEarly" value="yes" /> Yes</label>
           <label class="ck-pill"><input type="radio" name="mayNeedEarly" value="no" checked /> No</label>
@@ -56,21 +59,26 @@ const sources = new Map([...taxFigures, ...decisionFigures]);
     <fieldset>
       <legend>Your income, now and later</legend>
       <label>Province or territory
+        <small class="ck-help">{HELP.province}</small>
         <select name="province">
           {PROVINCES.map((p) => <option value={p.code} selected={p.code === d.province}>{p.name}</option>)}
         </select>
       </label>
       <label>Your income this year ($, before tax)
+        <small class="ck-help">{HELP.income}</small>
         <input type="number" name="income" inputmode="decimal" min="0" step="1000" value={d.income} />
       </label>
       <p class="ck-error" data-error-for="income" hidden></p>
       <label>Expected yearly income in retirement ($)
+        <small class="ck-help">{HELP.retirementIncome}</small>
         <input type="number" name="retirementIncome" inputmode="decimal" min="0" step="1000" value={d.retirementIncome} />
         <small>Include RRSP or RRIF withdrawals, pensions, CPP and OAS. Leave out TFSA withdrawals.</small>
       </label>
       <p class="ck-error" data-error-for="retirementIncome" hidden></p>
       <label class="ck-check"><input type="checkbox" name="estimateRetirement" /> Not sure: estimate it for me (65% of today's income)</label>
+      <small class="ck-help">{HELP.estimateRetirement}</small>
       <label>Your age
+        <small class="ck-help">{HELP.age}</small>
         <input type="number" name="age" inputmode="numeric" min="0" max="120" step="1" value={d.age} />
       </label>
       <p class="ck-error" data-error-for="age" hidden></p>
@@ -79,14 +87,17 @@ const sources = new Map([...taxFigures, ...decisionFigures]);
     <fieldset>
       <legend>The money you are deciding on</legend>
       <label>Amount to put away ($)
+        <small class="ck-help">{HELP.amount}</small>
         <input type="number" name="amount" inputmode="decimal" min="1" step="500" value={d.amount} />
       </label>
       <p class="ck-error" data-error-for="amount" hidden></p>
       <label>Years until you withdraw it
+        <small class="ck-help">{HELP.years}</small>
         <input type="number" name="years" inputmode="numeric" min="0" max={HORIZON_MAX} step="1" value={d.years} />
       </label>
       <p class="ck-error" data-error-for="years" hidden></p>
       <label>Yearly return for the illustration (%)
+        <small class="ck-help">{HELP.expectedReturn}</small>
         <input type="number" name="expectedReturn" inputmode="decimal" min="0" max="15" step="0.5" value={DEFAULT_RETURN * 100} />
         <small>The same return applies to both accounts, so it never changes which one wins.</small>
       </label>
@@ -96,18 +107,24 @@ const sources = new Map([...taxFigures, ...decisionFigures]);
     <fieldset>
       <legend>Anything else? (optional)</legend>
       <label>TFSA room available ($)
+        <small class="ck-help">{HELP.tfsaRoom}</small>
         <input type="number" name="tfsaRoom" inputmode="decimal" min="0" step="500" placeholder="Blank: assume enough" />
       </label>
       <p class="ck-error" data-error-for="tfsaRoom" hidden></p>
       <label>RRSP room available ($)
+        <small class="ck-help">{HELP.rrspRoom}</small>
         <input type="number" name="rrspRoom" inputmode="decimal" min="0" step="500" placeholder="Blank: assume enough" />
       </label>
       <p class="ck-error" data-error-for="rrspRoom" hidden></p>
       <small>New room in 2026: TFSA ${TFSA_ANNUAL.toLocaleString("en-CA")}; RRSP 18% of last year's earned income, up to ${RRSP_CAP.toLocaleString("en-CA")}. Your exact room is in CRA My Account.</small>
       <label class="ck-check"><input type="checkbox" name="expectGis" /> I expect a low retirement income (may get the Guaranteed Income Supplement)</label>
+      <small class="ck-help">{HELP.expectGis}</small>
       <label class="ck-check"><input type="checkbox" name="spouseEarnsLess" /> My spouse or partner earns much less than I do</label>
+      <small class="ck-help">{HELP.spouseEarnsLess}</small>
       <label class="ck-check"><input type="checkbox" name="selfEmployed" /> I am self-employed</label>
+      <small class="ck-help">{HELP.selfEmployed}</small>
       <label class="ck-check"><input type="checkbox" name="leavingCanada" /> I may leave Canada</label>
+      <small class="ck-help">{HELP.leavingCanada}</small>
     </fieldset>
     <noscript><p class="ck-help">Turn on JavaScript to run your own numbers. The example is $5,000 for 30 years, earning $95,000 now and $55,000 in retirement in Ontario.</p></noscript>
   </form>
@@ -115,11 +132,14 @@ const sources = new Map([...taxFigures, ...decisionFigures]);
   <div class="ck-results" id="tvr-results" aria-live="polite" set:html={initialHtml} />
 </div>
 
+<Fragment set:html={renderNextSteps()} />
+<Fragment set:html={renderExample()} />
+
 <section class="ck-assumptions" aria-labelledby="tvr-h-how">
-  <h2 id="tvr-h-how">How the math works</h2>
+  <h2 id="tvr-h-how">How this calculator works</h2>
   <ul>
     <li><strong>It compares two tax rates.</strong> An RRSP deduction saves tax at your marginal rate today; the withdrawal is taxed at your marginal rate in retirement. A TFSA is the reverse: tax now, nothing later. Whichever rate is lower is the one you would rather pay.</li>
-    <li><strong>Marginal rates come from the 2026 federal and provincial brackets</strong> for all 13 provinces and territories, the same engine as our income tax calculator, including Ontario's surtax. Credits other than the basic personal amount are left out.</li>
+    <li><strong>Marginal rates come from the 2026 federal and provincial brackets</strong> for all 13 provinces and territories, the same engine as the income tax calculator, including Ontario's surtax. Credits other than the basic personal amount are left out.</li>
     <li><strong>OAS recovery tax:</strong> if your retirement income is above $95,323, 15% of each extra dollar is clawed back from Old Age Security, so the tool adds 15 points to your retirement rate.</li>
     <li><strong>Within 3 points it is a tie,</strong> and the TFSA comes first for flexibility: tax-free withdrawals at any time, the room back next January 1, and no effect on income-tested benefits.</li>
     <li><strong>The rates are on the next dollar.</strong> A large RRSP deduction that drops you into a lower bracket saves a little less than shown, and large withdrawals can be taxed a little more.</li>

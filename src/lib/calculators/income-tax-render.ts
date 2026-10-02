@@ -10,8 +10,12 @@
  * "Not yet verified" label.
  */
 
-import { $, $c, NOT_VERIFIED, alerts, card, pct, row, table, type Alert } from "./calc-kit";
+import { $, $c, NOT_VERIFIED, alerts, card, longDate, nextSteps, pct, row, table, workedExample, type Alert } from "./calc-kit";
+import { figure, type FigureLog } from "./figures";
 import {
+  DEFAULT_INPUT,
+  estimate,
+  type TaxInput,
   BPA_PHASE_FROM,
   BPA_PHASE_TO,
   CANADA_EMPLOYMENT_AMOUNT,
@@ -222,4 +226,65 @@ export function renderPaycheque(p: PaychequeResult, annual: TaxResult): string {
   );
 
   return `${headline}${stub}${timeline}${year}<p class="ck-note">Assumes steady pay all year, no other income, and contributions starting in January. Employers follow CRA's payroll formulas; check against CRA's <a href="${PDOC_URL}" rel="noopener">Payroll Deductions Online Calculator</a>.${p.pensionLabel === "QPP" ? " In Quebec, Revenu Québec's source-deduction formulas set provincial withholding." : ""}</p><p class="ck-disclaimer">${DISCLAIMER}</p>`;
+}
+
+/* ------------------------------------------------------------------ */
+/* Below the tool: field help, next steps, worked example              */
+/* ------------------------------------------------------------------ */
+
+/** Registry figures the next steps cite (kept apart from taxFigures, which other pages share). */
+export const itxNextFigures: FigureLog = new Map();
+const DL = "tax-deadlines-2026.json";
+const FILING_DEADLINE = figure<string>(DL, "t1.filing.individuals.2027", itxNextFigures);
+const SELF_EMPLOYED_DEADLINE = figure<string>(DL, "t1.filing.self_employed.2027", itxNextFigures);
+const LATE_PENALTY = figure<{ base: number; per_full_month_late: number; max_months: number }>(DL, "filing.late_penalty", itxNextFigures);
+const RRSP_DEADLINE = figure<string>(DL, "rrsp.deadline.2026_tax_year", itxNextFigures);
+const RECORDS_RULE = figure<string>("home-office-2026.json", "home_office.employee.records_six_years", itxNextFigures);
+const RECORD_YEARS = Number(/(\d+) years/.exec(RECORDS_RULE)![1]);
+
+/** One line per form field: why the tool needs it (140 characters max). */
+export const HELP = {
+  mode: "The whole-year view shows your tax bill; the paycheque view shows what lands in your account each pay.",
+  province: "Your province decides which tax brackets and credits apply.",
+  age: "Age decides whether CPP applies (18 and over) and whether the OAS recovery tax can apply (65 and over).",
+  employment: "Wages pay CPP and EI and earn the Canada employment amount credit, so they are kept apart from other income.",
+  selfEmployment: "Self-employed income pays both halves of CPP and no EI, so it is taxed differently from wages.",
+  otherIncome: "Other income adds to taxable income but pays no CPP or EI.",
+  otherHasDividendsOrGains: "Dividends and capital gains get special tax treatment this version does not model, so the tool flags them.",
+  rrsp: "RRSP contributions come off taxable income, which lowers tax at your marginal rate.",
+  fhsa: "FHSA contributions come off taxable income the same way RRSP contributions do.",
+  dues: "Dues are deductible, and in Ontario they also lower the income used for the LIFT credit.",
+  payFrequency: "The number of pays a year splits the yearly tax and payroll into per-cheque amounts.",
+  td1Federal: "Your federal TD1 claim sets how much federal tax your employer withholds from each pay.",
+  td1Provincial: "Your provincial TD1 claim sets how much provincial tax is withheld from each pay.",
+} as const;
+
+export function renderNextSteps(): string {
+  return nextSteps("itx-h-next", [
+    `<strong>File your ${TAX_YEAR} return by ${longDate(FILING_DEADLINE)}.</strong> Any balance owing is due that day too. Self-employed filers have until ${longDate(SELF_EMPLOYED_DEADLINE)} to file, but payment is still due ${longDate(FILING_DEADLINE)}.`,
+    `<strong>If you owe, pay on time.</strong> CRA My Payment takes online debit payments. Filing late with a balance owing adds a ${pct(LATE_PENALTY.base)} penalty plus ${pct(LATE_PENALTY.per_full_month_late)} for each full month late, up to ${LATE_PENALTY.max_months} months, and interest runs on unpaid tax.`,
+    `<strong>Lower this number with an RRSP deduction.</strong> Contributions made by ${longDate(RRSP_DEADLINE)} can be deducted on your ${TAX_YEAR} return. Check how much room you have with the <a href="/calculators/rrsp-room">RRSP room calculator</a>.`,
+    `<strong>Keep your slips and receipts for ${RECORD_YEARS} years</strong> from the end of the tax year. CRA can ask to see them, and you do not send them with the return.`,
+  ]);
+}
+
+/** The worked example's inputs: one Ontario salary, nothing else. */
+export const EXAMPLE_INPUT: Readonly<TaxInput> = { ...DEFAULT_INPUT, province: "ON", employment: 82_000, age: 35 };
+
+export function renderExample(): string {
+  const r = estimate(EXAMPLE_INPUT);
+  const c = r.core;
+  return workedExample(
+    "itx-h-example",
+    `A 35-year-old in ${provinceName(EXAMPLE_INPUT.province)} earns <strong>${$(EXAMPLE_INPUT.employment!)}</strong> in employment income in ${TAX_YEAR}, with no other income and no RRSP, FHSA or dues deductions. Run through this calculator, that gives:`,
+    [
+      ["Income tax (federal and provincial)", $(c.tax.total)],
+      [`${c.payroll.pensionLabel} and EI`, $(c.payroll.total)],
+      ["Take-home pay", `${$(c.takeHome)} (${$(c.takeHome / 12)} a month)`],
+      ["Average income tax rate", pct(r.averageRate)],
+      ["Marginal rate on the next dollar", pct(r.marginalRate)],
+      [`Tax saved by ${$(RRSP_WHAT_IF)} more RRSP`, $(r.rrspWhatIf)],
+    ],
+    "Computed by the same engine as the calculator above when this page was built. Change the inputs above to run your own numbers.",
+  );
 }

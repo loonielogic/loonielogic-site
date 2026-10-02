@@ -12,7 +12,7 @@ import {
   afford,
   affordFigures,
 } from "../../lib/calculators/house-affordability";
-import { renderResults } from "../../lib/calculators/house-affordability-render";
+import { HELP, hafNextFigures, renderExample, renderNextSteps, renderResults } from "../../lib/calculators/house-affordability-render";
 import { pct } from "../../lib/calculators/calc-kit";
 import CalcSources from "./CalcSources.astro";
 
@@ -26,42 +26,51 @@ const pctNum = (r: number) => Number((r * 100).toFixed(3));
     <fieldset>
       <legend>Your household</legend>
       <label>Gross yearly household income ($, before tax)
+        <small class="ck-help">{HELP.income}</small>
         <input type="number" name="income" inputmode="decimal" min="0" step="1000" value={d.income} />
       </label>
       <p class="ck-error" data-error-for="income" hidden></p>
       <label>Cash for the down payment and closing costs ($)
+        <small class="ck-help">{HELP.cash}</small>
         <input type="number" name="cash" inputmode="decimal" min="0" step="1000" value={d.cash} />
         <small>Savings, FHSA, Home Buyers' Plan (up to $60,000 each), gifts, sale proceeds. Borrowed down payments are generally not accepted for insured mortgages.</small>
       </label>
       <p class="ck-error" data-error-for="cash" hidden></p>
       <label class="ck-check"><input type="checkbox" name="firstTimeBuyer" checked={d.firstTimeBuyer} /> First-time buyer</label>
+      <small class="ck-help">{HELP.firstTimeBuyer}</small>
       <label class="ck-check"><input type="checkbox" name="newBuild" /> Newly built home</label>
+      <small class="ck-help">{HELP.newBuild}</small>
     </fieldset>
 
     <fieldset>
       <legend>Your mortgage</legend>
       <label>Mortgage rate you would actually pay (% a year)
+        <small class="ck-help">{HELP.contractRate}</small>
         <input type="number" name="contractRate" inputmode="decimal" min="0" max="20" step="0.05" value={pctNum(d.contractRate!)} />
         <small>Default {pct(d.contractRate!)} is illustrative, not a lender quote. You qualify at the higher of this plus 2 points and 5.25%.</small>
       </label>
       <p class="ck-error" data-error-for="contractRate" hidden></p>
       <label class="ck-check" data-show="thirty"><input type="checkbox" name="wantThirty" /> Use a 30-year amortization (first-time buyers and new builds; adds 0.20% to the insurance premium)</label>
+      <small class="ck-help" data-show="thirty">{HELP.wantThirty}</small>
     </fieldset>
 
     <fieldset>
       <legend>Your other debts</legend>
       <label>Monthly debt payments ($: car, student loans, other loans)
+        <small class="ck-help">{HELP.debtPayments}</small>
         <input type="number" name="debtPayments" inputmode="decimal" min="0" step="50" value={d.debtPayments} />
       </label>
       <p class="ck-error" data-error-for="debtPayments" hidden></p>
       <details>
         <summary>Only know a balance?</summary>
         <label>Credit card and unsecured line of credit balances ($)
+          <small class="ck-help">{HELP.unsecuredBalance}</small>
           <input type="number" name="unsecuredBalance" inputmode="decimal" min="0" step="100" value={d.unsecuredBalance} />
           <small>Lenders count 3% of the balance a month (or the minimum payment, if higher).</small>
         </label>
         <p class="ck-error" data-error-for="unsecuredBalance" hidden></p>
         <label>Secured line of credit balance ($)
+          <small class="ck-help">{HELP.securedBalance}</small>
           <input type="number" name="securedBalance" inputmode="decimal" min="0" step="100" value={d.securedBalance} />
           <small>Counted at 0.65% of the balance a month.</small>
         </label>
@@ -72,6 +81,7 @@ const pctNum = (r: number) => Number((r * 100).toFixed(3));
     <fieldset>
       <legend>The home</legend>
       <label>Province
+        <small class="ck-help">{HELP.province}</small>
         <select name="province">
           <option value="ON" selected>Ontario</option>
           <option value="BC">British Columbia</option>
@@ -83,21 +93,26 @@ const pctNum = (r: number) => Number((r * 100).toFixed(3));
         </select>
       </label>
       <label class="ck-check" data-show="ON"><input type="checkbox" name="toronto" /> In the City of Toronto (adds municipal land transfer tax)</label>
+      <small class="ck-help" data-show="ON">{HELP.toronto}</small>
       <label>Property tax (% of the price a year)
+        <small class="ck-help">{HELP.taxRate}</small>
         <input type="number" name="taxRate" inputmode="decimal" min="0" max="5" step="0.01" value={pctNum(d.taxRate!)} />
         <small>A rough default. Your city's rate applies to the assessed value.</small>
       </label>
       <p class="ck-error" data-error-for="taxRate" hidden></p>
       <label>Heating ($ a month)
+        <small class="ck-help">{HELP.heating}</small>
         <input type="number" name="heating" inputmode="decimal" min="0" step="10" value={d.heating} />
         <small>Lenders often use the greater of $100 a month or $0.75 per square foot of living space.</small>
       </label>
       <p class="ck-error" data-error-for="heating" hidden></p>
       <label>Condo fees ($ a month)
+        <small class="ck-help">{HELP.condoFees}</small>
         <input type="number" name="condoFees" inputmode="decimal" min="0" step="25" value={d.condoFees} />
       </label>
       <p class="ck-error" data-error-for="condoFees" hidden></p>
       <label>Legal and other closing fees ($)
+        <small class="ck-help">{HELP.legal}</small>
         <input type="number" name="legal" inputmode="decimal" min="0" step="100" value={DEFAULT_LEGAL} />
       </label>
       <p class="ck-error" data-error-for="legal" hidden></p>
@@ -108,8 +123,11 @@ const pctNum = (r: number) => Number((r * 100).toFixed(3));
   <div class="ck-results" id="haf-results" aria-live="polite" set:html={initialHtml} />
 </div>
 
+<Fragment set:html={renderNextSteps()} />
+<Fragment set:html={renderExample()} />
+
 <section class="ck-assumptions" aria-labelledby="haf-h-how">
-  <h2 id="haf-h-how">How the math works</h2>
+  <h2 id="haf-h-how">How this calculator works</h2>
   <ul>
     <li><strong>Three limits, the lowest wins.</strong> Housing costs up to 39% of gross income (GDS), housing plus other debt payments up to 44% (TDS), and enough cash for the minimum down payment plus closing costs.</li>
     <li><strong>Housing costs</strong> are the mortgage payment at the qualifying rate, property tax, heating, and half of any condo fees.</li>
@@ -124,7 +142,7 @@ const pctNum = (r: number) => Number((r * 100).toFixed(3));
   </p>
 </section>
 
-<CalcSources figures={[...affordFigures.values()]} checked="2026-09-27 to 2026-09-30" />
+<CalcSources figures={[...affordFigures.values(), ...hafNextFigures.values()]} checked="2026-09-27 to 2026-09-30" />
 
 <script>
   import { afford, validate, type AffordInput, type Field } from "../../lib/calculators/house-affordability";

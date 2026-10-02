@@ -7,23 +7,29 @@
  * change with the same functions (no calculate button). Nothing is saved
  * and the goal name never leaves the page.
  */
+import "../../styles/calc-kit.css";
 import {
   DEFAULT_EXPECTED,
   DEFAULT_GOAL,
   EXPECTED_MAX,
   EXPECTED_PRESETS,
+  MARKET_MAX,
   NAME_MAX,
+  STEADY_MAX,
   YEARS_MAX,
   YEARS_MIN,
   plan,
 } from "../../lib/calculators/goal-planner";
-import { renderResults } from "../../lib/calculators/goal-planner-render";
+import { HELP, gpFigures, renderExample, renderNextSteps, renderResults } from "../../lib/calculators/goal-planner-render";
+import CalcSources from "./CalcSources.astro";
 
 const g = DEFAULT_GOAL;
 const now = new Date();
 const initialHtml = renderResults(plan(g, DEFAULT_EXPECTED, { year: now.getFullYear(), month: now.getMonth() + 1 }));
 const pctNum = (r: number) => Number((r * 100).toFixed(2));
 const yrs = (n: number) => `${n} ${n === 1 ? "year" : "years"}`;
+const checkedDates = [...gpFigures.values()].map((f) => f.verified_date).sort();
+const checked = checkedDates[0] === checkedDates[checkedDates.length - 1] ? checkedDates[0] : `${checkedDates[0]} to ${checkedDates[checkedDates.length - 1]}`;
 ---
 
 <div class="gp" id="gp">
@@ -31,10 +37,12 @@ const yrs = (n: number) => `${n} ${n === 1 ? "year" : "years"}`;
     <fieldset>
       <legend>Your goal</legend>
       <label>What are you saving for?
+        <small class="ck-help">{HELP.name}</small>
         <input type="text" name="name" maxlength={NAME_MAX} autocomplete="off" value={g.name} placeholder="First home down payment" />
       </label>
       <p class="gp-error" data-error-for="name" hidden></p>
       <label>Target amount ($)
+        <small class="ck-help">{HELP.target}</small>
         <input type="number" name="target" inputmode="decimal" min="1" step="500" value={g.target} />
       </label>
       <p class="gp-error" data-error-for="target" hidden></p>
@@ -43,6 +51,7 @@ const yrs = (n: number) => `${n} ${n === 1 ? "year" : "years"}`;
     <fieldset>
       <legend>Your timeline</legend>
       <label for="gp-years" class="gp-range-label">Years until you need it <output id="gp-years-out" for="gp-years">{yrs(g.years!)}</output></label>
+      <small class="ck-help">{HELP.years}</small>
       <input id="gp-years" class="gp-range" type="range" name="years" min={YEARS_MIN} max={YEARS_MAX} step="1" value={g.years} />
       <div class="gp-range-ends" aria-hidden="true"><span>{YEARS_MIN}</span><span>{YEARS_MAX}</span></div>
       <p class="gp-error" data-error-for="years" hidden></p>
@@ -51,10 +60,12 @@ const yrs = (n: number) => `${n} ${n === 1 ? "year" : "years"}`;
     <fieldset>
       <legend>Where you are now</legend>
       <label>Saved so far ($)
+        <small class="ck-help">{HELP.currentSavings}</small>
         <input type="number" name="currentSavings" inputmode="decimal" min="0" step="100" value={g.currentSavings} />
       </label>
       <p class="gp-error" data-error-for="currentSavings" hidden></p>
       <label>Saving each month ($)
+        <small class="ck-help">{HELP.monthlyContribution}</small>
         <input type="number" name="monthlyContribution" inputmode="decimal" min="0" step="25" value={g.monthlyContribution} />
       </label>
       <p class="gp-error" data-error-for="monthlyContribution" hidden></p>
@@ -63,12 +74,14 @@ const yrs = (n: number) => `${n} ${n === 1 ? "year" : "years"}`;
 
     <fieldset>
       <legend>Your own return guess</legend>
+      <small class="ck-help">{HELP.expectedPreset}</small>
       <div class="gp-presets" role="group" aria-label="Return presets">
         {EXPECTED_PRESETS.map((r) => (
           <label class="gp-chip"><input type="radio" name="expectedPreset" value={pctNum(r)} checked={r === DEFAULT_EXPECTED} /> {r === 0 ? "0% (cash)" : `${pctNum(r)}%`}</label>
         ))}
       </div>
       <label>Or type your own (%)
+        <small class="ck-help">{HELP.expectedReturn}</small>
         <input type="number" name="expectedReturn" inputmode="decimal" min="0" max={pctNum(EXPECTED_MAX)} step="0.1" value={pctNum(DEFAULT_EXPECTED)} />
       </label>
       <p class="gp-error" data-error-for="expectedReturn" hidden></p>
@@ -80,20 +93,26 @@ const yrs = (n: number) => `${n} ${n === 1 ? "year" : "years"}`;
   <div class="gp-results" id="gp-results" aria-live="polite" set:html={initialHtml} />
 </div>
 
+<Fragment set:html={renderNextSteps()} />
+<Fragment set:html={renderExample()} />
+
 <section class="gp-assumptions" aria-labelledby="gp-h-assumptions">
-  <h2 id="gp-h-assumptions">How the math works</h2>
+  <h2 id="gp-h-assumptions">How this calculator works</h2>
   <ul>
     <li><strong>Required return</strong> is the yearly growth rate that makes your savings today, plus your monthly amount, land exactly on your target by your date. The planner finds it by trial: it tries a rate, checks the result, and narrows in until the two match.</li>
     <li><strong>The search runs from 0% to 30% a year.</strong> If saving alone gets you there, the answer is 0%. If even 30% falls short, the planner says so instead of showing a made-up number.</li>
     <li><strong>The verdict bands</strong> are 4% or less (steady), above 4% up to 8% (market-like growth), and above 8% (above historical averages). They describe the arithmetic, not what any account will earn.</li>
     <li><strong>Growth is compounded monthly.</strong> The yearly rate is split into 12 equal steps, deposits go in at the end of each month, and the same rate applies every month. Real returns go up and down.</li>
     <li><strong>Left out on purpose:</strong> fees, taxes and inflation. A goal priced in today's dollars may cost more later.</li>
+    <li><strong>Where the numbers come from:</strong> the required return, the monthly amount and the milestones use only what you enter. The verdict bands are design choices, not sourced figures. The account limits and dates quoted in the next steps come from the figure registry and are listed under Sources and dates.</li>
     <li><strong>Nothing is saved.</strong> Your goal stays in this browser tab. Tracking progress over time may come later.</li>
   </ul>
   <p class="page-meta">
     This planner is education, not advice. The required return is math, not a recommendation, and no return is promised.
   </p>
 </section>
+
+<CalcSources figures={[...gpFigures.values()]} checked={checked} extra={["Required return, monthly amount and milestones: arithmetic on your own inputs; no registry figures go into them", `Verdict bands (${pctNum(STEADY_MAX)}% and ${pctNum(MARKET_MAX)}%): design bands for this tool, not registry figures <span class="ck-flag">assumption</span>`]} />
 
 <script>
   import { plan, validate, type Field, type Goal } from "../../lib/calculators/goal-planner";

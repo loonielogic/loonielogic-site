@@ -7,15 +7,25 @@
  * Copy rules: education, not advice (never "you should"); no em dashes.
  */
 
+import { nextSteps, workedExample } from "./calc-kit";
 import {
   CLOSING_RULE_OF_THUMB,
+  FHSA_ANNUAL,
+  FHSA_LIFETIME,
   FHSA_REFUND_RANGE,
+  HBP_HOLDING_DAYS,
+  HBP_LIMIT,
   HBP_REPAY_YEARS,
   HOME_BUYERS_AMOUNT_VALUE,
   INSURED_CAP,
+  MAINTENANCE_ANNUAL,
+  defaultInput,
+  plan,
   qualifyingRate,
   SNAPSHOT_RATE,
+  TFSA_ANNUAL,
   type Plan,
+  type PlannerInput,
   type Scenario,
 } from "./down-payment-planner";
 
@@ -176,4 +186,77 @@ export function renderResults(p: Plan): string {
 <section class="dpp-card" aria-labelledby="dpp-h-sources"><h2 id="dpp-h-sources">Where the money comes from</h2>${sourcesTable(p)}</section>
 <section class="dpp-card" aria-labelledby="dpp-h-tradeoff"><h2 id="dpp-h-tradeoff">The 20%-down tradeoff</h2>${tradeoffCard(p)}</section>
 <section class="dpp-card" aria-labelledby="dpp-h-budget"><h2 id="dpp-h-budget">After you buy: the budget shock</h2>${budgetPanel(p)}</section>`;
+}
+
+/* ------------------------------------------------------------------ */
+/* Below the tool: field help, next steps, worked example              */
+/* ------------------------------------------------------------------ */
+
+/** One line per form field: why the tool needs it (140 characters max). */
+export const HELP = {
+  mode: "Ask when the savings will be ready, or how much to save each month to buy by a set date.",
+  price: "The price sets the minimum down payment, the land transfer tax and the mortgage.",
+  province: "Province sets land transfer tax and whether sales tax is charged on mortgage insurance.",
+  toronto: "Toronto charges its own land transfer tax on top of Ontario's.",
+  manualTransferTax: "Only Ontario and BC transfer tax is calculated here, so other provinces need their own figure.",
+  firstTimeBuyer: "First-time buyers get land transfer tax rebates or exemptions that lower the cash needed.",
+  downChoice: "Minimum down needs less cash but adds a CMHC premium; 20% down avoids it.",
+  couple: "Two first-time buyers each get FHSA and Home Buyers' Plan limits, which doubles both.",
+  fhsaOpenYear: "FHSA room starts the year the account opens, so this sets how much unused room has built up.",
+  fhsaBalance: "Your FHSA balance counts toward the down payment and comes out tax-free for a first home.",
+  fhsaContributedTotal: `Past contributions use up the ${$(FHSA_LIFETIME)} lifetime FHSA limit.`,
+  rrspBalance: `RRSP savings can go to the down payment through the Home Buyers' Plan, up to ${$(HBP_LIMIT)} each.`,
+  rrspRecent: `Contributions made in the ${HBP_HOLDING_DAYS} days before buying cannot come out under the Home Buyers' Plan.`,
+  useHbp: `The Home Buyers' Plan is a loan from your RRSP, repaid over ${HBP_REPAY_YEARS} years, so including it is your call.`,
+  tfsaBalance: "TFSA savings can be withdrawn tax-free for the down payment.",
+  tfsaRoom: "New savings fill the TFSA only up to the room you have.",
+  taxableBalance: "Savings outside registered accounts count toward the cash you need.",
+  gift: "A gift at closing lowers how much has to come from your own savings.",
+  monthly: "Monthly savings set how long it takes to reach the cash target.",
+  targetDate: "A target month sets how much has to be saved each month to get there.",
+  savingsRate: "Interest on savings shortens the timeline; the same rate applies to every account.",
+  contractRate: "The mortgage rate sets the monthly payment in the budget after you buy.",
+  amortYears: "A longer amortization lowers the payment but costs more interest over time.",
+  fees: "Legal, title and inspection fees are paid in cash at closing, on top of the down payment.",
+  buffer: "An extra cushion adds to the cash target for costs nobody can price in advance.",
+  rent: "Your rent today is compared with the monthly cost of owning.",
+  propertyTaxRate: "Property tax is part of the monthly cost of owning.",
+  insuranceMonthly: "Home insurance is part of the monthly cost of owning.",
+  condoFees: "Condo fees are part of the monthly cost of owning.",
+} as const;
+
+export function renderNextSteps(): string {
+  return nextSteps("dpp-h-next", [
+    `<strong>Open the FHSA early.</strong> Room starts building only once the account is open: ${$(FHSA_ANNUAL)} a year, up to ${$(FHSA_LIFETIME)} in total. New TFSA room is ${$(TFSA_ANNUAL)} a year in 2026.`,
+    `<strong>Get a lender pre-approval</strong> before shopping, and check the price against your income with the <a href="/calculators/house-affordability">house affordability calculator</a>. Savings alone do not show what a lender will approve.`,
+    `<strong>Ask for a rate hold</strong> with the pre-approval, then rerun this plan at the held rate so the budget after buying is realistic.`,
+    `<strong>Keep a closing-cost buffer.</strong> Closing costs run about ${pct(CLOSING_RULE_OF_THUMB, 1)} of the price as a rule of thumb, on top of the down payment. If the Home Buyers' Plan is part of the plan, RRSP money has to sit in the account ${HBP_HOLDING_DAYS} days before it can come out.`,
+  ]);
+}
+
+/** The worked example's inputs: a $500,000 Ontario home, $10,000 saved, $1,200 a month from October 2026. */
+export const EXAMPLE_INPUT: Readonly<PlannerInput> = {
+  ...defaultInput(new Date(2026, 9, 1)),
+  price: 500_000,
+  tfsaBalance: 10_000,
+  monthly: 1_200,
+};
+
+export function renderExample(): string {
+  const p = plan({ ...EXAMPLE_INPUT });
+  const s = p.chosen;
+  const i = p.input;
+  return workedExample(
+    "dpp-h-example",
+    `A first-time buyer in Ontario wants a <strong>${$(i.price)}</strong> home with the minimum down payment. They have ${$(i.tfsaBalance)} in a TFSA, no FHSA yet, and save ${$(i.monthly)} a month at ${pct(i.savingsRate)} from October 2026, with a ${pct(i.contractRate)} mortgage rate over ${i.amortYears} years. Run through this planner, that gives:`,
+    [
+      [`Down payment (${pct(s.stack.downPct, 1)})`, $(s.stack.downPayment)],
+      ["Total cash needed at closing", $(s.stack.cashTarget)],
+      ["Time to save it", Number.isFinite(s.months) ? months(s.monthsWhole) : "Not reached"],
+      ["CMHC premium added to the mortgage", $(s.stack.premium)],
+      ["Mortgage payment", `${$(s.payment)} a month`],
+      ["Monthly cost of owning", `${$(p.budget.total)} a month`],
+    ],
+    `Computed by the same engine as the planner above when this page was built. The monthly cost of owning adds property tax, insurance and maintenance at ${pct(MAINTENANCE_ANNUAL, 0)} of the price a year to the mortgage payment.`,
+  );
 }

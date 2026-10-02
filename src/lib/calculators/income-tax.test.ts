@@ -31,7 +31,10 @@ import {
   validate,
   type TaxInput,
 } from "./income-tax";
-import { DISCLAIMER, renderAnnual, renderPaycheque } from "./income-tax-render";
+import { DISCLAIMER, EXAMPLE_INPUT, HELP, renderAnnual, renderExample, renderNextSteps, renderPaycheque } from "./income-tax-render";
+import { $, pct } from "./calc-kit";
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 
 const close = (actual: number, expected: number, tol = 0.01) =>
   assert.ok(Math.abs(actual - expected) <= tol, `expected ${expected}, got ${actual}`);
@@ -271,5 +274,59 @@ describe("v2 credits", () => {
     const html = renderAnnual(estimate(DEFAULT_INPUT));
     assert.ok(html.includes("Canada employment amount credit"));
     assert.ok(!html.includes("are left out in this version"));
+  });
+});
+
+describe("below the tool: field help, next steps, worked example", () => {
+  const SRC = join(import.meta.dirname, "..", "..");
+  const DASHES = [String.fromCharCode(0x2014), String.fromCharCode(0x2013)];
+  const houseRules = (html: string, where: string) => {
+    const text = html.replace(/<[^>]+>/g, " ");
+    for (const d of DASHES) assert.ok(!html.includes(d), `${where}: em or en dash`);
+    assert.ok(!/you should/i.test(text), `${where}: "you should"`);
+    assert.ok(!/\b(we|our|us)\b/i.test(text) && !/\bI\b/.test(text), `${where}: first-person voice`);
+  };
+  const internalLinksExist = (html: string) => {
+    for (const [, href] of html.matchAll(/href="(\/[^"]*)"/g)) {
+      const [, section, slug] = href.split("/");
+      const file = { calculators: `pages/calculators/${slug}.astro`, learn: `content/explainers/${slug}.mdx`, compare: `content/comparisons/${slug}.mdx` }[section];
+      assert.ok(file && existsSync(join(SRC, file)), `internal link ${href} has no page`);
+    }
+  };
+
+  test("every form field has one helper line, 140 characters or fewer", () => {
+    const form = readFileSync(join(SRC, "components/calculators/IncomeTax.astro"), "utf8").split("\n<script>")[0];
+    const fields = new Set([...form.matchAll(/<(?:input|select)\b[^>]*\bname="([A-Za-z0-9]+)"/g)].map((m) => m[1]));
+    assert.deepEqual([...fields].sort(), Object.keys(HELP).sort());
+    for (const [field, line] of Object.entries(HELP)) {
+      assert.ok(line.length > 0 && line.length <= 140, `${field}: ${line.length} characters`);
+      houseRules(line, `help for ${field}`);
+    }
+  });
+
+  test("next steps: the section, the heading and 3 to 4 dated steps from the registry", () => {
+    const html = renderNextSteps();
+    assert.match(html, /^<section class="ck-next[^"]*" aria-labelledby="itx-h-next"><h2 id="itx-h-next">What to do with this number<\/h2>/);
+    const steps = html.match(/<li>/g)?.length ?? 0;
+    assert.ok(steps >= 3 && steps <= 4, `${steps} steps`);
+    for (const date of ["April 30, 2027", "June 15, 2027", "March 1, 2027"]) assert.ok(html.includes(date), date);
+    assert.ok(html.includes("CRA My Payment"));
+    assert.ok(html.includes("6 years"));
+    houseRules(html, "next steps");
+    internalLinksExist(html);
+  });
+
+  test("worked example: $82,000 in Ontario, every figure straight from estimate()", () => {
+    const html = renderExample();
+    const r = estimate(EXAMPLE_INPUT);
+    assert.equal(EXAMPLE_INPUT.employment, 82_000);
+    assert.match(html, /^<section class="ck-example[^"]*" aria-labelledby="itx-h-example"><h2 id="itx-h-example">A worked example<\/h2>/);
+    assert.ok(html.includes("$82,000"));
+    for (const v of [$(r.core.tax.total), $(r.core.payroll.total), $(r.core.takeHome), pct(r.averageRate), pct(r.marginalRate), $(r.rrspWhatIf)]) {
+      assert.ok(html.includes(v), `missing engine value ${v}`);
+    }
+    const outputs = html.match(/<dd>/g)?.length ?? 0;
+    assert.ok(outputs >= 3 && outputs <= 6, `${outputs} outputs`);
+    houseRules(html, "worked example");
   });
 });

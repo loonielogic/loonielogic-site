@@ -10,7 +10,9 @@
  * claim that any return is achievable; no em dashes; never "you should".
  */
 
-import { VERDICT_COPY, type GoalPlan, type Milestone, type MonthStamp } from "./goal-planner";
+import { longDate, nextSteps, workedExample } from "./calc-kit";
+import { figure, type FigureLog } from "./figures";
+import { MARKET_MAX, STEADY_MAX, VERDICT_COPY, plan, type Goal, type GoalPlan, type Milestone, type MonthStamp } from "./goal-planner";
 
 const money = new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD", maximumFractionDigits: 0 });
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -112,4 +114,63 @@ function renderMilestones(p: GoalPlan): string {
 export function renderResults(p: GoalPlan): string {
   const name = `<strong class="gp-name">${escapeHtml(p.goal.name)}</strong>`;
   return `${renderHeadline(p, name)}${renderPath(p)}${renderInverse(p)}${renderMilestones(p)}<p class="gp-disclaimer">${DISCLAIMER}</p>`;
+}
+
+/* ------------------------------------------------------------------ */
+/* Below the tool: field help, next steps, worked example              */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Registry figures cited on this page. The planner's math uses no registry
+ * figures (it runs only on your inputs); these back the next steps.
+ */
+export const gpFigures: FigureLog = new Map();
+const TFSA_ANNUAL = figure<number>("tfsa-2026.json", "tfsa.annual_limit.2026", gpFigures);
+const FHSA_ANNUAL = figure<number>("fhsa-hbp-2026.json", "fhsa.annual_limit", gpFigures);
+const FHSA_LIFETIME = figure<number>("fhsa-hbp-2026.json", "fhsa.lifetime_limit", gpFigures);
+const RRSP_DEADLINE = figure<string>("rrsp-2026.json", "rrsp.deadline.2026", gpFigures);
+const ROOM_RESET = figure<string>("tax-deadlines-2026.json", "tfsa.room_reset", gpFigures);
+
+/** One line per form field: why the tool needs it (140 characters max). */
+export const HELP = {
+  name: "A name only labels the results; it never leaves this page.",
+  target: "The target is the amount the plan has to reach.",
+  years: "The deadline sets how many months of saving and growth the plan gets.",
+  currentSavings: "Money saved today grows for the whole timeline, so it counts for more than later deposits.",
+  monthlyContribution: "Monthly saving is the part of the plan you control most directly.",
+  expectedPreset: "Quick picks from cash to market-like growth, to see how much the monthly amount moves.",
+  expectedReturn: "Your own return guess sets the monthly amount needed and the milestone dates.",
+} as const;
+
+export function renderNextSteps(): string {
+  return nextSteps("gp-h-next", [
+    `<strong>Match the account to the goal.</strong> For a first home, the FHSA gives a deduction now and a tax-free withdrawal (${$(FHSA_ANNUAL)} a year, ${$(FHSA_LIFETIME)} lifetime). For retirement, compare the RRSP and TFSA with the <a href="/calculators/tfsa-vs-rrsp">TFSA vs RRSP tool</a>. For anything else, a TFSA keeps growth tax-free and withdrawals flexible (${$(TFSA_ANNUAL)} of new room in 2026).`,
+    `<strong>Read the required return against the bands.</strong> At ${pct(STEADY_MAX)} or less, savings alone nearly get there; above ${pct(MARKET_MAX)}, saving more each month or adding time changes the plan more than any return guess.`,
+    `<strong>Re-check once or twice a year,</strong> and after any change in income or plans. Enter the real balance in "Saved so far" and the remaining years; the plan rebuilds from where you are.`,
+    `<strong>Mark the room dates.</strong> RRSP contributions made by ${longDate(RRSP_DEADLINE)} count for 2026, and new TFSA room arrives on ${longDate(ROOM_RESET)}.`,
+  ]);
+}
+
+/** The worked example's inputs: $25,000 in 4 years, planned from October 2026. */
+export const EXAMPLE_GOAL: Readonly<Goal> = { name: "Car fund", target: 25_000, years: 4, currentSavings: 3_000, monthlyContribution: 400 };
+export const EXAMPLE_RETURN = 0.04;
+export const EXAMPLE_START: Readonly<MonthStamp> = { year: 2026, month: 10 };
+
+export function renderExample(): string {
+  const p = plan(EXAMPLE_GOAL, EXAMPLE_RETURN, EXAMPLE_START);
+  const g = p.goal;
+  const r = p.required;
+  const needed = r.kind === "solved" ? pct(r.rate) : r.kind === "out_of_reach" ? "Over 30%" : "0%";
+  return workedExample(
+    "gp-h-example",
+    `A goal of <strong>${$(g.target)}</strong> in ${yrs(g.years)}, planned from ${monthLabel(EXAMPLE_START)}: ${$(g.currentSavings)} saved so far and ${$(g.monthlyContribution)} a month going in, with a return guess of ${pct(EXAMPLE_RETURN)}. Run through this planner, that gives:`,
+    [
+      ["Return needed each year", needed],
+      ["Verdict", VERDICT_COPY[p.band]],
+      [`Saving alone by ${monthLabel(p.targetDate)}`, $(p.savedByDeadline)],
+      [`Monthly amount needed at ${pct(EXAMPLE_RETURN)}`, $(p.monthlyNeeded)],
+      [`Projected at ${pct(EXAMPLE_RETURN)} and ${$(g.monthlyContribution)} a month`, $(p.projectedAtDeadline)],
+    ],
+    "Computed by the same engine as the planner above when this page was built. The return is arithmetic, not a promise.",
+  );
 }

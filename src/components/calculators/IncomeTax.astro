@@ -15,7 +15,7 @@ import {
   estimate,
   taxFigures,
 } from "../../lib/calculators/income-tax";
-import { renderAnnual } from "../../lib/calculators/income-tax-render";
+import { HELP, itxNextFigures, renderAnnual, renderExample, renderNextSteps } from "../../lib/calculators/income-tax-render";
 import CalcSources from "./CalcSources.astro";
 
 const d = DEFAULT_INPUT;
@@ -26,16 +26,19 @@ const initialHtml = renderAnnual(estimate(d));
   <form class="ck-form" id="itx-form" novalidate>
     <fieldset>
       <legend>What do you want to see?</legend>
+      <small class="ck-help">{HELP.mode}</small>
       <div class="ck-pills" role="group" aria-label="View">
         <label class="ck-pill"><input type="radio" name="mode" value="annual" checked /> The whole year</label>
         <label class="ck-pill"><input type="radio" name="mode" value="paycheque" /> Each paycheque</label>
       </div>
       <label>Province or territory on December 31
+        <small class="ck-help">{HELP.province}</small>
         <select name="province">
           {PROVINCES.map((p) => <option value={p.code} selected={p.code === d.province}>{p.name}</option>)}
         </select>
       </label>
       <label>Your age
+        <small class="ck-help">{HELP.age}</small>
         <input type="number" name="age" inputmode="numeric" min="0" max="120" step="1" value={d.age} />
       </label>
       <p class="ck-error" data-error-for="age" hidden></p>
@@ -44,32 +47,39 @@ const initialHtml = renderAnnual(estimate(d));
     <fieldset>
       <legend>Your {TAX_YEAR} income</legend>
       <label>Employment income ($ a year, before tax)
+        <small class="ck-help">{HELP.employment}</small>
         <input type="number" name="employment" inputmode="decimal" min="0" step="1000" value={d.employment} />
       </label>
       <p class="ck-error" data-error-for="employment" hidden></p>
       <label>Self-employment income ($, net of expenses)
+        <small class="ck-help">{HELP.selfEmployment}</small>
         <input type="number" name="selfEmployment" inputmode="decimal" min="0" step="1000" value={d.selfEmployment} />
       </label>
       <p class="ck-error" data-error-for="selfEmployment" hidden></p>
       <label>Other income ($: pension, rental, interest, dividends, capital gains)
+        <small class="ck-help">{HELP.otherIncome}</small>
         <input type="number" name="otherIncome" inputmode="decimal" min="0" step="500" value={d.otherIncome} />
       </label>
       <p class="ck-error" data-error-for="otherIncome" hidden></p>
       <label class="ck-check"><input type="checkbox" name="otherHasDividendsOrGains" /> Some of that is dividends or capital gains</label>
+      <small class="ck-help">{HELP.otherHasDividendsOrGains}</small>
       <small>Blank counts as $0.</small>
     </fieldset>
 
     <fieldset>
       <legend>Deductions</legend>
       <label>RRSP contributions you will deduct ($)
+        <small class="ck-help">{HELP.rrsp}</small>
         <input type="number" name="rrsp" inputmode="decimal" min="0" step="500" value={d.rrsp} />
       </label>
       <p class="ck-error" data-error-for="rrsp" hidden></p>
       <label>FHSA contributions ($)
+        <small class="ck-help">{HELP.fhsa}</small>
         <input type="number" name="fhsa" inputmode="decimal" min="0" step="500" value={d.fhsa} />
       </label>
       <p class="ck-error" data-error-for="fhsa" hidden></p>
       <label>Union or professional dues ($)
+        <small class="ck-help">{HELP.dues}</small>
         <input type="number" name="dues" inputmode="decimal" min="0" step="50" value={d.dues} />
       </label>
       <p class="ck-error" data-error-for="dues" hidden></p>
@@ -78,6 +88,7 @@ const initialHtml = renderAnnual(estimate(d));
     <fieldset data-show="paycheque" hidden>
       <legend>Your pay</legend>
       <label>How often are you paid?
+        <small class="ck-help">{HELP.payFrequency}</small>
         <select name="payFrequency">
           <option value="weekly">Weekly (52 pays)</option>
           <option value="biweekly" selected>Every two weeks (26 pays)</option>
@@ -88,10 +99,12 @@ const initialHtml = renderAnnual(estimate(d));
       <details>
         <summary>TD1 claim amounts (advanced)</summary>
         <label>Federal TD1 claim ($)
+          <small class="ck-help">{HELP.td1Federal}</small>
           <input type="number" name="td1Federal" inputmode="decimal" min="0" step="100" placeholder={String(FEDERAL_BPA_MAX)} />
         </label>
         <p class="ck-error" data-error-for="td1Federal" hidden></p>
         <label>Provincial TD1 claim ($)
+          <small class="ck-help">{HELP.td1Provincial}</small>
           <input type="number" name="td1Provincial" inputmode="decimal" min="0" step="100" placeholder="Basic personal amount" />
         </label>
         <p class="ck-error" data-error-for="td1Provincial" hidden></p>
@@ -104,8 +117,11 @@ const initialHtml = renderAnnual(estimate(d));
   <div class="ck-results" id="itx-results" aria-live="polite" set:html={initialHtml} />
 </div>
 
+<Fragment set:html={renderNextSteps()} />
+<Fragment set:html={renderExample()} />
+
 <section class="ck-assumptions" aria-labelledby="itx-h-how">
-  <h2 id="itx-h-how">How the math works</h2>
+  <h2 id="itx-h-how">How this calculator works</h2>
   <ul>
     <li><strong>Taxable income</strong> is all your income minus RRSP and FHSA contributions and union or professional dues.</li>
     <li><strong>Tax is worked bracket by bracket.</strong> Each slice of income is taxed at its own federal and provincial rate, using the {TAX_YEAR} brackets for all 13 provinces and territories. Ontario's surtax shows as its own line.</li>
@@ -121,7 +137,7 @@ const initialHtml = renderAnnual(estimate(d));
   </p>
 </section>
 
-<CalcSources figures={[...taxFigures.values()]} checked="2026-09-27 to 2026-10-01" />
+<CalcSources figures={[...taxFigures.values(), ...itxNextFigures.values()]} checked="2026-09-27 to 2026-10-01" />
 
 <script>
   import { estimate, paycheque, validate, isProv, type Field, type PayFrequency, type TaxInput } from "../../lib/calculators/income-tax";

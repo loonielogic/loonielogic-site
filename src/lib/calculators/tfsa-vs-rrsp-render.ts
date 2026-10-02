@@ -8,9 +8,13 @@
  * dashes; the projection is an illustration at a return the user picks.
  */
 
-import { $, alerts, card, longDate, pct, type Alert } from "./calc-kit";
+import { $, alerts, card, longDate, nextSteps, pct, workedExample, type Alert } from "./calc-kit";
+import { figure, type FigureLog } from "./figures";
 import { OAS_THRESHOLD, provinceName } from "./income-tax";
 import {
+  DEFAULT_INPUT,
+  decide,
+  type DecisionInput,
   FHSA_ANNUAL,
   FHSA_LIFETIME,
   HBP_LIMIT,
@@ -191,4 +195,63 @@ export function renderResults(d: Decision): string {
 </ul>`;
   const closed = d.reason === "rrsp_closed";
   return `${headline(d)}${ratesCard(d)}${closed ? "" : valuesCard(d)}${quizCard(d)}${closed ? "" : flipCard(d)}${notes ? card("Notes that apply to you", notes) : ""}${links}<p class="ck-disclaimer">${DISCLAIMER}</p>`;
+}
+
+/* ------------------------------------------------------------------ */
+/* Below the tool: field help, next steps, worked example              */
+/* ------------------------------------------------------------------ */
+
+/** Registry figures the next steps cite beyond the decision's own. */
+export const tvrNextFigures: FigureLog = new Map();
+const ROOM_RESET = figure<string>("tax-deadlines-2026.json", "tfsa.room_reset", tvrNextFigures);
+
+/** One line per form field: why the tool needs it (140 characters max). */
+export const HELP = {
+  employerMatch: "A match only flows into an RRSP and is an instant return, so it is captured before anything else.",
+  homeSoon: "A first home soon points to the FHSA, which gives a deduction now and a tax-free withdrawal for the home.",
+  mayNeedEarly: "TFSA withdrawals are tax-free and the room comes back; RRSP withdrawals are taxed and the room is gone.",
+  province: "Your province sets the tax brackets behind both marginal rates.",
+  income: "Today's income sets the tax rate an RRSP deduction saves you.",
+  retirementIncome: "Retirement income sets the tax rate on RRSP withdrawals later.",
+  estimateRetirement: `With no figure, the tool assumes ${pct(REPLACEMENT_RATIO, 0)} of today's income, a rough stand-in.`,
+  age: `Age flags the last RRSP year (${RRSP_LAST_AGE}) and the under-18 rules.`,
+  amount: "The amount sizes the dollar comparison; it never changes which account wins.",
+  years: "Years until withdrawal set how long the money grows in the illustration.",
+  expectedReturn: "The return sizes the illustration only; both accounts get the same rate.",
+  tfsaRoom: "Room caps what can go in, so the tool flags an amount above it.",
+  rrspRoom: "RRSP room caps the deduction, so the tool flags an amount above it.",
+  expectGis: "RRSP withdrawals can reduce the Guaranteed Income Supplement; TFSA withdrawals do not.",
+  spouseEarnsLess: "A lower-earning spouse opens the spousal RRSP option for splitting retirement income.",
+  selfEmployed: "Self-employed savers have no employer match, so the tool adjusts its notes.",
+  leavingCanada: "Leaving Canada changes how both accounts are taxed, so the tool adds a warning.",
+} as const;
+
+export function renderNextSteps(): string {
+  return nextSteps("tvr-h-next", [
+    `<strong>Confirm your room before contributing.</strong> <a href="${MY_ACCOUNT_URL}" rel="noopener">CRA My Account</a> shows your TFSA room and your RRSP deduction limit, which is also on your latest Notice of Assessment. The <a href="/calculators/tfsa-room-checker">TFSA room checker</a> and <a href="/calculators/rrsp-room">RRSP room calculator</a> help when the CRA figure lags.`,
+    `<strong>RRSP deadline:</strong> contributions made by ${longDate(RRSP_DEADLINE)} can be deducted on your 2026 return. New RRSP room for 2026 tops out at ${$(RRSP_CAP)}.`,
+    `<strong>TFSA timing:</strong> the 2026 limit is ${$(TFSA_ANNUAL)}. Next year's room, and anything withdrawn this year, arrives on ${longDate(ROOM_RESET)}.`,
+    `<strong>Rerun it when your numbers move.</strong> A raise, a new pension or a change in retirement plans can flip the answer. The <a href="/compare/tfsa-vs-rrsp">TFSA vs RRSP guide</a> explains each case.`,
+  ]);
+}
+
+/** The worked example's inputs: an $82,000 Ontario earner saving for retirement. */
+export const EXAMPLE_INPUT: Readonly<DecisionInput> = { ...DEFAULT_INPUT, income: 82_000, retirementIncome: 50_000, amount: 5_000, years: 25, age: 40 };
+
+export function renderExample(): string {
+  const d = decide(EXAMPLE_INPUT);
+  const i = d.input;
+  return workedExample(
+    "tvr-h-example",
+    `A 40-year-old in ${provinceName(i.province)} earns <strong>${$(i.income)}</strong> today, expects ${$(i.retirementIncome)} a year in retirement, and is deciding where to put ${$(i.amount)} for ${i.years} years at ${pct(i.expectedReturn, 1)} a year. No employer match, no home purchase planned. Run through this tool, that gives:`,
+    [
+      ["Account that fits these numbers", NAME[d.account]],
+      ["Marginal rate today", pct(d.rates.now, 1)],
+      ["Marginal rate at withdrawal", pct(d.rates.then, 1)],
+      [`RRSP after tax in ${i.years} years`, $(d.values.rrsp)],
+      [`TFSA after tax in ${i.years} years`, $(d.values.tfsa)],
+      ["Difference", `${$(Math.abs(d.values.difference))} more in the ${d.values.difference >= 0 ? "RRSP" : "TFSA"}`],
+    ],
+    "Computed by the same engine as the tool above when this page was built. The dollar values illustrate one return; the rate comparison decides the answer.",
+  );
 }

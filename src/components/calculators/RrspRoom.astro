@@ -9,7 +9,7 @@
  */
 import "../../styles/calc-kit.css";
 import { DEADLINE, DOLLAR_LIMIT, NADIA, NEXT_YEAR, TAX_YEAR, check, rrspFigures } from "../../lib/calculators/rrsp-room";
-import { renderResults } from "../../lib/calculators/rrsp-room-render";
+import { HELP, renderExample, renderNextSteps, renderResults } from "../../lib/calculators/rrsp-room-render";
 import { $, longDate } from "../../lib/calculators/calc-kit";
 import CalcSources from "./CalcSources.astro";
 
@@ -23,21 +23,26 @@ const initialHtml = renderResults(check(d), { asOf, example: true });
   <form class="ck-form" id="rrr-form" novalidate>
     <fieldset>
       <legend>Where are you starting from?</legend>
+      <small class="ck-help">{HELP.mode}</small>
       <div class="ck-pills" role="group" aria-label="Mode">
         <label class="ck-pill"><input type="radio" name="mode" value="noa" checked /> I have my CRA number</label>
         <label class="ck-pill"><input type="radio" name="mode" value="rebuild" /> Rebuild my limit</label>
       </div>
       <label>Your age
+        <small class="ck-help">{HELP.age}</small>
         <input type="number" name="age" inputmode="numeric" min="0" max="120" step="1" value={d.age} />
       </label>
       <p class="ck-error" data-error-for="age" hidden></p>
       <label class="ck-check"><input type="checkbox" name="nonResident" /> I am a non-resident of Canada</label>
+      <small class="ck-help">{HELP.nonResident}</small>
       <label class="ck-check"><input type="checkbox" name="bestGuess" /> Some of my numbers are guesses</label>
+      <small class="ck-help">{HELP.bestGuess}</small>
     </fieldset>
 
     <fieldset data-show="noa">
       <legend>From your Notice of Assessment</legend>
       <label>RRSP deduction limit for {TAX_YEAR} ($)
+        <small class="ck-help">{HELP.deductionLimit}</small>
         <input type="number" name="deductionLimit" inputmode="decimal" min="0" step="100" value={d.deductionLimit} />
         <small>On your {TAX_YEAR - 1} Notice of Assessment, in the "RRSP deduction limit statement" section, or in CRA My Account under RRSP.</small>
       </label>
@@ -47,11 +52,13 @@ const initialHtml = renderResults(check(d), { asOf, example: true });
     <fieldset data-show="rebuild" hidden>
       <legend>The pieces CRA uses</legend>
       <label>Unused deduction room carried forward ($)
+        <small class="ck-help">{HELP.unusedRoom}</small>
         <input type="number" name="unusedRoom" inputmode="decimal" min="0" step="100" value={d.unusedRoom} />
         <small>From last year's notice. Unused room carries forward with no end date.</small>
       </label>
       <p class="ck-error" data-error-for="unusedRoom" hidden></p>
       <label>{TAX_YEAR - 1} earned income ($)
+        <small class="ck-help">{HELP.earnedIncome}</small>
         <input type="number" name="earnedIncome" inputmode="decimal" min="0" step="1000" value={d.earnedIncome} />
       </label>
       <p class="ck-error" data-error-for="earnedIncome" hidden></p>
@@ -61,14 +68,17 @@ const initialHtml = renderResults(check(d), { asOf, example: true });
         <small><strong>Does not count:</strong> pensions (including CPP, QPP and OAS), retiring allowances, RRSP or RRIF income, death benefits, and investment income (interest, dividends, capital gains). RRSP room runs on earned income, not total income.</small>
       </details>
       <label>{TAX_YEAR - 1} pension adjustment ($, T4 box 52)
+        <small class="ck-help">{HELP.pensionAdjustment}</small>
         <input type="number" name="pensionAdjustment" inputmode="decimal" min="0" step="100" value={d.pensionAdjustment} />
       </label>
       <p class="ck-error" data-error-for="pensionAdjustment" hidden></p>
       <label>Pension adjustment reversal ($, T10 slip)
+        <small class="ck-help">{HELP.par}</small>
         <input type="number" name="par" inputmode="decimal" min="0" step="100" value={d.par} />
       </label>
       <p class="ck-error" data-error-for="par" hidden></p>
       <label>Net past service pension adjustment ($)
+        <small class="ck-help">{HELP.pspa}</small>
         <input type="number" name="pspa" inputmode="decimal" min="0" step="100" value={d.pspa} />
       </label>
       <p class="ck-error" data-error-for="pspa" hidden></p>
@@ -78,30 +88,36 @@ const initialHtml = renderResults(check(d), { asOf, example: true });
     <fieldset>
       <legend>What has already gone in</legend>
       <label>Unused RRSP contributions on your notice ($)
+        <small class="ck-help">{HELP.unusedContributions}</small>
         <input type="number" name="unusedContributions" inputmode="decimal" min="0" step="100" value={d.unusedContributions} />
         <small>Contributions you made but never claimed as a deduction. Most people forget this line exists.</small>
       </label>
       <p class="ck-error" data-error-for="unusedContributions" hidden></p>
       <label>Contributions since that statement, March to December {TAX_YEAR} ($)
+        <small class="ck-help">{HELP.contribSince}</small>
         <input type="number" name="contribSince" inputmode="decimal" min="0" step="100" value={d.contribSince} />
         <small>All RRSPs: your own, group RRSP (including employer contributions), and spousal RRSPs you pay into. Leave out direct transfers between your own RRSPs. Saskatchewan Pension Plan contributions count too.</small>
       </label>
       <p class="ck-error" data-error-for="contribSince" hidden></p>
       <label>Contributions January 1 to {longDate(DEADLINE)} ($)
+        <small class="ck-help">{HELP.contribFirst60}</small>
         <input type="number" name="contribFirst60" inputmode="decimal" min="0" step="100" value={d.contribFirst60} />
       </label>
       <p class="ck-error" data-error-for="contribFirst60" hidden></p>
       <label>Claim those first-60-days contributions for
+        <small class="ck-help">{HELP.first60ClaimYear}</small>
         <select name="first60ClaimYear">
           <option value="this" selected>My {TAX_YEAR} return</option>
           <option value="next">My {NEXT_YEAR} return</option>
         </select>
       </label>
       <label>Contributions you cannot date ($)
+        <small class="ck-help">{HELP.contribUndated}</small>
         <input type="number" name="contribUndated" inputmode="decimal" min="0" step="100" value={d.contribUndated} />
       </label>
       <p class="ck-error" data-error-for="contribUndated" hidden></p>
       <label>RRSP withdrawals this year ($)
+        <small class="ck-help">{HELP.withdrawals}</small>
         <input type="number" name="withdrawals" inputmode="decimal" min="0" step="100" value={d.withdrawals} />
         <small>Noted only: RRSP withdrawals do not give room back.</small>
       </label>
@@ -111,6 +127,7 @@ const initialHtml = renderResults(check(d), { asOf, example: true });
     <fieldset>
       <legend>Next year (optional)</legend>
       <label>Your {TAX_YEAR} earned income ($)
+        <small class="ck-help">{HELP.earnedThisYear}</small>
         <input type="number" name="earnedThisYear" inputmode="decimal" min="0" step="1000" placeholder="Blank: skip the forecast" />
       </label>
       <p class="ck-error" data-error-for="earnedThisYear" hidden></p>
@@ -122,8 +139,11 @@ const initialHtml = renderResults(check(d), { asOf, example: true });
   <div class="ck-results" id="rrr-results" aria-live="polite" set:html={initialHtml} />
 </div>
 
+<Fragment set:html={renderNextSteps()} />
+<Fragment set:html={renderExample()} />
+
 <section class="ck-assumptions" aria-labelledby="rrr-h-how">
-  <h2 id="rrr-h-how">How the math works</h2>
+  <h2 id="rrr-h-how">How this calculator works</h2>
   <ul>
     <li><strong>CRA's deduction limit is the opening balance.</strong> Every contribution since the statement comes off it, and so do unused contributions already reported. What is left is your contribution room now.</li>
     <li><strong>Rebuilding the limit</strong> uses CRA's formula: unused room carried forward, plus the lesser of 18% of last year's earned income and the {TAX_YEAR} dollar limit of {$(DOLLAR_LIMIT)}, minus last year's pension adjustment, plus any pension adjustment reversal, minus any past service pension adjustment.</li>
@@ -131,7 +151,7 @@ const initialHtml = renderResults(check(d), { asOf, example: true });
     <li><strong>Over-contributions:</strong> a one-time lifetime cushion of $2,000 (none under 18), then 1% a month on the excess until it is removed or new room absorbs it.</li>
     <li><strong>Group and spousal RRSPs count against your room</strong> as the contributor. Direct transfers between your own RRSPs do not. Withdrawals never give room back.</li>
     <li><strong>Not in this version:</strong> Home Buyers' Plan and Lifelong Learning Plan tracking, withdrawal tax, RRIF planning, and non-resident or treaty rules beyond the earned-income note.</li>
-    <li><strong>Nothing is saved, and we never ask for your CRA login.</strong> Your numbers stay in this browser tab.</li>
+    <li><strong>Nothing is saved, and this tool never asks for your CRA login.</strong> Your numbers stay in this browser tab.</li>
   </ul>
   <p class="page-meta">
     This is an estimate from your own records, not CRA's figure and not financial advice. CRA My Account and your Notice of Assessment are the source of truth.

@@ -58,6 +58,26 @@ export function blocked(messages: string[], lead = "Fix the highlighted answer t
   return `<div class="ck-blocked"><p><strong>${lead}</strong></p><ul>${messages.map((m) => `<li>${m}</li>`).join("")}</ul></div>`;
 }
 
+/**
+ * "What to do with this number": the next-steps strip under a calculator.
+ * Concrete, tool-specific steps only; no sales or newsletter calls to action.
+ * Styled by the existing ck-assumptions rules (heading rule + card list).
+ */
+export function nextSteps(id: string, steps: string[]): string {
+  return `<section class="ck-next ck-assumptions" aria-labelledby="${id}"><h2 id="${id}">What to do with this number</h2><ul>${steps.map((s) => `<li>${s}</li>`).join("")}</ul></section>`;
+}
+
+/**
+ * "A worked example": one scenario run through the calculator's own engine at
+ * build time. `outputs` must be formatted straight from the engine's result,
+ * never typed by hand, so the example always matches the tool. Styled by the
+ * existing ck-example callout plus the ck-assumptions heading; the intro and
+ * note are divs because `.ck-example p` zeroes paragraph margins.
+ */
+export function workedExample(id: string, intro: string, outputs: [string, string][], note = ""): string {
+  return `<section class="ck-example ck-assumptions" aria-labelledby="${id}"><h2 id="${id}">A worked example</h2><div class="ck-lead">${intro}</div>${facts(outputs)}${note ? `<div class="ck-note">${note}</div>` : ""}</section>`;
+}
+
 /** Inline source label for a registry figure, e.g. "canada.ca, verified 2026-09-27". */
 export function sourceTag(log: FigureLog, key: string): string {
   const f = log.get(key);

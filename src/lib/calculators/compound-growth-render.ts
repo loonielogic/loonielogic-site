@@ -10,7 +10,9 @@
  * dashes; never "you should"; plain words for people new to investing.
  */
 
-import { DELAY_YEARS, type GrowthResult, type YearPoint } from "./compound-growth";
+import { nextSteps, workedExample } from "./calc-kit";
+import { figure, type FigureLog } from "./figures";
+import { DELAY_YEARS, calculate, type GrowthInput, type GrowthResult, type YearPoint } from "./compound-growth";
 
 const money = new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD", maximumFractionDigits: 0 });
 
@@ -141,4 +143,58 @@ export function renderResults(r: GrowthResult): string {
 <p class="cg-lead">${input.startingAmount > 0 ? `${$(input.startingAmount)} today` : "Nothing today"}${input.monthlyContribution > 0 ? ` plus ${$(input.monthlyContribution)} a month` : ""} could grow to about this much, if your money earned ${pct(input.annualReturn)} every year. This illustrates compounding; it is not a forecast.</p></div>`;
   const chart = `<section class="cg-card"><h2>Year by year</h2>${renderChart(r)}${renderTable(r)}</section>`;
   return `${headline}${renderCompare(r)}${renderSplit(r)}${chart}<p class="cg-disclaimer">${DISCLAIMER}</p>`;
+}
+
+/* ------------------------------------------------------------------ */
+/* Below the tool: field help, next steps, worked example              */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Registry figures cited on this page. The compounding math itself uses no
+ * registry figures (it runs only on your inputs); these back the next steps.
+ */
+export const cgFigures: FigureLog = new Map();
+const TFSA_ANNUAL = figure<number>("tfsa-2026.json", "tfsa.annual_limit.2026", cgFigures);
+
+/** One line per form field: why the tool needs it (140 characters max). */
+export const HELP = {
+  startingAmount: "Money invested on day one has the most time to grow, so it gets its own line.",
+  monthlyContribution: "Regular deposits build most of the balance early on; growth takes over later.",
+  years: "Time is what compounding runs on: each extra year earns growth on all the growth before it.",
+  returnPreset: "Three common assumptions, to see how much the answer depends on the return.",
+  annualReturn: "The yearly return drives growth; fees and taxes come off it in real life, so a lower number is the cautious view.",
+} as const;
+
+/** One point of return, the size of a typical fee gap, for the fee-drag line. */
+export const FEE_DRAG = 0.01;
+
+export function renderNextSteps(): string {
+  return nextSteps("cg-h-next", [
+    `<strong>Check the fees.</strong> Look up the management expense ratio (MER) on each fund's Fund Facts or ETF Facts sheet. Fees come off the return every year, so the gap compounds too; the worked example below shows what ${pct(FEE_DRAG)} a year does.`,
+    `<strong>Let growth stay tax-free.</strong> Inside a TFSA, growth is never taxed; new TFSA room for 2026 is ${$(TFSA_ANNUAL)}. <a href="/learn/tfsa">TFSA basics</a> explains how room works.`,
+    `<strong>Rebalance on a schedule,</strong> such as once a year or when a holding drifts well off its target mix, rather than after every market move.`,
+    `<strong>Turn the number into a target.</strong> The <a href="/calculators/goal-planner">Goal Planner</a> works backward from an amount and a date to the return or monthly saving it needs.`,
+  ]);
+}
+
+/** The worked example's inputs. */
+export const EXAMPLE_INPUT: Readonly<GrowthInput> = { startingAmount: 5_000, monthlyContribution: 300, years: 25, annualReturn: 0.06 };
+
+export function renderExample(): string {
+  const r = calculate(EXAMPLE_INPUT);
+  const lower = calculate({ ...EXAMPLE_INPUT, annualReturn: EXAMPLE_INPUT.annualReturn! - FEE_DRAG });
+  const i = r.input;
+  return workedExample(
+    "cg-h-example",
+    `<strong>${$(i.startingAmount)}</strong> invested today plus ${$(i.monthlyContribution)} a month for ${yrs(i.years)}, at an assumed ${pct(i.annualReturn)} a year. Run through this calculator, that gives:`,
+    [
+      [`Balance after ${yrs(i.years)}`, $(r.now.futureValue)],
+      ["Money put in", $(r.now.contributed)],
+      ["Growth earned", $(r.now.growth)],
+      [`Cost of starting ${DELAY_YEARS} years later`, $(r.costOfWaiting)],
+      [`Same plan at ${pct(lower.input.annualReturn)} (${pct(FEE_DRAG)} in fees)`, $(lower.now.futureValue)],
+      ["What that fee gap costs", $(r.now.futureValue - lower.now.futureValue)],
+    ],
+    "Computed by the same engine as the calculator above when this page was built. The return is an assumption, not a forecast.",
+  );
 }

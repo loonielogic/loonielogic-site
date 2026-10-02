@@ -5,6 +5,7 @@
  * once at build time from the defaults, so the page is useful with JS off;
  * the script re-renders on every input change with the same functions.
  */
+import "../../styles/calc-kit.css";
 import {
   defaultInput,
   plan,
@@ -18,7 +19,7 @@ import {
   SNAPSHOT_RATE,
   TFSA_ANNUAL,
 } from "../../lib/calculators/down-payment-planner";
-import { renderResults, pct, $ } from "../../lib/calculators/down-payment-planner-render";
+import { HELP, renderExample, renderNextSteps, renderResults, pct, $ } from "../../lib/calculators/down-payment-planner-render";
 import { usedFigures } from "../../lib/calculators/figures";
 
 const d = defaultInput();
@@ -35,6 +36,7 @@ const isAssumption = (s: string) => s === "assumption" || s === "needs_reverific
   <form class="dpp-form" id="dpp-form" novalidate>
     <fieldset>
       <legend>What do you want to know?</legend>
+      <small class="ck-help">{HELP.mode}</small>
       <label class="dpp-radio"><input type="radio" name="mode" value="timeline" checked /> When can I buy? (timeline)</label>
       <label class="dpp-radio"><input type="radio" name="mode" value="target" /> How much do I save to buy by a date?</label>
     </fieldset>
@@ -42,9 +44,11 @@ const isAssumption = (s: string) => s === "assumption" || s === "needs_reverific
     <fieldset>
       <legend>The home</legend>
       <label>Home price
+        <small class="ck-help">{HELP.price}</small>
         <input type="number" name="price" inputmode="numeric" min="0" step="1000" value={d.price} />
       </label>
       <label>Province
+        <small class="ck-help">{HELP.province}</small>
         <select name="province">
           <option value="ON" selected>Ontario</option>
           <option value="BC">British Columbia</option>
@@ -56,52 +60,67 @@ const isAssumption = (s: string) => s === "assumption" || s === "needs_reverific
         </select>
       </label>
       <label class="dpp-check" data-show="ON"><input type="checkbox" name="toronto" /> In the City of Toronto (adds municipal land transfer tax)</label>
+      <small class="ck-help" data-show="ON">{HELP.toronto}</small>
       <label data-show="manual" hidden>Transfer tax or registration fees for your province
+        <small class="ck-help">{HELP.manualTransferTax}</small>
         <input type="number" name="manualTransferTax" inputmode="numeric" min="0" step="100" value="0" />
         <small>This planner only calculates Ontario and BC transfer tax. Enter your own figure.</small>
       </label>
       <label class="dpp-check"><input type="checkbox" name="firstTimeBuyer" checked /> First-time buyer rebates apply</label>
+      <small class="ck-help">{HELP.firstTimeBuyer}</small>
       <fieldset class="dpp-inline">
         <legend>Down payment</legend>
+        <small class="ck-help">{HELP.downChoice}</small>
         <label class="dpp-radio"><input type="radio" name="downChoice" value="minimum" checked /> Minimum</label>
         <label class="dpp-radio"><input type="radio" name="downChoice" value="twenty" /> 20%</label>
       </fieldset>
       <label class="dpp-check"><input type="checkbox" name="couple" /> Buying as a couple (both first-time buyers; doubles FHSA and HBP limits)</label>
+      <small class="ck-help">{HELP.couple}</small>
     </fieldset>
 
     <fieldset>
       <legend>What you have saved now</legend>
       <label>FHSA opened in
+        <small class="ck-help">{HELP.fhsaOpenYear}</small>
         <select name="fhsaOpenYear">
           <option value="" selected>Not opened yet (assume it opens this year)</option>
           {years.map((y) => <option value={y}>{y}</option>)}
         </select>
       </label>
       <label>FHSA balance
+        <small class="ck-help">{HELP.fhsaBalance}</small>
         <input type="number" name="fhsaBalance" inputmode="numeric" min="0" step="100" value={d.fhsaBalance} />
       </label>
       <label>Total contributed to your FHSA so far
+        <small class="ck-help">{HELP.fhsaContributedTotal}</small>
         <input type="number" name="fhsaContributedTotal" inputmode="numeric" min="0" step="100" value={d.fhsaContributedTotal} />
         <small>For a couple, enter the combined amount.</small>
       </label>
       <label>RRSP balance
+        <small class="ck-help">{HELP.rrspBalance}</small>
         <input type="number" name="rrspBalance" inputmode="numeric" min="0" step="100" value={d.rrspBalance} />
       </label>
       <label>RRSP contributions made in the 90 days before buying
+        <small class="ck-help">{HELP.rrspRecent}</small>
         <input type="number" name="rrspRecent" inputmode="numeric" min="0" step="100" value={d.rrspRecent} />
         <small>These cannot be withdrawn under the Home Buyers' Plan.</small>
       </label>
       <label class="dpp-check"><input type="checkbox" name="useHbp" checked /> Include the Home Buyers' Plan</label>
+      <small class="ck-help">{HELP.useHbp}</small>
       <label>TFSA balance
+        <small class="ck-help">{HELP.tfsaBalance}</small>
         <input type="number" name="tfsaBalance" inputmode="numeric" min="0" step="100" value={d.tfsaBalance} />
       </label>
       <label>TFSA room available now
+        <small class="ck-help">{HELP.tfsaRoom}</small>
         <input type="number" name="tfsaRoom" inputmode="numeric" min="0" step="100" value={d.tfsaRoom} />
       </label>
       <label>Other (taxable) savings
+        <small class="ck-help">{HELP.taxableBalance}</small>
         <input type="number" name="taxableBalance" inputmode="numeric" min="0" step="100" value={d.taxableBalance} />
       </label>
       <label>Expected gift at closing
+        <small class="ck-help">{HELP.gift}</small>
         <input type="number" name="gift" inputmode="numeric" min="0" step="500" value={d.gift} />
       </label>
     </fieldset>
@@ -109,12 +128,15 @@ const isAssumption = (s: string) => s === "assumption" || s === "needs_reverific
     <fieldset>
       <legend>Saving from here</legend>
       <label data-show="timeline">Monthly savings
+        <small class="ck-help">{HELP.monthly}</small>
         <input type="number" name="monthly" inputmode="numeric" min="0" step="50" value={d.monthly} />
       </label>
       <label data-show="target" hidden>Target purchase month
+        <small class="ck-help">{HELP.targetDate}</small>
         <input type="month" name="targetDate" value={targetValue} />
       </label>
       <label>Savings interest rate (% a year)
+        <small class="ck-help">{HELP.savingsRate}</small>
         <input type="number" name="savingsRate" inputmode="decimal" min="0" max="20" step="0.05" value={rate(d.savingsRate)} />
       </label>
     </fieldset>
@@ -122,32 +144,40 @@ const isAssumption = (s: string) => s === "assumption" || s === "needs_reverific
     <fieldset>
       <legend>Mortgage and costs</legend>
       <label>Mortgage rate (% a year)
+        <small class="ck-help">{HELP.contractRate}</small>
         <input type="number" name="contractRate" inputmode="decimal" min="0" max="20" step="0.01" value={rate(d.contractRate)} />
         <small>Default {pct(DEFAULT_CONTRACT_RATE)} is illustrative, verify. Best 5-year fixed snapshot: {pct(SNAPSHOT_RATE)} (Ratehub, Sept 2026).</small>
       </label>
       <label>Amortization
+        <small class="ck-help">{HELP.amortYears}</small>
         <select name="amortYears">
           <option value="25" selected>25 years</option>
           <option value="30">30 years (first-time buyers and new builds; adds 0.20% to the insurance premium)</option>
         </select>
       </label>
       <label>Legal, title, inspection and other fees
+        <small class="ck-help">{HELP.fees}</small>
         <input type="number" name="fees" inputmode="numeric" min="0" step="100" value={d.fees} />
       </label>
       <label>Extra cushion
+        <small class="ck-help">{HELP.buffer}</small>
         <input type="number" name="buffer" inputmode="numeric" min="0" step="500" value={d.buffer} />
       </label>
       <label>Current monthly rent
+        <small class="ck-help">{HELP.rent}</small>
         <input type="number" name="rent" inputmode="numeric" min="0" step="50" value="" placeholder="Enter to compare" />
       </label>
       <label>Property tax rate (% of price a year)
+        <small class="ck-help">{HELP.propertyTaxRate}</small>
         <input type="number" name="propertyTaxRate" inputmode="decimal" min="0" max="5" step="0.001" value={(d.propertyTaxRate * 100).toFixed(3)} />
         <small>2026 residential rates: Toronto {pct(PROPERTY_TAX_PRESETS.toronto, 3)}, Calgary {pct(PROPERTY_TAX_PRESETS.calgary, 3)}, Edmonton {pct(PROPERTY_TAX_PRESETS.edmonton, 3)}. Use your municipality's rate.</small>
       </label>
       <label>Home insurance per month
+        <small class="ck-help">{HELP.insuranceMonthly}</small>
         <input type="number" name="insuranceMonthly" inputmode="numeric" min="0" step="10" value={d.insuranceMonthly} />
       </label>
       <label>Condo fees per month
+        <small class="ck-help">{HELP.condoFees}</small>
         <input type="number" name="condoFees" inputmode="numeric" min="0" step="10" value={d.condoFees} />
       </label>
     </fieldset>
@@ -156,8 +186,11 @@ const isAssumption = (s: string) => s === "assumption" || s === "needs_reverific
   <div class="dpp-results" id="dpp-results" aria-live="polite" set:html={initialHtml} />
 </div>
 
+<Fragment set:html={renderNextSteps()} />
+<Fragment set:html={renderExample()} />
+
 <section class="dpp-assumptions" aria-labelledby="dpp-h-assumptions">
-  <h2 id="dpp-h-assumptions">Assumptions behind these numbers</h2>
+  <h2 id="dpp-h-assumptions">How this calculator works</h2>
   <ul>
     <li><strong>Savings rate {pct(DEFAULT_SAVINGS_RATE)} <span class="dpp-flag">re-check</span>.</strong> The default comes from EQ Bank's rate, which requires $2,000 a month in direct deposits. Without that, EQ's base rate is {pct(EQ_RATES.base_personal_account)} (checked 2026-09-28).</li>
     <li><strong>Mortgage rate {pct(DEFAULT_CONTRACT_RATE)} <span class="dpp-flag">illustrative, verify</span>.</strong> Taken from a worked example, not a lender quote. The Ratehub best 5-year fixed snapshot of {pct(SNAPSHOT_RATE)} is shown alongside and expires 2026-10-15. Payments use Canadian semi-annual compounding.</li>

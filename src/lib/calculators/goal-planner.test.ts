@@ -27,7 +27,22 @@ import {
   type Goal,
   type RequiredReturn,
 } from "./goal-planner";
-import { DISCLAIMER, escapeHtml, renderResults } from "./goal-planner-render";
+import {
+  $,
+  DISCLAIMER,
+  EXAMPLE_GOAL,
+  EXAMPLE_RETURN,
+  EXAMPLE_START,
+  HELP,
+  escapeHtml,
+  gpFigures,
+  pct,
+  renderExample,
+  renderNextSteps,
+  renderResults,
+} from "./goal-planner-render";
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 
 const START = { year: 2026, month: 10 };
 const close = (actual: number, expected: number, tol = 0.01) =>
@@ -235,5 +250,59 @@ describe("results copy rules", () => {
     assert.ok(!html.includes("<img"));
     assert.ok(html.includes("&lt;img"));
     assert.equal(escapeHtml(`a&b<c>"d'`), "a&amp;b&lt;c&gt;&quot;d&#39;");
+  });
+});
+
+describe("below the tool: field help, next steps, worked example", () => {
+  const SRC = join(import.meta.dirname, "..", "..");
+  const DASHES = [String.fromCharCode(0x2014), String.fromCharCode(0x2013)];
+  const houseRules = (html: string, where: string) => {
+    const text = html.replace(/<[^>]+>/g, " ");
+    for (const d of DASHES) assert.ok(!html.includes(d), `${where}: em or en dash`);
+    assert.ok(!/you should/i.test(text), `${where}: "you should"`);
+    assert.ok(!/\b(we|our|us)\b/i.test(text) && !/\bI\b/.test(text), `${where}: first-person voice`);
+  };
+  const internalLinksExist = (html: string) => {
+    for (const [, href] of html.matchAll(/href="(\/[^"]*)"/g)) {
+      const [, section, slug] = href.split("/");
+      const file = { calculators: `pages/calculators/${slug}.astro`, learn: `content/explainers/${slug}.mdx`, compare: `content/comparisons/${slug}.mdx` }[section];
+      assert.ok(file && existsSync(join(SRC, file)), `internal link ${href} has no page`);
+    }
+  };
+
+  test("every form field has one helper line, 140 characters or fewer (presets once)", () => {
+    const form = readFileSync(join(SRC, "components/calculators/GoalPlanner.astro"), "utf8").split("\n<script>")[0];
+    const fields = new Set([...form.matchAll(/<(?:input|select)\b[^>]*\bname="([A-Za-z0-9]+)"/g)].map((m) => m[1]));
+    assert.deepEqual([...fields].sort(), Object.keys(HELP).sort());
+    for (const [field, line] of Object.entries(HELP)) {
+      assert.ok(line.length > 0 && line.length <= 140, `${field}: ${line.length} characters`);
+      houseRules(line, `help for ${field}`);
+    }
+  });
+
+  test("next steps: FHSA, RRSP and TFSA priority and a re-check cadence; figures from the registry", () => {
+    const html = renderNextSteps();
+    assert.match(html, /^<section class="ck-next[^"]*" aria-labelledby="gp-h-next"><h2 id="gp-h-next">What to do with this number<\/h2>/);
+    const steps = html.match(/<li>/g)?.length ?? 0;
+    assert.ok(steps >= 3 && steps <= 4, `${steps} steps`);
+    for (const s of ["FHSA", "RRSP", "TFSA", "Re-check", "March 1, 2027", "January 1, 2027"]) assert.ok(html.includes(s), s);
+    for (const key of ["tfsa.annual_limit.2026", "fhsa.annual_limit", "fhsa.lifetime_limit"]) {
+      assert.ok(html.includes($(gpFigures.get(key)!.value as number)), key);
+    }
+    houseRules(html, "next steps");
+    internalLinksExist(html);
+  });
+
+  test("worked example: every figure straight from plan()", () => {
+    const html = renderExample();
+    const p = plan(EXAMPLE_GOAL, EXAMPLE_RETURN, EXAMPLE_START);
+    assert.equal(p.required.kind, "solved");
+    assert.match(html, /^<section class="ck-example[^"]*" aria-labelledby="gp-h-example"><h2 id="gp-h-example">A worked example<\/h2>/);
+    for (const v of [pct((p.required as { rate: number }).rate), VERDICT_COPY[p.band], $(p.savedByDeadline), $(p.monthlyNeeded), $(p.projectedAtDeadline)]) {
+      assert.ok(html.includes(v), `missing engine value ${v}`);
+    }
+    const outputs = html.match(/<dd>/g)?.length ?? 0;
+    assert.ok(outputs >= 3 && outputs <= 6, `${outputs} outputs`);
+    houseRules(html, "worked example");
   });
 });

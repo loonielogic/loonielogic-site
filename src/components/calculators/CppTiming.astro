@@ -6,6 +6,7 @@
  * with JS off; the script recomputes on every input change with the same
  * functions (no calculate button).
  */
+import "../../styles/calc-kit.css";
 import {
   AVERAGE_AT_65,
   CHILD_YEARS_MAX,
@@ -24,7 +25,7 @@ import {
   cppFigures,
   defaultInput,
 } from "../../lib/calculators/cpp-timing";
-import { renderResults, sourceTag, pct, $c, ACCURACY_BANNER, MSCA_URL, CRIC_URL, type RenderOptions } from "../../lib/calculators/cpp-timing-render";
+import { HELP, renderExample, renderNextSteps, renderResults, sourceTag, pct, $c, ACCURACY_BANNER, MSCA_URL, CRIC_URL, type RenderOptions } from "../../lib/calculators/cpp-timing-render";
 
 interface Props {
   /** "Learn: CPP + OAS basics" target; null until that explainer is built. */
@@ -50,12 +51,14 @@ const src = (key: string) => sourceTag(key);
     <fieldset>
       <legend>You (or the person you're running it for)</legend>
       <label>Current age
+        <small class="ck-help">{HELP.currentAge}</small>
         <input type="number" name="currentAge" inputmode="numeric" min={AGE_MIN} max={AGE_MAX} step="1" value={d.currentAge} />
       </label>
       <p class="cpt-error" data-error-for="currentAge" hidden></p>
       <p class="cpt-warning" data-warning-for="currentAge" hidden></p>
 
       <label>Estimated monthly <span data-plan>CPP</span> at 65 ($)
+        <small class="ck-help">{HELP.est65}</small>
         <input type="number" name="est65" inputmode="decimal" min="0" max="1508" step="1" value={d.est65} />
       </label>
       <p class="cpt-error" data-error-for="est65" hidden></p>
@@ -65,12 +68,14 @@ const src = (key: string) => sourceTag(key);
 
     <fieldset>
       <legend>Plan to age</legend>
+      <small class="ck-help">{HELP.horizonPreset}</small>
       <div class="cpt-presets" role="group" aria-label="Planning age presets">
         {HORIZON_PRESETS.map((h) => (
           <label class="cpt-chip"><input type="radio" name="horizonPreset" value={h} checked={h === d.horizon} /> {h}</label>
         ))}
       </div>
       <label>Or type a planning age ({HORIZON_MIN} to {HORIZON_MAX})
+        <small class="ck-help">{HELP.horizon}</small>
         <input type="number" name="horizon" inputmode="numeric" min={HORIZON_MIN} max={HORIZON_MAX} step="1" value={d.horizon} />
       </label>
       <p class="cpt-error" data-error-for="horizon" hidden></p>
@@ -80,6 +85,7 @@ const src = (key: string) => sourceTag(key);
 
     <fieldset>
       <legend>Still working between 60 and {LATEST_AGE}?</legend>
+      <small class="ck-help">{HELP.stillWorking}</small>
       <div class="cpt-seg">
         <label class="cpt-radio"><input type="radio" name="stillWorking" value="yes" /> Yes</label>
         <label class="cpt-radio"><input type="radio" name="stillWorking" value="no" /> No</label>
@@ -90,25 +96,33 @@ const src = (key: string) => sourceTag(key);
     <fieldset>
       <legend>Other things that matter</legend>
       <label>Child-rearing years (low or no earnings while raising kids under 7)
+        <small class="ck-help">{HELP.childRearingYears}</small>
         <input type="number" name="childRearingYears" inputmode="numeric" min="0" max={CHILD_YEARS_MAX} step="1" value={d.childRearingYears} />
       </label>
       <p class="cpt-error" data-error-for="childRearingYears" hidden></p>
       <label>Other expected retirement income, per year ($)
+        <small class="ck-help">{HELP.otherIncome}</small>
         <input type="number" name="otherIncome" inputmode="numeric" min="0" step="1000" value={d.otherIncome} />
       </label>
       <p class="cpt-error" data-error-for="otherIncome" hidden></p>
       <small>Pensions, RRIF withdrawals, work income. Used only to check the OAS recovery-tax threshold.</small>
       <p class="cpt-help">Any of these apply? (optional)</p>
       <label class="cpt-check"><input type="checkbox" name="quebec" /> Worked in Quebec (QPP)</label>
+      <small class="ck-help">{HELP.quebec}</small>
       <label class="cpt-check"><input type="checkbox" name="survivor" /> A CPP survivor's pension is expected</label>
+      <small class="ck-help">{HELP.survivor}</small>
       <label class="cpt-check"><input type="checkbox" name="separation" /> Separated or divorced</label>
+      <small class="ck-help">{HELP.separation}</small>
       <label class="cpt-check"><input type="checkbox" name="disability" /> Received CPP disability benefits</label>
+      <small class="ck-help">{HELP.disability}</small>
     </fieldset>
 
     <fieldset>
       <legend>Advanced: invest the difference</legend>
       <label class="cpt-check"><input type="checkbox" name="invest" /> <span>What if <span data-plan>CPP</span> starts early and every cheque is invested?</span></label>
+      <small class="ck-help">{HELP.invest}</small>
       <label data-show="invest" hidden>Annual return (%)
+        <small class="ck-help">{HELP.investReturn}</small>
         <input type="number" name="investReturn" inputmode="decimal" min="0" max="10" step="0.5" value={(DEFAULT_RETURN * 100).toString()} />
       </label>
       <p class="cpt-error" data-error-for="investReturn" hidden></p>
@@ -120,8 +134,11 @@ const src = (key: string) => sourceTag(key);
   <div class="cpt-results" id="cpt-results" aria-live="polite" set:html={initialHtml} />
 </div>
 
+<Fragment set:html={renderNextSteps(opts)} />
+<Fragment set:html={renderExample()} />
+
 <section class="cpt-assumptions" aria-labelledby="cpt-h-assumptions">
-  <h2 id="cpt-h-assumptions">Assumptions behind this comparison</h2>
+  <h2 id="cpt-h-assumptions">How this calculator works</h2>
   <ul>
     <li><strong>Your estimate at 65 is taken as entered <span class="cpt-flag">estimate</span>.</strong> The tool times a given estimate; it does not compute a benefit from your earnings history. That is the job of My Service Canada Account and the Canadian Retirement Income Calculator.</li>
     <li><strong>Whole start years from 60 to {LATEST_AGE}.</strong> Each month before 65 takes 0.6% off (up to {pct(MAX_REDUCTION)} at 60) <Fragment set:html={src("cpp.early_reduction")} />; each month after adds 0.7% (up to {pct(MAX_BOOST)} at {LATEST_AGE}) <Fragment set:html={src("cpp.late_boost")} />. Waiting past {LATEST_AGE} adds nothing <Fragment set:html={src("cpp.timing.no_benefit_past_70")} />.</li>

@@ -9,8 +9,14 @@
  * never "you should".
  */
 
-import { $, alerts, card, pct, row, table, type Alert } from "./calc-kit";
+import { $, alerts, card, nextSteps, pct, row, table, workedExample, type Alert } from "./calc-kit";
+import { figure, type FigureLog } from "./figures";
 import {
+  BC_GUIDELINE,
+  DEFAULT_INPUT,
+  ON_GUIDELINE,
+  compare,
+  type RvbInput,
   GRID_APPRECIATION,
   GRID_RETURN,
   PTR_BUY_BELOW,
@@ -154,4 +160,66 @@ export function renderResults(x: RvbResult): string {
 <li><a href="/calculators/down-payment-planner">Plan the down payment</a></li>
 </ul>`;
   return `${headline(x)}${wealthCard(x)}${gridCard(x)}${cashFlowCard(x)}${ptrCard(x)}${wrongCard(x)}${notes(x)}${links}<p class="ck-disclaimer">${DISCLAIMER}</p>`;
+}
+
+/* ------------------------------------------------------------------ */
+/* Below the tool: field help, next steps, worked example              */
+/* ------------------------------------------------------------------ */
+
+/** Registry figures the next steps cite beyond the calculator's own. */
+export const rvbNextFigures: FigureLog = new Map();
+const CLOSING_RULE = figure<number>("mortgage-2026.json", "closing_costs.range", rvbNextFigures);
+
+/** One line per form field: why the tool needs it (140 characters max). */
+export const HELP = {
+  rent: "Rent is the renter's main cost; the gap between it and owning costs is what the renter invests.",
+  rentGrowth: `Rent increases add up over the years you stay; Ontario's 2026 cap is ${pct(ON_GUIDELINE, 1)} and BC's is ${pct(BC_GUIDELINE, 1)}.`,
+  guidelineExempt: "Units first occupied after November 15, 2018 have no Ontario rent cap, so the tool notes it.",
+  price: "The price sets the down payment, the mortgage and the home's value as it grows.",
+  downPct: "A bigger down payment means a smaller mortgage, and the renter invests the same amount instead.",
+  rate: "The mortgage rate drives interest, the largest owning cost in the early years.",
+  amortYears: "A longer amortization lowers the payment but builds equity more slowly.",
+  condo: "Condos usually carry monthly fees and lower maintenance, so the tool adjusts both.",
+  condoFees: "Condo fees are an owning cost the renter does not pay.",
+  taxRate: "Property tax is an owning cost that grows with the home's value.",
+  insurance: "Home insurance is an owning cost the renter mostly avoids.",
+  maintenance: "Upkeep is a real owning cost, often forgotten, that grows with the home's value.",
+  closingPct: "Closing costs are paid once on day one; the renter invests that money instead.",
+  appreciation: "Home price growth is the owner's main gain, and the biggest unknown in the comparison.",
+  investReturn: "The renter's return decides how fast the invested difference grows.",
+  commission: "Selling costs come off the owner's wealth when the home is sold.",
+  moving: "Moving costs hit both paths, so they count on each move.",
+  years: "How long you stay decides whether buying has time to catch up with its upfront costs.",
+  income: "With your income, the tool checks whether the stress-test payment could pass a lender.",
+} as const;
+
+export function renderNextSteps(): string {
+  return nextSteps("rvb-h-next", [
+    `<strong>If buying wins, get a lender pre-approval</strong> before shopping, and run the full lender test in the <a href="/calculators/house-affordability">house affordability calculator</a>. A win on paper still has to pass the stress test.`,
+    `<strong>Ask for a rate hold</strong> with the pre-approval, then rerun this comparison at the held rate. The result here assumes the same rate for the whole stay.`,
+    `<strong>Keep a closing-cost buffer</strong> of about ${pct(CLOSING_RULE, 1)} of the price as a rule of thumb, on top of the down payment. The <a href="/calculators/down-payment-planner">First Home Savings Planner</a> itemizes it.`,
+    `<strong>If renting wins, invest the difference for real.</strong> The renter's lead only exists if the money that would have gone to the down payment and owning costs actually gets invested.`,
+  ]);
+}
+
+/** The worked example's inputs: a $600,000 home against $2,300 rent, staying 7 years. */
+export const EXAMPLE_INPUT: Readonly<RvbInput> = { ...DEFAULT_INPUT, price: 600_000, rent: 2_300, years: 7 };
+
+export function renderExample(): string {
+  const x = compare(EXAMPLE_INPUT);
+  const r = x.input;
+  const be = x.sim.breakeven;
+  return workedExample(
+    "rvb-h-example",
+    `A <strong>${$(r.price)}</strong> home with ${pct(r.downPct, 0)} down at ${pct(r.rate)}, against renting for ${$(r.rent)} a month, staying ${yrs(r.years)}. Home prices grow ${pct(r.appreciation, 1)} a year and the renter earns ${pct(r.investReturn, 1)}; every other assumption is the form's default. Run through this calculator, that gives:`,
+    [
+      ["Comes out ahead", x.verdict === "buy" ? "Buying" : "Renting"],
+      [`Gap after ${yrs(r.years)}`, $(Math.abs(x.gapAtTenure))],
+      ["Buying catches up in", be === null ? "Never within 30 years" : `Year ${be}`],
+      ["Cash needed on day one", $(x.sim.upfront)],
+      ["Owning cost, month one", `${$(x.sim.ownMonth1)} a month`],
+      ["Buying and selling costs", $(x.roundTrip)],
+    ],
+    "Computed by the same engine as the calculator above when this page was built. Change any assumption above to see how sensitive the answer is.",
+  );
 }

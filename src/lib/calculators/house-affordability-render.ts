@@ -9,9 +9,10 @@
  * dashes; never "you should".
  */
 
-import { $, NOT_VERIFIED, alerts, card, facts, pct, row, table, type Alert } from "./calc-kit";
+import { $, NOT_VERIFIED, alerts, card, facts, nextSteps, pct, row, table, workedExample, type Alert } from "./calc-kit";
+import { figure, type FigureLog } from "./figures";
 import { INSURED_CAP, MQR_FLOOR } from "./down-payment-planner";
-import { GDS, LENDER_INTERNAL, TDS, type Affordability, type Limit } from "./house-affordability";
+import { CONDO_SHARE, DEFAULT_INPUT, GDS, LENDER_INTERNAL, TDS, afford, type AffordInput, type Affordability, type Limit } from "./house-affordability";
 
 export const RULES_DATE = "2026-09-27";
 export const DISCLAIMER = `An estimate, not a pre-approval: your lender decides. Rules used are dated ${RULES_DATE}: GDS ${pct(GDS, 0)} and TDS ${pct(TDS, 0)} insured ceilings, the stress test, the ${$(INSURED_CAP)} insured price cap and 30-year insured amortization for first-time buyers and new builds.`;
@@ -135,7 +136,7 @@ function notes(a: Affordability): string {
     list.push({ tone: "info", html: "<strong>Land transfer tax is only calculated for Ontario (and Toronto) and British Columbia.</strong> Add your province's transfer tax or registration fees to legal and other fees." });
   }
   if (s.torontoUnverified) {
-    list.push({ tone: "info", html: `<strong>Toronto municipal land transfer tax</strong> uses the tiers in our down payment planner: ${NOT_VERIFIED} against toronto.ca.` });
+    list.push({ tone: "info", html: `<strong>Toronto municipal land transfer tax</strong> uses the same tiers as the down payment planner: ${NOT_VERIFIED} against toronto.ca.` });
   }
   list.push({ tone: "info", html: `<strong>Many lenders run tighter limits,</strong> around ${pct(LENDER_INTERNAL.gds, 0)} GDS and ${pct(LENDER_INTERNAL.tds, 0)} TDS. ${pct(GDS, 0)}/${pct(TDS, 0)} is the insured ceiling, not a target, and a pre-approval is the only real number.` });
   list.push({ tone: "info", html: "<strong>Property tax and heating are rough defaults.</strong> Property tax is charged on assessed value at your city's rate; replace both with real figures for the home you are looking at." });
@@ -148,4 +149,61 @@ export function renderResults(a: Affordability): string {
 <li><a href="/calculators/rent-vs-buy">Rent or buy at this price?</a></li>
 </ul>`;
   return `${headline(a)}${limitsCard(a)}${a.maxPrice > 0 ? paymentsCard(a) + breakdownCard(a) + amortCard(a) : ""}${notes(a)}${links}<p class="ck-disclaimer">${DISCLAIMER}</p>`;
+}
+
+/* ------------------------------------------------------------------ */
+/* Below the tool: field help, next steps, worked example              */
+/* ------------------------------------------------------------------ */
+
+/** Registry figures the next steps cite beyond the calculator's own. */
+export const hafNextFigures: FigureLog = new Map();
+const CLOSING_RULE = figure<number>("mortgage-2026.json", "closing_costs.range", hafNextFigures);
+
+/** One line per form field: why the tool needs it (140 characters max). */
+export const HELP = {
+  income: `Lenders cap housing costs at ${pct(GDS, 0)} of gross income, so income sets the price ceiling.`,
+  cash: "Cash has to cover the minimum down payment and closing costs, which is often the tighter limit.",
+  firstTimeBuyer: "First-time buyers get land transfer tax rebates and can choose a 30-year insured amortization.",
+  newBuild: "New builds also qualify for a 30-year insured amortization.",
+  contractRate: "Lenders test you at a higher stress-test rate; your real payment uses this one.",
+  wantThirty: "A longer amortization lowers the payment, which raises the price that passes the income limits.",
+  debtPayments: `Other debt payments count against the ${pct(TDS, 0)} total debt limit.`,
+  unsecuredBalance: "Lenders turn card and unsecured credit line balances into a monthly payment for the debt limit.",
+  securedBalance: "Lenders turn a secured credit line balance into a monthly payment for the debt limit.",
+  province: "Province sets land transfer tax and whether sales tax is charged on mortgage insurance.",
+  toronto: "Toronto charges its own land transfer tax on top of Ontario's.",
+  taxRate: "Property tax is part of the housing cost lenders test against your income.",
+  heating: "Lenders add heating to the monthly housing cost.",
+  condoFees: `Lenders count ${pct(CONDO_SHARE, 0)} of condo fees as housing cost.`,
+  legal: "Legal and closing fees come out of your cash before the down payment does.",
+} as const;
+
+export function renderNextSteps(): string {
+  return nextSteps("haf-h-next", [
+    `<strong>Get a lender pre-approval.</strong> It checks your credit and income documents against the lender's own limits, which can be tighter than the ${pct(GDS, 0)}/${pct(TDS, 0)} ceilings used here.`,
+    `<strong>Ask for a rate hold</strong> with the pre-approval, so a rate rise while you shop does not shrink the budget. Rerun this calculator at the held rate.`,
+    `<strong>Keep a closing-cost buffer.</strong> A common rule of thumb is about ${pct(CLOSING_RULE, 1)} of the price, paid in cash at closing on top of the down payment. The <a href="/calculators/down-payment-planner">First Home Savings Planner</a> itemizes it for a target price.`,
+    `<strong>Test the price against renting.</strong> <a href="/calculators/rent-vs-buy">Rent vs buy</a> compares net wealth at the price you can carry.`,
+  ]);
+}
+
+/** The worked example's inputs: an $82,000 first-time buyer in Ontario with $40,000 saved. */
+export const EXAMPLE_INPUT: Readonly<AffordInput> = { ...DEFAULT_INPUT, income: 82_000, cash: 40_000 };
+
+export function renderExample(): string {
+  const a = afford(EXAMPLE_INPUT);
+  const s = a.at;
+  return workedExample(
+    "haf-h-example",
+    `A first-time buyer in Ontario earns <strong>${$(a.input.income)}</strong> a year, has ${$(a.input.cash)} for the down payment and closing costs, no other debts, and a ${pct(a.input.contractRate)} mortgage rate. Run through this calculator, that gives:`,
+    [
+      ["Maximum purchase price", $(a.maxPrice)],
+      ["Limit that binds", LIMIT_NAME[a.binding]],
+      ["Down payment", `${$(s.down)} (${pct(s.downPct, 1)})`],
+      ["Closing costs from cash", $(s.closing)],
+      ["Mortgage, with any CMHC premium", $(s.mortgage)],
+      ["Monthly payment at your rate", $(s.actualPayment)],
+    ],
+    `Computed by the same engine as the calculator above when this page was built. Lenders test the payment at ${pct(s.qualifyingRate)}: ${$(s.qualifyingPayment)} a month.`,
+  );
 }

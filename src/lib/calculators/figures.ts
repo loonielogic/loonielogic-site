@@ -13,6 +13,7 @@ import eiQpip from "../../data/figures/ei-qpip-2026.json";
 import federalBrackets from "../../data/figures/federal-brackets-2026.json";
 import fhsaHbp from "../../data/figures/fhsa-hbp-2026.json";
 import fthb from "../../data/figures/fthb-incentives-2026.json";
+import homeOffice from "../../data/figures/home-office-2026.json";
 import ltt from "../../data/figures/ltt-2026.json";
 import mortgage from "../../data/figures/mortgage-2026.json";
 import oasGis from "../../data/figures/oas-gis-2026-q3.json";
@@ -21,6 +22,7 @@ import qpp from "../../data/figures/qpp-2026.json";
 import rentHousing from "../../data/figures/rent-housing-2026.json";
 import rrsp from "../../data/figures/rrsp-2026.json";
 import taxCredits from "../../data/figures/tax-credits-2026.json";
+import taxDeadlines from "../../data/figures/tax-deadlines-2026.json";
 import tfsa from "../../data/figures/tfsa-2026.json";
 
 export interface FigureEntry {
@@ -44,6 +46,7 @@ const FILES: Record<string, { entries: FigureEntry[] }> = {
   "federal-brackets-2026.json": federalBrackets as { entries: FigureEntry[] },
   "fhsa-hbp-2026.json": fhsaHbp as { entries: FigureEntry[] },
   "fthb-incentives-2026.json": fthb as { entries: FigureEntry[] },
+  "home-office-2026.json": homeOffice as { entries: FigureEntry[] },
   "ltt-2026.json": ltt as { entries: FigureEntry[] },
   "mortgage-2026.json": mortgage as { entries: FigureEntry[] },
   "oas-gis-2026-q3.json": oasGis as { entries: FigureEntry[] },
@@ -52,6 +55,7 @@ const FILES: Record<string, { entries: FigureEntry[] }> = {
   "rent-housing-2026.json": rentHousing as { entries: FigureEntry[] },
   "rrsp-2026.json": rrsp as { entries: FigureEntry[] },
   "tax-credits-2026.json": taxCredits as { entries: FigureEntry[] },
+  "tax-deadlines-2026.json": taxDeadlines as { entries: FigureEntry[] },
   "tfsa-2026.json": tfsa as { entries: FigureEntry[] },
 };
 

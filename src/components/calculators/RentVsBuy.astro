@@ -18,7 +18,7 @@ import {
   compare,
   rvbFigures,
 } from "../../lib/calculators/rent-vs-buy";
-import { renderResults } from "../../lib/calculators/rent-vs-buy-render";
+import { HELP, renderExample, renderNextSteps, renderResults, rvbNextFigures } from "../../lib/calculators/rent-vs-buy-render";
 import { pct } from "../../lib/calculators/calc-kit";
 import CalcSources from "./CalcSources.astro";
 
@@ -32,41 +32,50 @@ const p = (r: number, digits = 2) => Number((r * 100).toFixed(digits));
     <fieldset>
       <legend>Renting</legend>
       <label>Monthly rent ($)
+        <small class="ck-help">{HELP.rent}</small>
         <input type="number" name="rent" inputmode="decimal" min="0" step="50" value={d.rent} />
       </label>
       <p class="ck-error" data-error-for="rent" hidden></p>
       <label>Rent increase each year (%)
+        <small class="ck-help">{HELP.rentGrowth}</small>
         <input type="number" name="rentGrowth" inputmode="decimal" min="0" max="10" step="0.1" value={p(d.rentGrowth!, 2)} />
         <small>2026 caps: Ontario {pct(ON_GUIDELINE, 1)}, BC {pct(BC_GUIDELINE, 1)}. Other provinces: use your own estimate.</small>
       </label>
       <p class="ck-error" data-error-for="rentGrowth" hidden></p>
       <label class="ck-check"><input type="checkbox" name="guidelineExempt" /> Ontario unit first occupied after November 15, 2018 (no rent cap)</label>
+      <small class="ck-help">{HELP.guidelineExempt}</small>
     </fieldset>
 
     <fieldset>
       <legend>Buying</legend>
       <label>Home price ($)
+        <small class="ck-help">{HELP.price}</small>
         <input type="number" name="price" inputmode="decimal" min="0" step="5000" value={d.price} />
       </label>
       <p class="ck-error" data-error-for="price" hidden></p>
       <label>Down payment (% of the price)
+        <small class="ck-help">{HELP.downPct}</small>
         <input type="number" name="downPct" inputmode="decimal" min="5" max="100" step="0.5" value={p(d.downPct!, 1)} />
         <small>Under 20%, the CMHC premium is added to the mortgage.</small>
       </label>
       <p class="ck-error" data-error-for="downPct" hidden></p>
       <label>Mortgage rate (% a year)
+        <small class="ck-help">{HELP.rate}</small>
         <input type="number" name="rate" inputmode="decimal" min="0" max="20" step="0.05" value={p(d.rate!)} />
         <small>Default {pct(d.rate!)} is illustrative (discount-broker 5-year fixed, Sept 2026). Best 5-year fixed snapshot: {pct(RATE_SNAPSHOT.best_5yr_fixed)}; rates move weekly.</small>
       </label>
       <p class="ck-error" data-error-for="rate" hidden></p>
       <label>Amortization
+        <small class="ck-help">{HELP.amortYears}</small>
         <select name="amortYears">
           <option value="25" selected>25 years</option>
           <option value="30">30 years (first-time buyers and new builds)</option>
         </select>
       </label>
       <label class="ck-check"><input type="checkbox" name="condo" /> It is a condo</label>
+      <small class="ck-help">{HELP.condo}</small>
       <label data-show="condo" hidden>Condo fees ($ a month)
+        <small class="ck-help">{HELP.condoFees}</small>
         <input type="number" name="condoFees" inputmode="decimal" min="0" step="25" value="0" />
       </label>
       <p class="ck-error" data-error-for="condoFees" hidden></p>
@@ -75,20 +84,24 @@ const p = (r: number, digits = 2) => Number((r * 100).toFixed(digits));
     <fieldset>
       <legend>Owning costs</legend>
       <label>Property tax (% of value a year)
+        <small class="ck-help">{HELP.taxRate}</small>
         <input type="number" name="taxRate" inputmode="decimal" min="0" max="5" step="0.001" value={p(d.taxRate!, 4)} />
         <small>2026 residential rates: Toronto {pct(TORONTO_TAX, 3)}, Calgary {pct(CALGARY_TAX, 3)}, Edmonton {pct(EDMONTON_TAX, 3)}.</small>
       </label>
       <p class="ck-error" data-error-for="taxRate" hidden></p>
       <label>Home insurance ($ a month)
+        <small class="ck-help">{HELP.insurance}</small>
         <input type="number" name="insurance" inputmode="decimal" min="0" step="10" value={d.insurance} />
       </label>
       <p class="ck-error" data-error-for="insurance" hidden></p>
       <label>Maintenance (% of value a year)
+        <small class="ck-help">{HELP.maintenance}</small>
         <input type="number" name="maintenance" inputmode="decimal" min="0" max="5" step="0.1" value={p(d.maintenance!, 1)} />
         <small>1% is a common rule of thumb; about 0.5% for condos.</small>
       </label>
       <p class="ck-error" data-error-for="maintenance" hidden></p>
       <label>Buying closing costs (% of the price)
+        <small class="ck-help">{HELP.closingPct}</small>
         <input type="number" name="closingPct" inputmode="decimal" min="0" max="10" step="0.1" value={p(d.closingPct!, 1)} />
         <small>Land transfer tax, legal and fees. Toronto at $800,000 is about 2% after first-time rebates; Alberta about 1% (no land transfer tax).</small>
       </label>
@@ -98,21 +111,25 @@ const p = (r: number, digits = 2) => Number((r * 100).toFixed(digits));
     <fieldset>
       <legend>The assumptions nobody knows</legend>
       <label>Home price growth (% a year)
+        <small class="ck-help">{HELP.appreciation}</small>
         <input type="number" name="appreciation" inputmode="decimal" min="-5" max="10" step="0.5" value={p(d.appreciation!, 1)} />
         <small>An assumption, not a forecast. Negative values are allowed.</small>
       </label>
       <p class="ck-error" data-error-for="appreciation" hidden></p>
       <label>Renter's investment return (% a year, after tax)
+        <small class="ck-help">{HELP.investReturn}</small>
         <input type="number" name="investReturn" inputmode="decimal" min="0" max="10" step="0.5" value={p(d.investReturn!, 1)} />
         <small>For example, a balanced portfolio inside a TFSA.</small>
       </label>
       <p class="ck-error" data-error-for="investReturn" hidden></p>
       <label>Selling commission (%)
+        <small class="ck-help">{HELP.commission}</small>
         <input type="number" name="commission" inputmode="decimal" min="0" max="10" step="0.25" value={p(d.commission!, 2)} />
         <small>5% is common in Ontario; flat-fee options cost less.</small>
       </label>
       <p class="ck-error" data-error-for="commission" hidden></p>
       <label>Moving costs, each move ($)
+        <small class="ck-help">{HELP.moving}</small>
         <input type="number" name="moving" inputmode="decimal" min="0" step="250" value={d.moving} />
       </label>
       <p class="ck-error" data-error-for="moving" hidden></p>
@@ -121,10 +138,12 @@ const p = (r: number, digits = 2) => Number((r * 100).toFixed(digits));
     <fieldset>
       <legend>Your plans</legend>
       <label>Years you would stay in the home
+        <small class="ck-help">{HELP.years}</small>
         <input type="number" name="years" inputmode="numeric" min="1" max="30" step="1" value={d.years} />
       </label>
       <p class="ck-error" data-error-for="years" hidden></p>
       <label>Household income ($ a year, optional)
+        <small class="ck-help">{HELP.income}</small>
         <input type="number" name="income" inputmode="decimal" min="0" step="1000" placeholder="For the qualification check" />
       </label>
       <p class="ck-error" data-error-for="income" hidden></p>
@@ -135,8 +154,11 @@ const p = (r: number, digits = 2) => Number((r * 100).toFixed(digits));
   <div class="ck-results" id="rvb-results" aria-live="polite" set:html={initialHtml} />
 </div>
 
+<Fragment set:html={renderNextSteps()} />
+<Fragment set:html={renderExample()} />
+
 <section class="ck-assumptions" aria-labelledby="rvb-h-how">
-  <h2 id="rvb-h-how">How the math works</h2>
+  <h2 id="rvb-h-how">How this calculator works</h2>
   <ul>
     <li><strong>It compares net wealth, not monthly payments.</strong> The buyer's wealth is what they would walk away with if they sold: home value, minus selling commission, legal and moving, minus the mortgage left.</li>
     <li><strong>The renter invests what the buyer spends.</strong> The down payment, closing costs and moving money go into investments on day one, and each month the renter invests the difference between the owner's costs and the rent. If owning is cheaper than renting in a month, the renter draws down instead.</li>
@@ -150,7 +172,7 @@ const p = (r: number, digits = 2) => Number((r * 100).toFixed(digits));
   </p>
 </section>
 
-<CalcSources figures={[...rvbFigures.values()]} checked="2026-09-27 to 2026-09-30" />
+<CalcSources figures={[...rvbFigures.values(), ...rvbNextFigures.values()]} checked="2026-09-27 to 2026-09-30" />
 
 <script>
   import { compare, validate, type Field, type RvbInput } from "../../lib/calculators/rent-vs-buy";
