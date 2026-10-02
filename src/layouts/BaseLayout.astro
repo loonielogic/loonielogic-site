@@ -18,6 +18,7 @@ import {
 } from "../lib/analytics";
 import { ogImageFor, OG_WIDTH, OG_HEIGHT } from "../lib/og";
 import { TOOL_GROUPS } from "../lib/tools-nav";
+import { faqPageNode } from "../lib/faq-schema";
 
 interface Crumb {
   name: string;
@@ -141,6 +142,10 @@ const breadcrumbNode: Record<string, unknown>[] =
       ]
     : [];
 
+// FAQPage from the sitemap manifest (item 67) — exactly the page's own
+// questions/answers, verbatim; no node when the manifest has none.
+const faqNode = faqPageNode(slug);
+
 const graph = {
   "@context": "https://schema.org",
   "@graph": [
@@ -148,6 +153,7 @@ const graph = {
     primaryType,
     ...breadcrumbNode,
     ...(jsonLdExtra ? [jsonLdExtra] : []),
+    ...(faqNode ? [faqNode] : []),
   ],
 };
 ---
