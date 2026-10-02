@@ -337,6 +337,7 @@
         "/learn/home-buyers-plan",
         "/compare/fhsa-vs-home-buyers-plan",
         "/calculators/down-payment-planner",
+        "/learn/first-home-savings",
         "/learn/glossary"
       ],
       "review_cadence": "annual",
@@ -375,6 +376,7 @@
         "/learn/fhsa",
         "/compare/fhsa-vs-home-buyers-plan",
         "/calculators/down-payment-planner",
+        "/learn/first-home-savings",
         "/learn/glossary"
       ],
       "review_cadence": "annual",
@@ -999,7 +1001,8 @@
       "related": [
         "/learn/fhsa",
         "/compare/fhsa-vs-home-buyers-plan",
-        "/learn/first-time-home-buyer-incentives"
+        "/learn/first-time-home-buyer-incentives",
+        "/learn/first-home-savings"
       ],
       "review_cadence": "annual",
       "note": "Time-sensitive campaign: publish early-mid November 2026. Page build to schedule before the push.",
@@ -1207,7 +1210,49 @@
       "faq_pages": [
         "FAQPage"
       ]
+    },
+    {
+      "slug": "/learn/first-home-savings",
+      "title": "First Home Down Payment Strategy: FHSA + HBP + TFSA 2026",
+      "meta_description": "The one-page first-home down payment strategy: FHSA first ($8,000/yr), HBP second ($60,000), TFSA as overflow. Room math, costed traps, and the cluster guides.",
+      "page_type": "explainer",
+      "cluster": "housing",
+      "hub": "/learn/",
+      "wave": 2,
+      "status": "draft",
+      "card_dek": "The one-page strategy: FHSA first, HBP second, TFSA as overflow.",
+      "related": [
+        "/learn/fhsa",
+        "/learn/home-buyers-plan",
+        "/compare/fhsa-vs-home-buyers-plan",
+        "/calculators/down-payment-planner",
+        "/learn/fhsa-open-before-dec-31",
+        "/learn/gifted-down-payment-tax-rules"
+      ],
+      "review_cadence": "annual",
+      "note": "Flagship cluster hub (item 83). Wave 2, November 2026, paired with the Dec-31 campaign. FHSA-vs-HBP, down-payment-planner, and gifted pages are forward references (draft) — render their cards unlinked until live.",
+      "faq_pages": [
+        "FAQPage"
+      ],
+      "faq": [
+        {
+          "q": "For a down payment, which comes first: the FHSA or the Home Buyers' Plan?",
+          "a": "For new savings, the FHSA comes first at every income level: contributions are deductible and qualifying withdrawals for a first home are tax-free and never repaid. The HBP is the speed option: it unlocks money already in an RRSP, up to $60,000 per person, but every dollar is repaid to the RRSP over 15 years. The two stack for the same home."
+        },
+        {
+          "q": "How much can a couple stack for a first home using the FHSA and HBP?",
+          "a": "Up to $200,000 of tax-assisted money: each eligible partner gets a $40,000 FHSA lifetime limit and can withdraw up to $60,000 under the HBP, and both partners can use both for the same purchase. The FHSA part is never repaid; the HBP part is repaid to each partner's RRSP at one-fifteenth per year over 15 years."
+        },
+        {
+          "q": "What is the Dec 31 FHSA deadline, and what does waiting cost?",
+          "a": "FHSA room starts accumulating only in the year the first account is opened. Open in December 2026, even with $0 contributed, and 2027 starts with $16,000 of room ($8,000 new plus $8,000 carried forward). Wait until January 2027 and 2027 starts with $8,000. One month of waiting permanently costs $8,000 of lifetime room, a fifth of the $40,000 cap."
+        },
+        {
+          "q": "Can a gifted down payment cover the entire down payment?",
+          "a": "Yes. Canada has no gift tax, so the recipient owes nothing and reports nothing, and there is no cap: the whole down payment can be a gift. Lenders accept gifts from immediate family (parents, grandparents, siblings, child, legal guardian) with a signed gift letter and roughly 90 days of bank statements tracing the money. One surprise lands on the giver: selling investments to raise the cash creates a taxable capital gain at the 50% inclusion rate."
+        }
+      ]
     }
   ],
-  "version": "1.4"
+  "version": "1.5"
 }

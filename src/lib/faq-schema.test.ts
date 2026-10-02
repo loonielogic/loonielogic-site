@@ -20,9 +20,10 @@ function houseStyleProblems(text: string): string[] {
   return out;
 }
 
-// The 15 explainer pages whose manifest entries carry FAQ blocks
+// The 16 explainer pages whose manifest entries carry FAQ blocks
 // (items 34 + 40 + 64 + 65: the two draft pages from the item-80 merge
-// batch carry FAQ blocks too; item 82 adds three draft Reddit-gap pages).
+// batch carry FAQ blocks too; item 82 adds three draft Reddit-gap pages;
+// item 83 adds the draft first-home savings hub).
 // If this set changes intentionally, update it here.
 const EXPECTED_FAQ_SLUGS = [
   "/learn/cpp-oas",
@@ -30,6 +31,7 @@ const EXPECTED_FAQ_SLUGS = [
   "/learn/federal-tax-brackets-2026",
   "/learn/fhsa",
   "/learn/fhsa-open-before-dec-31",
+  "/learn/first-home-savings",
   "/learn/first-paycheque-playbook",
   "/learn/first-time-tax-filing",
   "/learn/fraud-scams-basics",

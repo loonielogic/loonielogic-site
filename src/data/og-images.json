@@ -143,6 +143,12 @@
     "title": "Open your FHSA before Dec 31: why 2026 room is lost forever",
     "line": "FHSA room starts when you open the account. Open in December 2026 to bank $8,000 of room for 2027…"
   },
+  "/learn/first-home-savings": {
+    "image": "/og/learn-first-home-savings.png",
+    "alt": "LoonieLogic explainer: First Home Down Payment Strategy: FHSA + HBP + TFSA 2026",
+    "title": "First Home Down Payment Strategy: FHSA + HBP + TFSA 2026",
+    "line": "The one-page first-home down payment strategy: FHSA first ($8,000/yr), HBP second ($60,000)…"
+  },
   "/learn/first-paycheque-playbook": {
     "image": "/og/learn-first-paycheque-playbook.png",
     "alt": "LoonieLogic explainer: First paycheque, decoded: CPP, EI, tax, and the first $1,000",
