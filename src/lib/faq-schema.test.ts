@@ -20,11 +20,13 @@ function houseStyleProblems(text: string): string[] {
   return out;
 }
 
-// The 15 explainer pages whose manifest entries carry FAQ blocks
+// The 16 pages whose manifest entries carry FAQ blocks
 // (items 34 + 40 + 64 + 65: the two draft pages from the item-80 merge
-// batch carry FAQ blocks too; item 82 adds three draft Reddit-gap pages).
+// batch carry FAQ blocks too; item 82 adds three draft Reddit-gap pages;
+// item 84 adds the draft FHSA vs HBP comparison).
 // If this set changes intentionally, update it here.
 const EXPECTED_FAQ_SLUGS = [
+  "/compare/fhsa-vs-home-buyers-plan",
   "/learn/cpp-oas",
   "/learn/credit-score",
   "/learn/federal-tax-brackets-2026",
@@ -46,7 +48,7 @@ const manifestPages = (sitemap as { pages: { slug: string; faq?: { q: string; a:
 const manifestBySlug = new Map(manifestPages.map((p) => [p.slug, p.faq ?? []]));
 
 describe("faq-schema", () => {
-  it("FAQ-carrying slug set is exactly the 15 FAQ explainers", () => {
+  it("FAQ-carrying slug set is exactly the 16 FAQ pages", () => {
     assert.deepEqual(faqSlugs(), EXPECTED_FAQ_SLUGS);
   });
 
