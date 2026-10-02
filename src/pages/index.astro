@@ -24,10 +24,11 @@ const metaDescription =
 const PLANNER = "/calculators/down-payment-planner";
 
 // Pages that actually exist in this build. Guided-path items and the
-// Learn/Try/Do cards link only to these.
+// Learn/Try/Do cards link only to these. Draft content pages are built
+// (reachable by direct URL, noindex) but stay off the homepage until live.
 const builtSlugs = new Set<string>(["/", "/learn/", "/calculators/", "/compare/"]);
 for (const coll of ["explainers", "comparisons", "legal"] as const) {
-  for (const e of await getCollection(coll)) builtSlugs.add(e.data.slug);
+  for (const e of await getCollection(coll)) if (e.data.status === "live") builtSlugs.add(e.data.slug);
 }
 // Calculator pages are built as routes from manifests.json, not as content
 // collections, so add their manifest slugs too. Without this, liveIn() never
@@ -54,6 +55,7 @@ const teasers = [
   ...(await getCollection("explainers")).map((e) => ({ e, kind: "Explainer" })),
   ...(await getCollection("comparisons")).map((e) => ({ e, kind: "Comparison" })),
 ]
+  .filter(({ e }) => e.data.status === "live")
   .map(({ e, kind }) => ({
     kind,
     slug: e.data.slug,
