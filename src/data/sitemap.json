@@ -1006,7 +1006,28 @@
         "/calculators/tfsa-room-checker"
       ],
       "review_cadence": "annual",
-      "note": "Publish window early December 2026."
+      "note": "Publish window early December 2026.",
+      "faq_pages": [
+        "FAQPage"
+      ],
+      "faq": [
+        {
+          "q": "When does TFSA room come back after a withdrawal, and does the December 31 date matter?",
+          "a": "TFSA room from a withdrawal is added back on January 1 of the following calendar year, not right away. A withdrawal made on December 31, 2026 restores that room on January 1, 2027, while the same withdrawal on January 1, 2027 waits until January 1, 2028. Re-contributing the money in the same year without spare room counts as a new contribution and can trigger the 1% per month excess tax."
+        },
+        {
+          "q": "Is the charitable donation credit 14% or 15% on the first $200 for 2026?",
+          "a": "For 2026 the federal credit on the first $200 of donations is 14%, because that rate follows the lowest federal tax bracket, which was cut from 15% to 14%. Many older articles still quote 15% and are stale for 2026. Amounts above $200 earn 29%, or 33% to the extent income falls in the top federal bracket. Provincial credits stack on top, and the credit is non-refundable."
+        },
+        {
+          "q": "What is the last day to sell for a tax loss that counts in 2026?",
+          "a": "Settlement date decides the tax year, and trades settle on a T+1 basis. Tuesday, December 29, 2026 is the last trading date that settles within 2026, according to the Broadridge/TD Major Canadian Tax Deadlines and Dates 2026 chart. Each brokerage publishes its own year-end deadline, and that date governs the account, so it can be earlier than December 29. A trade settling January 2 is a 2027 loss."
+        },
+        {
+          "q": "How does the superficial loss rule stop a tax-loss sale from counting?",
+          "a": "If the same or identical property is bought during the 30 days before or after the sale, a 61-day window counting the sale day, and it is still held at the end of that window, the loss is deemed nil. The purchase can be made by the seller, a spouse, or an affiliated corporation or trust, and buying it inside a TFSA or RRSP counts too. The denied loss is added to the adjusted cost base of the repurchased property."
+        }
+      ]
     },
     {
       "slug": "/learn/fhsa-open-before-dec-31",
@@ -1230,5 +1251,5 @@
       ]
     }
   ],
-  "version": "1.5"
+  "version": "1.6"
 }

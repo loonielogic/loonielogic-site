@@ -1,1 +1,49 @@
-{"entries":[{"expires":"2027-01-01","key":"capital_gains.inclusion_rate.2026","label":"Capital gains inclusion rate (2026)","notes":"Half of the gain is included in income; only that half is taxed at the marginal rate. The 2024 Budget proposed raising the rate to 66.67% on gains above $250,000 - CANCELLED March 21, 2025. Never present the 66.67% rate as live.","rejected":[{"claim":"66.67% inclusion rate above $250,000","reason":"Proposed in 2024 Budget; proposal cancelled March 21, 2025.","reported_by":"glossary + capital-gains mentions in drafts, verified 2026-09-28"}],"source":"https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/about-your-tax-return/tax-return/completing-a-tax-return/deductions-credits-expenses/line-12700-capital-gains.html","source_note":"CRA capital gains page; 50% re-verified 2026-09-28.","status":"verified","unit":"pct","value":0.5,"verified_date":"2026-09-28"},{"expires":"2027-01-01","key":"capital_gains.principal_residence","label":"Principal residence exemption","notes":"Cottages, rentals, second properties face the 50% inclusion rate.","source":"https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/about-your-tax-return/tax-return/completing-a-tax-return/deductions-credits-expenses/line-12700-capital-gains.html","source_note":"CRA capital gains page (glossary, verified 2026-09-29).","status":"verified","unit":"text","value":"Capital gains on a principal residence are fully exempt; the sale must still be reported on the return","verified_date":"2026-09-29"},{"expires":"2027-01-01","key":"tax_loss.settlement_cutoff.2026","label":"2026 tax-loss selling settlement cutoff","notes":"Duplicate of tax-deadlines-2026.json:tax_loss.2026 for the capital-gains file. CRA uses settlement date, not trade date.","source":"https://www.td.com/ca/en/personal-banking/products-services/advice-insights/major-canadian-tax-deadlines-chart.html","source_note":"Broadridge/TD Major Canadian Tax Deadlines chart (promo calendar, verified 2026-09-29).","status":"verified","unit":"date","value":"2026-12-29","verified_date":"2026-09-29"}],"tax_year":2026,"topic":"Capital gains inclusion rate and related rules (2026)"}
+{
+ "entries": [
+  {
+   "expires": "2027-01-01",
+   "key": "capital_gains.inclusion_rate.2026",
+   "label": "Capital gains inclusion rate (2026)",
+   "notes": "Half of the gain is included in income; only that half is taxed at the marginal rate. The 2024 Budget proposed raising the rate to 66.67% on gains above $250,000 - CANCELLED March 21, 2025. Never present the 66.67% rate as live.",
+   "rejected": [
+    {
+     "claim": "66.67% inclusion rate above $250,000",
+     "reason": "Proposed in 2024 Budget; proposal cancelled March 21, 2025.",
+     "reported_by": "glossary + capital-gains mentions in drafts, verified 2026-09-28"
+    }
+   ],
+   "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/about-your-tax-return/tax-return/completing-a-tax-return/deductions-credits-expenses/line-12700-capital-gains.html",
+   "source_note": "CRA capital gains page; 50% re-verified 2026-09-28.",
+   "status": "verified",
+   "unit": "pct",
+   "value": 0.5,
+   "verified_date": "2026-09-28"
+  },
+  {
+   "expires": "2027-01-01",
+   "key": "capital_gains.principal_residence",
+   "label": "Principal residence exemption",
+   "notes": "Cottages, rentals, second properties face the 50% inclusion rate.",
+   "source": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/about-your-tax-return/tax-return/completing-a-tax-return/deductions-credits-expenses/line-12700-capital-gains.html",
+   "source_note": "CRA capital gains page (glossary, verified 2026-09-29).",
+   "status": "verified",
+   "unit": "text",
+   "value": "Capital gains on a principal residence are fully exempt; the sale must still be reported on the return",
+   "verified_date": "2026-09-29"
+  },
+  {
+   "expires": "2027-01-01",
+   "key": "tax_loss.settlement_cutoff.2026",
+   "label": "2026 tax-loss selling settlement cutoff",
+   "notes": "Duplicate of tax-deadlines-2026.json:tax_loss.2026 for the capital-gains file. CRA uses settlement date, not trade date.",
+   "source": "https://mediahandler.broadridgeadvisor.com/media/787920/TD_WPO_MajorCanadianTaxDeadlinesDatesEN-0226.pdf?MediaVersion=1&optimize=false&Language=en-us",
+   "source_note": "Source URL moved (td.com chart page now 404s); value re-confirmed verbatim on the official Broadridge/TD 2026 chart PDF 2026-10-02. Broadridge/TD Major Canadian Tax Deadlines chart (promo calendar, verified 2026-09-29).",
+   "status": "verified",
+   "unit": "date",
+   "value": "2026-12-29",
+   "verified_date": "2026-10-02"
+  }
+ ],
+ "tax_year": 2026,
+ "topic": "Capital gains inclusion rate and related rules (2026)"
+}

@@ -1,0 +1,55 @@
+{
+ "entries": [
+  {
+   "key": "year_end.superficial_loss.rule.2026",
+   "label": "Superficial loss rule (30 days before and after the sale)",
+   "notes": "",
+   "source": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4037/t4037-10e.pdf",
+   "source_note": "CRA Guide T4037; draft sources verified 2026-09-29.",
+   "status": "verified",
+   "unit": "text",
+   "value": "30 days before or after; loss deemed nil and added to ACB of the repurchased property",
+   "verified_date": "2026-10-02",
+   "expires": "2027-01-01"
+  },
+  {
+   "key": "year_end.capital_loss.carry.2026",
+   "label": "Net capital loss carryback and carryforward",
+   "notes": "",
+   "source": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4037/t4037-10e.pdf",
+   "source_note": "CRA Guide T4037; draft sources verified 2026-09-29.",
+   "status": "verified",
+   "unit": "table",
+   "value": {
+    "back_years": 3,
+    "forward": "indefinite"
+   },
+   "verified_date": "2026-10-02",
+   "expires": "2027-01-01"
+  },
+  {
+   "key": "year_end.donation.income_cap_75.2026",
+   "label": "Donation claim limit as a share of net income",
+   "notes": "",
+   "source": "https://laws-lois.justice.gc.ca/eng/acts/I-3.3/section-118.1.html",
+   "source_note": "ITA s.118.1; draft sources verified 2026-09-29.",
+   "status": "verified",
+   "unit": "pct",
+   "value": 0.75,
+   "verified_date": "2026-10-02",
+   "expires": "2027-01-01"
+  },
+  {
+   "key": "year_end.donation.carryforward_5y.2026",
+   "label": "Unclaimed donation carryforward period",
+   "notes": "",
+   "source": "https://laws-lois.justice.gc.ca/eng/acts/I-3.3/section-118.1.html",
+   "source_note": "ITA s.118.1; draft sources verified 2026-09-29.",
+   "status": "verified",
+   "unit": "years",
+   "value": 5,
+   "verified_date": "2026-10-02",
+   "expires": "2027-01-01"
+  }
+ ]
+}
