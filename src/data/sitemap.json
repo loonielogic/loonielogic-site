@@ -82,7 +82,7 @@
     {
       "cluster": "tax",
       "hub": "/calculators/",
-      "meta_description": "Estimate your 2026 Canadian income tax in seconds: federal + all 13 provinces, CPP/EI premiums, paycheque mode, and marginal vs average rates explained in plain English.",
+      "meta_description": "Estimate your 2026 Canadian income tax in seconds: federal + provincial, CPP/EI premiums, paycheque mode, and marginal vs average rates explained.",
       "page_type": "calculator",
       "related": [
         "/learn/federal-tax-brackets-2026",
@@ -130,7 +130,7 @@
     {
       "cluster": "retirement",
       "hub": "/calculators/",
-      "meta_description": "Rebuild your RRSP room from scratch or forward-track from your NOA. Dual-mode calculator with 11 edge cases covered, including the $2,000 buffer and 90-day rule.",
+      "meta_description": "Rebuild your RRSP room from scratch or forward-track from your NOA. Dual-mode calculator with 11 edge cases, including the $2,000 buffer and 90-day rule.",
       "page_type": "calculator",
       "related": [
         "/learn/rrsp",
@@ -240,7 +240,7 @@
     {
       "cluster": "utility",
       "hub": "/learn/",
-      "meta_description": "Every Canadian money term, decoded: TFSA, RRSP, FHSA, marginal rates, CMHC, OAS clawback and 43 more. Plain English, verified 2026 figures.",
+      "meta_description": "Every Canadian money term, decoded: TFSA, RRSP, FHSA, marginal rates, CMHC, OAS clawback and 43 more. Plain English, verified 2026 figures, A to Z.",
       "page_type": "glossary",
       "related": [
         "/learn/tfsa",
@@ -323,7 +323,7 @@
     {
       "cluster": "tax",
       "hub": "/learn/",
-      "meta_description": "Every 2026 federal bracket explained: 14%, 20.5%, 26%, 29%, 33% thresholds, the $16,452 basic personal amount, and a worked $100,000 example. Pairs with our tax calculator.",
+      "meta_description": "Every 2026 federal bracket explained: 14% to 33% thresholds, the $16,452 basic personal amount, and a worked $100,000 example. Pairs with our tax calculator.",
       "page_type": "explainer",
       "related": [
         "/calculators/income-tax-calculator",
@@ -434,13 +434,13 @@
       "review_cadence": "annual",
       "slug": "/learn/credit-score",
       "card_dek": "How Canadian credit scores work and the moves that actually raise yours.",
-      "title": "Credit Score Canada 2026: How It Works and How to Raise Yours",
+      "title": "Credit Score Canada 2026: How It Works and How to Raise It",
       "wave": 3
     },
     {
       "cluster": "retirement",
       "hub": "/compare/",
-      "meta_description": "TFSA vs RRSP settled with real 2026 math: income-based recommendations, when each wins, edge cases (employer match, OAS clawback, age 71), plus the 6-question quiz.",
+      "meta_description": "TFSA vs RRSP settled with 2026 math: income-based recommendations, when each wins, edge cases (employer match, OAS clawback, age 71), plus the 6-question quiz.",
       "page_type": "comparison",
       "related": [
         "/learn/tfsa",
@@ -450,13 +450,13 @@
       "review_cadence": "annual",
       "slug": "/compare/tfsa-vs-rrsp",
       "card_dek": "Which account to fund first, with the 2026 math and a clear verdict.",
-      "title": "TFSA vs RRSP Canada 2026: The Only Comparison That Recommends",
+      "title": "TFSA vs RRSP Canada 2026: The Comparison That Recommends",
       "wave": 1
     },
     {
       "cluster": "investing",
       "hub": "/compare/",
-      "meta_description": "Honest 2026 comparison: commissions, USD accounts, managed portfolios, margin rates, and current promos. We recommend one per profile, with affiliate links disclosed.",
+      "meta_description": "Honest 2026 comparison: commissions, USD accounts, managed portfolios, and margin rates. We recommend one per profile, with affiliate links disclosed.",
       "page_type": "comparison",
       "related": [
         "/compare/tfsa-vs-rrsp",
@@ -465,13 +465,13 @@
       "review_cadence": "quarterly",
       "slug": "/compare/wealthsimple-vs-questrade",
       "card_dek": "Fees, features, and which brokerage fits which kind of investor.",
-      "title": "Wealthsimple vs Questrade 2026: Fees, Features, and Which to Pick",
+      "title": "Wealthsimple vs Questrade 2026: Fees, Features, and Our Pick",
       "wave": 1
     },
     {
       "cluster": "housing",
       "hub": "/compare/",
-      "meta_description": "FHSA vs HBP with income-based math: why FHSA first for new money at every income level, when HBP wins for speed, how couples stack up to $200k, and 9 edge cases.",
+      "meta_description": "FHSA vs HBP with income-based math: why FHSA first for new money at every income level, when HBP wins for speed, how couples reach $200k, and 9 edge cases.",
       "page_type": "comparison",
       "related": [
         "/learn/fhsa",
@@ -497,13 +497,13 @@
       "review_cadence": "promo-watch",
       "slug": "/compare/best-bank-accounts-beginners",
       "card_dek": "No-fee accounts for students and newcomers, and which ones to skip.",
-      "title": "Best Bank Accounts for Beginners in Canada 2026 (Student/Newcomer)",
+      "title": "The Best Bank Accounts for Beginners in Canada 2026",
       "wave": 3
     },
     {
       "cluster": "utility",
       "hub": null,
-      "meta_description": "Who runs LoonieLogic, how we make money (affiliate disclosure summary), and why we recommend instead of sitting on the fence. Educational content only, not financial advice.",
+      "meta_description": "Who runs LoonieLogic, how we make money, and why we recommend instead of sitting on the fence. Educational content only, never financial advice.",
       "page_type": "legal",
       "related": [
         "/affiliate-disclosure",
@@ -518,7 +518,7 @@
     {
       "cluster": "utility",
       "hub": null,
-      "meta_description": "LoonieLogic's privacy policy: what we collect (almost nothing), PIPEDA rights, CASL consent rules, calculator inputs staying in your browser, and how to contact us.",
+      "meta_description": "LoonieLogic's privacy policy: what we collect (almost nothing), your rights under PIPEDA, and why calculator inputs never leave your browser.",
       "page_type": "legal",
       "related": [
         "/about",
@@ -532,7 +532,7 @@
     {
       "cluster": "utility",
       "hub": null,
-      "meta_description": "How LoonieLogic makes money: affiliate commissions on broker/bank links, per Competition Act disclosure rules. Recommendations are never sold. Here is the proof.",
+      "meta_description": "How LoonieLogic makes money: affiliate commissions on broker, bank, and tax-software links, disclosed per Competition Act rules. Recommendations are never sold.",
       "page_type": "legal",
       "related": [
         "/about",
