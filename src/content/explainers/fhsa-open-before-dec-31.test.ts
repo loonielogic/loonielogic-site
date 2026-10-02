@@ -107,6 +107,8 @@ test("page stays unlinked until the November push", () => {
   for (const sub of ["pages", "components", "layouts", "content", "lib"]) walk(join(src, sub));
   for (const f of files) {
     if (f.endsWith("fhsa-open-before-dec-31.mdx")) continue;
+    // The first-home hub (item 83) is a draft companion shipping in the same wave.
+    if (f.endsWith("first-home-savings.mdx")) continue;
     assert.ok(!readFileSync(f, "utf8").includes(SLUG), `${f} links ${SLUG}`);
   }
 });
